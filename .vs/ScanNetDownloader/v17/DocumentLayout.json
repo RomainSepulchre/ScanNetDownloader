@@ -1,9 +1,9 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "M:\\Dev projects\\ScanNetDownloader\\ScanNetDownloader\\",
+  "WorkspaceRootPath": "M:\\Dev projects\\ScanNetDownloader\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{55B72091-FA96-4395-96F6-B7799176D7CB}|ScanNetDownloader\\ScanNetDownloader.csproj|m:\\dev projects\\scannetdownloader\\scannetdownloader\\scannetdownloader\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{55B72091-FA96-4395-96F6-B7799176D7CB}|ScanNetDownloader\\ScanNetDownloader.csproj|m:\\dev projects\\scannetdownloader\\scannetdownloader\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{55B72091-FA96-4395-96F6-B7799176D7CB}|ScanNetDownloader\\ScanNetDownloader.csproj|solutionrelative:scannetdownloader\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
@@ -64,13 +64,13 @@
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "Program.cs",
-              "DocumentMoniker": "M:\\Dev projects\\ScanNetDownloader\\ScanNetDownloader\\ScanNetDownloader\\Program.cs",
+              "DocumentMoniker": "M:\\Dev projects\\ScanNetDownloader\\ScanNetDownloader\\Program.cs",
               "RelativeDocumentMoniker": "ScanNetDownloader\\Program.cs",
-              "ToolTip": "M:\\Dev projects\\ScanNetDownloader\\ScanNetDownloader\\ScanNetDownloader\\Program.cs",
+              "ToolTip": "M:\\Dev projects\\ScanNetDownloader\\ScanNetDownloader\\Program.cs",
               "RelativeToolTip": "ScanNetDownloader\\Program.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA8AAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-13T19:40:18.122Z",
+              "WhenOpened": "2024-09-13T20:04:48.391Z",
               "EditorCaption": ""
             }
           ]
