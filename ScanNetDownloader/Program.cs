@@ -63,6 +63,20 @@ namespace ScanDownloader
 
         //OUTPUT FILE
         private static string ImgName => $"{BOOK_NAME}_{chapterId}-{pageId.ToString("D3")}{IMG_EXTENSION}";
+
+        // SEPARATORS
+        private static readonly string[] URL_BLOCK_START_SEPARATOR = new string[] { "<div class=\"viewer-cnt\">" };
+        private static readonly string[] URL_BLOCK_END_SEPARATOR = new string[] { "<div id=\"ppp\" style>" };
+        private static readonly string[] CLEAN_BEFORE_IMG_TAG_SEPARATOR = new string[] { "<div id=\"all\" style=\" display: none; \">" };
+        private static readonly string[] IMG_TAG_END_SEPARATOR = new string[] { "/>" };
+        private static readonly char QUOTE_SEPARATOR = '\"';
+        private static readonly char SLASH_SEPARATOR = '/';
+        private static readonly char DASH_SEPARATOR = '-';
+        private static readonly char POINT_SEPARATOR = '.';
+        private static readonly string HTTP_ADDRESS = "https://";
+
+        // SETTINGS
+        private static bool openOutputDirectoryWhenClosing = true;
         #endregion
 
         #region Main
@@ -77,26 +91,210 @@ namespace ScanDownloader
             if (isNo) return; // Quit App prematurely
 
             string downloadFolder = CreateChapterFolder();
-            DownloadFromImgUrl(downloadFolder);
+            DownloadFromChapterUrl(downloadFolder);
+            //DownloadFromImgUrl(downloadFolder);
 
             Console.WriteLine("All page downloaded, press any key to close...");
             Console.ReadKey();
-            OpenFolder(downloadFolder);
+            if(openOutputDirectoryWhenClosing) OpenFolder(downloadFolder);
         }
         #endregion
 
         #region Downloading
+        // Attempt to search in the html file the links of all images store them and to have the correct img naming every time
         static void DownloadFromChapterUrl(string downloadPath)
         {
-            //using(WebClient client = new WebClient())
-            //{
-            //    // Or you can get the file content without saving it
-            //    string htmlCode = client.DownloadString("https://www.scan-vf.net/one_piece/chapitre-1091/3");
-            //    client.DownloadFile("https://www.scan-vf.net/one_piece/chapitre-1091/3", Path.Combine(DOWNLOAD_DIRECTORY, "test.html"));
-            //    Console.WriteLine(htmlCode);
-            //    Console.ReadKey();
-            //    return;
-            //}
+
+            //////////////////////////////////////////////////////////////////////////////////
+            // Download html file to check code consistency
+            List<string> urlsToTest = new List<string>
+            {
+                "https://www.scan-vf.net/one_piece/chapitre-1091/3",
+                "https://www.scan-vf.net/one_piece/chapitre-1079/1",
+                "https://www.scan-vf.net/one_piece/chapitre-1120/1",
+                "https://www.scan-vf.net/one_piece/chapitre-1094/1",
+                "https://www.scan-vf.net/one_piece/chapitre-140/1",
+                "https://www.scan-vf.net/one_piece/chapitre-1087/7"
+            };
+
+            List<string> imgUrlsToTest = new List<string>
+            {
+                "https://www.scan-vf.net/uploads/manga/kingdom/chapters/chapitre-810/01.webp",
+                "https://www.scan-vf.net/uploads/manga/attaque-des-titans/chapters/chapitre-139.5/01.jpg",
+                "https://www.scan-vf.net/uploads/manga/one-punch-man/chapters/chapitre-230/mp-01.webp",
+                "https://www.scan-vf.net/uploads/manga/one_piece/chapters/chapitre-1091/001.webp",
+            };
+            // Debug
+            if (true) 
+            {
+                //SaveHtmlFiles(urlsToTest);
+
+                foreach (string item in imgUrlsToTest)
+                {
+                    string _bookName = GetBookNameFromUrl(item);
+                    string _chapterId = GetChapterIdFromUrl(item);
+                    string _fileExtension = GetFileExtensionFromUrl(item);
+                    string _imgName = $"{_bookName}_{_chapterId}-{pageId.ToString("D3")}{_fileExtension}";
+
+                    Console.WriteLine($"\nIMG NAME => {_imgName}");
+                }
+                return; // DEBUG
+            }
+            ////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+            foreach (string url in urlsToTest)
+            {
+                List<string> imgsToDownload = GetImgUrlsFromHtmlContent(url);
+
+                int pageId = 1;
+                foreach (string imgUrl in imgsToDownload)
+                {
+                    string bookName = GetBookNameFromUrl(imgUrl);
+                    string chapterId = GetChapterIdFromUrl(imgUrl);
+                    string fileExtension = GetFileExtensionFromUrl(imgUrl);
+                    string imgName = $"{bookName}_{chapterId}-{pageId.ToString("D3")}{fileExtension}";
+                    Debug.WriteLine($"IMG NAME => {imgName}");
+                    
+                    string downloadedFile = Path.Combine(downloadPath, imgName);
+
+                    using (WebClient client = new WebClient())
+                    {
+                        try
+                        {
+                            Console.WriteLine($"\nDownloading {ImgName} from {imgUrl} ...");
+
+                            if (File.Exists(downloadedFile) == true && File.ReadAllBytes(downloadedFile).Length > 0 == true)
+                            {
+                                Console.WriteLine($"File already downloaded!\n");
+                            }
+                            else
+                            {
+                                client.DownloadFile(new Uri(imgUrl), downloadedFile);
+                                Console.WriteLine($"Sucessfully downloaded!\n");
+                            }
+
+                        }
+                        catch (WebException ex)
+                        {
+                            Debug.WriteLine($"EXCEPTION: {ex}");
+                            Console.WriteLine($"Download failed for {imgUrl} ! Exception:{ex}\n");
+                        }
+                    }
+
+                    pageId++;
+                }
+            }
+            
+
+        }
+
+        static List<string> GetImgUrlsFromHtmlContent(string htmlUrl)
+        {
+            string htmlContent;
+            using (WebClient client = new WebClient())
+            {
+                htmlContent = client.DownloadString(htmlUrl); // Save html code in a variable
+            }
+
+            // Start parsing
+            // Separators
+            string[] splitContent = htmlContent.Split(URL_BLOCK_START_SEPARATOR, StringSplitOptions.RemoveEmptyEntries); // Split before the block with all the img url
+            string urlSplit = splitContent[1]; // Keep the split after our separator (trim the beginning)
+
+            splitContent = urlSplit.Split(URL_BLOCK_END_SEPARATOR, StringSplitOptions.RemoveEmptyEntries); // Split after the block with all the img url
+            urlSplit = splitContent[0]; // Keep the split before our separator (trim the end)
+
+            splitContent = urlSplit.Split(CLEAN_BEFORE_IMG_TAG_SEPARATOR, StringSplitOptions.RemoveEmptyEntries); // Clean the html code that is still before the first <img/>
+            urlSplit = splitContent[1]; // Keep the split after our separator (trim the beginning)
+
+            Debug.WriteLine($"---- URL SPLIT ---- \n {urlSplit} \n ---- URL SPLIT END ----");
+
+            List<string> imgUrls = urlSplit.Split(IMG_TAG_END_SEPARATOR, StringSplitOptions.RemoveEmptyEntries).ToList(); // Split each img tag in a list
+
+            // Keep only the urls in the list
+            for (int i = imgUrls.Count - 1; i >= 0; i--)
+            {
+                if (imgUrls[i].ToLower().Contains(HTTP_ADDRESS))
+                {
+                    string[] imgUrlSplit = imgUrls[i].Split(QUOTE_SEPARATOR);
+                    foreach (string split in imgUrlSplit)
+                    {
+                        // Keep only the split containing the url
+                        if (split.ToLower().Contains(HTTP_ADDRESS))
+                        {
+                            imgUrls[i] = split;
+                            imgUrls[i] = imgUrls[i].Replace(" ", string.Empty); // Remove space in the string
+                        }
+                    }
+                }
+                else
+                {
+                    Debug.WriteLine($"\nRemove Line #{i} \"{imgUrls[i]}\" from url list");
+                    imgUrls.RemoveAt(i);
+                }
+            }
+
+            // DEBUG.WRITE LIST ITEMS
+            LogListItems(imgUrls);
+
+            return imgUrls;
+        }
+
+
+        
+
+        static string GetBookNameFromUrl(string url)
+        {
+            // Example of url
+            //   0    1      2            3      4      5        6         7          8
+            // https://www.scan-vf.net/uploads/manga/kingdom/chapters/chapitre-810/01.webp
+            // https://www.scan-vf.net/uploads/manga/attaque-des-titans/chapters/chapitre-139.5/01.jpg
+            // https://www.scan-vf.net/uploads/manga/one-punch-man/chapters/chapitre-230/mp-01.webp
+            // https://www.scan-vf.net/uploads/manga/one_piece/chapters/chapitre-1091/001.webp
+
+            string bookName = url.Split(SLASH_SEPARATOR)[5];
+
+            //TODO: Clean name format
+            Debug.WriteLine($"GetBookNameFromUrl -> {bookName}");
+            return bookName;
+        }
+
+        static string GetChapterIdFromUrl(string url)
+        {
+            // Example of url
+            //   0    1      2            3      4      5        6         7          8
+            // https://www.scan-vf.net/uploads/manga/kingdom/chapters/chapitre-810/01.webp
+            // https://www.scan-vf.net/uploads/manga/attaque-des-titans/chapters/chapitre-139.5/01.jpg
+            // https://www.scan-vf.net/uploads/manga/one-punch-man/chapters/chapitre-230/mp-01.webp
+            // https://www.scan-vf.net/uploads/manga/one_piece/chapters/chapitre-1091/001.webp
+
+            string chapterId = url.Split(SLASH_SEPARATOR)[7];
+
+            //TODO: Clean chapter id format
+            Debug.WriteLine($"GetChapterIdFromUrl -> {chapterId}");
+            return chapterId;
+        }
+
+        static string GetFileExtensionFromUrl(string url)
+        {
+            // Example of url
+            //   0    1      2            3      4      5        6         7          8
+            // https://www.scan-vf.net/uploads/manga/kingdom/chapters/chapitre-810/01.webp
+            // https://www.scan-vf.net/uploads/manga/attaque-des-titans/chapters/chapitre-139.5/01.jpg
+            // https://www.scan-vf.net/uploads/manga/one-punch-man/chapters/chapitre-230/mp-01.webp
+            // https://www.scan-vf.net/uploads/manga/one_piece/chapters/chapitre-1091/001.webp
+
+            string fileExtension = url.Split(SLASH_SEPARATOR)[8];
+            fileExtension = "." + fileExtension.Split(POINT_SEPARATOR)[1];
+
+            Debug.WriteLine($"GetFileExtensionFromUrl -> {fileExtension}");
+            return fileExtension;
         }
 
         // Better solution than this can be found -> Parse html file to find img links
@@ -233,6 +431,39 @@ namespace ScanDownloader
             }
 
             return isValid;
+        }
+        #endregion
+
+        #region Debug
+        static void SaveHtmlFiles(List<string> urlList)
+        {
+            foreach (string urlToDl in urlList)
+            {
+                // Save htlm code in a file to test
+                using (WebClient client = new WebClient())
+                {
+                    string htmlFileName = urlToDl.Remove(0, 8); // Remove "https://"
+                    htmlFileName = htmlFileName.Replace('/', '_');
+                    htmlFileName = htmlFileName + ".html";
+                    client.DownloadFile(urlToDl, Path.Combine(DOWNLOAD_DIRECTORY, htmlFileName));
+
+                    Console.WriteLine($"\n {htmlFileName} downloaded...");
+                }
+            }
+            Console.WriteLine($"Html file saved, press to open folder location...");
+            Console.ReadKey();
+            openOutputDirectoryWhenClosing = false;
+            OpenFolder(DOWNLOAD_DIRECTORY);
+        }
+
+        static void LogListItems<T>(List<T> list)
+        {
+            Debug.WriteLine($"\n---- {nameof(list)} ----");
+            foreach (T imgUrl in list)
+            {
+                Debug.WriteLine($"{imgUrl}");
+            }
+            Debug.WriteLine($"\n---- {nameof(list)} END ----");
         }
         #endregion
     }
