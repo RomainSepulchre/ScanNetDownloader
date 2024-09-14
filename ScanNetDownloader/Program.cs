@@ -9,31 +9,21 @@ using System.Net;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO.Compression;
 
 
 namespace ScanDownloader
 {
     internal class Program
     {
-        // TODO: Scrap web page of the first chapter page to get the exact link of all webp image instead searching manually
-        // TODO: Download several chapters at once
-        // TODO: Output folder selection
-        // TODO: Switch from console to an interface
-        // TODO: Generate Cbz automatically when a chapter is fully downloaded
 
-        //
-        // TEST LINKS (with several different img naming concention)
-        //
-        //https://www.scan-vf.net/uploads/manga/one_piece/chapters/chapitre-1090/01.webp
-        //https://www.scan-vf.net/uploads/manga/one_piece/chapters/chapitre-1091/001.webp
-        //https://www.scan-vf.net/uploads/manga/one_piece/chapters/chapitre-1092/001.webp
-        //https://www.scan-vf.net/uploads/manga/one_piece/chapters/chapitre-1093/001.webp
-        //https://www.scan-vf.net/uploads/manga/one_piece/chapters/chapitre-1094/01.webp
-        //https://www.scan-vf.net/uploads/manga/one_piece/chapters/chapitre-1095/01.webp
-        //https://www.scan-vf.net/uploads/manga/one_piece/chapters/chapitre-1096/mp001.webp
-        //https://www.scan-vf.net/uploads/manga/one_piece/chapters/chapitre-1097/01.webp
-        //https://www.scan-vf.net/uploads/manga/one_piece/chapters/chapitre-1098/mp01.webp
-        //https://www.scan-vf.net/uploads/manga/one_piece/chapters/chapitre-1098/mp01.webp
+        // TODO: Replace chapter list by link of book main page, ask a range of chapter to download and generate myself the chapter links instead of having to enter manually each chapter links
+        //--> handle out of range chapter if user enter chapter not available yet
+        //--> One chapter url was .../episode-1101/... instead of .../chapitre-1101/...
+        // TODO: Generate Cbz automatically when a chapter is fully downloaded
+        // TODO: Select Output folder by opening explorer window 
+        // TODO: Switch from console app to an interface
+        // TODO: Scrap a list of all the books available and create a search engine
 
         #region Parameters
         /// <summary>
@@ -41,26 +31,70 @@ namespace ScanDownloader
         /// </summary>
         private static readonly List<string> CHAPTERS_TO_DOWNLOAD_URL = new List<string>
         {
-            "https://www.scan-vf.net/one_piece/chapitre-1091/3",
-            "https://www.scan-vf.net/one_piece/chapitre-1079/1",
-            "https://www.scan-vf.net/one_piece/chapitre-1120/5",
+            "https://www.scan-vf.net/one_piece/chapitre-1090/1",
+            "https://www.scan-vf.net/one_piece/chapitre-1091/1",
+            "https://www.scan-vf.net/one_piece/chapitre-1092/1",
+            "https://www.scan-vf.net/one_piece/chapitre-1093/1",
             "https://www.scan-vf.net/one_piece/chapitre-1094/1",
-            "https://www.scan-vf.net/one_piece/chapitre-140/1",
-            "https://www.scan-vf.net/one_piece/chapitre-1087/7",
-            "https://www.scan-vf.net/jujutsu-kaisen/chapitre-268/1",
-            "https://www.scan-vf.net/dragon-Ball-Super/chapitre-73/4",
-            "https://www.scan-vf.net/my-hero-academia/chapitre-358/2"
-        };
+            "https://www.scan-vf.net/one_piece/chapitre-1095/1",
+            "https://www.scan-vf.net/one_piece/chapitre-1096/1",
+            "https://www.scan-vf.net/one_piece/chapitre-1097/1",
+            "https://www.scan-vf.net/one_piece/chapitre-1098/1",
+            "https://www.scan-vf.net/one_piece/chapitre-1099/1",
+            "https://www.scan-vf.net/one_piece/chapitre-1100/1",
+            "https://www.scan-vf.net/one_piece/episode-1101/1",
+            "https://www.scan-vf.net/one_piece/chapitre-1102/1",
+            "https://www.scan-vf.net/one_piece/chapitre-1103/1",
+            "https://www.scan-vf.net/one_piece/chapitre-1104/1",
+            "https://www.scan-vf.net/one_piece/chapitre-1105/1",
+            "https://www.scan-vf.net/one_piece/chapitre-1106/1",
+            "https://www.scan-vf.net/one_piece/chapitre-1107/1",
+            "https://www.scan-vf.net/one_piece/chapitre-1108/1",
+            "https://www.scan-vf.net/one_piece/chapitre-1109/1",
+            "https://www.scan-vf.net/one_piece/chapitre-1110/1",
+            "https://www.scan-vf.net/one_piece/chapitre-1111/1",
+            "https://www.scan-vf.net/one_piece/chapitre-1112/1",
+            "https://www.scan-vf.net/one_piece/chapitre-1113/1",
+            "https://www.scan-vf.net/one_piece/chapitre-1114/1",
+            "https://www.scan-vf.net/one_piece/chapitre-1115/1",
+            "https://www.scan-vf.net/one_piece/chapitre-1116/1",
+            "https://www.scan-vf.net/one_piece/chapitre-1117/1",
+            "https://www.scan-vf.net/one_piece/chapitre-1118/1",
+            "https://www.scan-vf.net/one_piece/chapitre-1119/1",
+            "https://www.scan-vf.net/one_piece/chapitre-1120/1",
+            "https://www.scan-vf.net/one_piece/chapitre-1121/1",
+            "https://www.scan-vf.net/one_piece/chapitre-1122/1",
+            "https://www.scan-vf.net/one_piece/chapitre-1123/1",
+            "https://www.scan-vf.net/one_piece/chapitre-1124/1",
+            "https://www.scan-vf.net/one_piece/chapitre-1125/1",
+            "https://www.scan-vf.net/one_piece/chapitre-1126/1"
 
-        /// <summary>
-        /// Should the program automatically open the output directory when closing
-        /// </summary>
-        private static bool openOutputDirectoryWhenClosing = true;
+
+            //"https://www.scan-vf.net/one_piece/chapitre-1091/3",
+            //"https://www.scan-vf.net/one_piece/chapitre-1079/1",
+            //"https://www.scan-vf.net/one_piece/chapitre-1120/5",
+            //"https://www.scan-vf.net/one_piece/chapitre-1094/1",
+            //"https://www.scan-vf.net/one_piece/chapitre-140/1",
+            //"https://www.scan-vf.net/one_piece/chapitre-1087/7",
+            //"https://www.scan-vf.net/jujutsu-kaisen/chapitre-268/1",
+            //"https://www.scan-vf.net/dragon-Ball-Super/chapitre-73/4",
+            //"https://www.scan-vf.net/my-hero-academia/chapitre-358/2"
+        };
 
         /// <summary>
         /// Set a custom output folder (if null or empty, we use the default user download folder)
         /// </summary>
         private static readonly string CUSTOM_FOLDER_PATH = @"D:\Download\ScanNetDownloader";
+
+        /// <summary>
+        /// Do you want to create a .cbz archive of every chapter downloaded
+        /// </summary>
+        private static readonly bool createCbzArchive = true;
+
+        /// <summary>
+        /// Should the program automatically open the output directory when closing
+        /// </summary>
+        private static bool openOutputDirectoryWhenClosing = true;
         #endregion
 
         // TODO: clean this shit
@@ -167,15 +201,16 @@ namespace ScanDownloader
                 Console.WriteLine($"{AdaptativeLineOfCharForHeader(header, '*')}");
 
                 List<string> imgsToDownload = GetImgUrlsFromHtmlContent(url);
+                if (imgsToDownload.Count == 0) { continue; } // if list (in case of error while getting html content) is empty skip directly to the next url
+
+                // Create output folder if necessary
+                string downloadPath = CreateChapterDirectory(bookName, chapterId);
+                Debug.Write($"Download Path: {downloadPath}");
 
                 int pageId = 1;
                 foreach (string imgUrl in imgsToDownload)
                 {
                     string fileExtension = GetFileExtensionFromUrl(imgUrl);
-
-                    // Create output folder if necessary
-                    string downloadPath = CreateChapterDirectory(bookName, chapterId);
-                    Debug.Write($"Download Path: {downloadPath}");
                     
                     string imgName = $"{bookName}_{chapterId}-{pageId.ToString("D3")}{fileExtension}";
                     Debug.WriteLine($"Image Name: {imgName}");
@@ -203,10 +238,37 @@ namespace ScanDownloader
                         catch (WebException ex)
                         {
                             Debug.WriteLine($"Error while downloading: {ex}");
-                            Console.WriteLine($"Download failed for {imgUrl} ! Exception:{ex}\n");
+                            Console.WriteLine($"Download failed for {imgUrl} ! Exception:{ex}");
+                            Console.WriteLine($"Press any key to continue...\n");
+                            Console.ReadKey();
                         }
                     }
                     pageId++;
+                }
+                // Create cbz here
+                if (createCbzArchive) // TODO: Put this in a dedicated function
+                {
+                    Console.WriteLine($"=> Create .CBZ for {bookName}-{chapterId}...");
+                    string folderToArchive = downloadPath;
+                    string cbzFilePath = Path.Combine(Directory.GetParent(downloadPath).FullName, $"{bookName}-chapter{chapterId}.cbz");
+                    if (File.Exists(cbzFilePath) == false)
+                    {
+                        ZipFile.CreateFromDirectory(folderToArchive, cbzFilePath);
+                        Console.WriteLine($"=> {bookName}-{chapterId} .CBZ successfully created!\n");
+                    }
+                    else
+                    {
+                        if (File.ReadAllBytes(cbzFilePath).Length > 0)
+                        {
+                            Console.WriteLine($"=> .CBZ already created!\n");
+                        }
+                        else
+                        {
+                            File.Delete(cbzFilePath);
+                            ZipFile.CreateFromDirectory(folderToArchive, cbzFilePath);
+                            Console.WriteLine($"=> {bookName}-{chapterId} .CBZ successfully created!\n");
+                        }
+                    }
                 }
             }
         }
@@ -284,7 +346,22 @@ namespace ScanDownloader
             string htmlContent;
             using (WebClient client = new WebClient())
             {
-                htmlContent = client.DownloadString(htmlUrl); // Save html code in a variable
+                try
+                {
+                    Debug.WriteLine($"Loading {htmlUrl} content...");
+                    htmlContent = client.DownloadString(htmlUrl); // Save html code in a variable
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Error while loading {htmlUrl} content. Ex: {ex}");
+                    Console.WriteLine($"Error while loading {htmlUrl} content, this chapter won't be downloaded. Ex: {ex}");
+                    Console.WriteLine($"Verify you entered a correct chapter url\n");
+                    Console.WriteLine($"Ex: {ex}\n");
+                    Console.WriteLine($"Press any key when you're ready to continue");
+                    Console.ReadKey(true);
+                    return new List<string>();
+                }
+                
             }
 
             string[] splitContent = htmlContent.Split(URL_BLOCK_START_SEPARATOR, StringSplitOptions.RemoveEmptyEntries); // Split before the block with all the img url
