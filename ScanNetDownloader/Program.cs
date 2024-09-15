@@ -10,6 +10,7 @@ using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO.Compression;
+using System.Threading;
 
 
 namespace ScanDownloader
@@ -20,9 +21,9 @@ namespace ScanDownloader
         // TODO: Replace chapter list by link of book main page, ask a range of chapter to download and generate myself the chapter links instead of having to enter manually each chapter links
         //--> handle out of range chapter if user enter chapter not available yet
         //--> One chapter url was .../episode-1101/... instead of .../chapitre-1101/...
-        // TODO: Generate Cbz automatically when a chapter is fully downloaded
+        // TODO: Save User Settings in a Json file
         // TODO: Select Output folder by opening explorer window 
-        // TODO: Switch from console app to an interface
+        // TODO: Switch from console app to an interface (WPF ?)
         // TODO: Scrap a list of all the books available and create a search engine
 
         #region Parameters
@@ -31,122 +32,45 @@ namespace ScanDownloader
         /// </summary>
         private static readonly List<string> CHAPTERS_TO_DOWNLOAD_URL = new List<string>
         {
-            "https://www.scan-vf.net/one_piece/chapitre-1090/1",
-            "https://www.scan-vf.net/one_piece/chapitre-1091/1",
-            "https://www.scan-vf.net/one_piece/chapitre-1092/1",
-            "https://www.scan-vf.net/one_piece/chapitre-1093/1",
-            "https://www.scan-vf.net/one_piece/chapitre-1094/1",
-            "https://www.scan-vf.net/one_piece/chapitre-1095/1",
-            "https://www.scan-vf.net/one_piece/chapitre-1096/1",
-            "https://www.scan-vf.net/one_piece/chapitre-1097/1",
-            "https://www.scan-vf.net/one_piece/chapitre-1098/1",
-            "https://www.scan-vf.net/one_piece/chapitre-1099/1",
-            "https://www.scan-vf.net/one_piece/chapitre-1100/1",
-            "https://www.scan-vf.net/one_piece/episode-1101/1",
-            "https://www.scan-vf.net/one_piece/chapitre-1102/1",
-            "https://www.scan-vf.net/one_piece/chapitre-1103/1",
-            "https://www.scan-vf.net/one_piece/chapitre-1104/1",
-            "https://www.scan-vf.net/one_piece/chapitre-1105/1",
-            "https://www.scan-vf.net/one_piece/chapitre-1106/1",
-            "https://www.scan-vf.net/one_piece/chapitre-1107/1",
-            "https://www.scan-vf.net/one_piece/chapitre-1108/1",
-            "https://www.scan-vf.net/one_piece/chapitre-1109/1",
-            "https://www.scan-vf.net/one_piece/chapitre-1110/1",
-            "https://www.scan-vf.net/one_piece/chapitre-1111/1",
-            "https://www.scan-vf.net/one_piece/chapitre-1112/1",
-            "https://www.scan-vf.net/one_piece/chapitre-1113/1",
-            "https://www.scan-vf.net/one_piece/chapitre-1114/1",
-            "https://www.scan-vf.net/one_piece/chapitre-1115/1",
-            "https://www.scan-vf.net/one_piece/chapitre-1116/1",
-            "https://www.scan-vf.net/one_piece/chapitre-1117/1",
-            "https://www.scan-vf.net/one_piece/chapitre-1118/1",
-            "https://www.scan-vf.net/one_piece/chapitre-1119/1",
-            "https://www.scan-vf.net/one_piece/chapitre-1120/1",
-            "https://www.scan-vf.net/one_piece/chapitre-1121/1",
-            "https://www.scan-vf.net/one_piece/chapitre-1122/1",
-            "https://www.scan-vf.net/one_piece/chapitre-1123/1",
-            "https://www.scan-vf.net/one_piece/chapitre-1124/1",
-            "https://www.scan-vf.net/one_piece/chapitre-1125/1",
-            "https://www.scan-vf.net/one_piece/chapitre-1126/1"
-
-
-            //"https://www.scan-vf.net/one_piece/chapitre-1091/3",
-            //"https://www.scan-vf.net/one_piece/chapitre-1079/1",
-            //"https://www.scan-vf.net/one_piece/chapitre-1120/5",
-            //"https://www.scan-vf.net/one_piece/chapitre-1094/1",
-            //"https://www.scan-vf.net/one_piece/chapitre-140/1",
-            //"https://www.scan-vf.net/one_piece/chapitre-1087/7",
-            //"https://www.scan-vf.net/jujutsu-kaisen/chapitre-268/1",
-            //"https://www.scan-vf.net/dragon-Ball-Super/chapitre-73/4",
-            //"https://www.scan-vf.net/my-hero-academia/chapitre-358/2"
+            "https://www.scan-vf.net/one_piece/chapitre-1079/1",
+            "https://www.scan-vf.net/one_piece/chapitre-1120/5",
+            "https://www.scan-vf.net/one_piece/chapitre-140/1",
+            "https://www.scan-vf.net/one_piece/chapitre-1087/7",
+            "https://www.scan-vf.net/jujutsu-kaisen/chapitre-268/1",
+            "https://www.scan-vf.net/dragon-Ball-Super/chapitre-73/4",
+            "https://www.scan-vf.net/my-hero-academia/chapitre-358/2"
         };
 
         /// <summary>
-        /// Set a custom output folder (if null or empty, we use the default user download folder)
+        /// Set a custom output folder (if null or empty, we use the default user download folder) (Default=string.Empty)
         /// </summary>
-        private static readonly string CUSTOM_FOLDER_PATH = @"D:\Download\ScanNetDownloader";
+        private static readonly string CUSTOM_FOLDER_PATH = @"D:\Download\ScanNetDownloader\Dev";
 
         /// <summary>
-        /// Do you want to create a .cbz archive of every chapter downloaded
+        /// The output directory used by the program
+        /// </summary>
+        private static readonly string OUTPUT_DIRECTORY = string.IsNullOrEmpty(CUSTOM_FOLDER_PATH) ? Constants.USER_DOWNLOAD_FOLDER_PATH : CUSTOM_FOLDER_PATH;
+
+        /// <summary>
+        /// Do you want to create a .cbz archive of every chapter downloaded (Default=True)
         /// </summary>
         private static readonly bool createCbzArchive = true;
 
         /// <summary>
-        /// Should the program automatically open the output directory when closing
+        /// Do you want to keep the images downloaded once the cbz has been created (Default=False)
+        /// </summary>
+        private static readonly bool deleteImagesAfterCbzCreation = false;
+
+        /// <summary>
+        /// Should the program automatically open the output directory when closing (Default=True)
         /// </summary>
         private static bool openOutputDirectoryWhenClosing = true;
-        #endregion
-
-        // TODO: clean this shit
-        #region Global variables 
-        // URL
-        private static readonly string BASE_URL = "https://www.scan-vf.net/uploads/manga/one_piece/chapters/chapitre-";
-        private static string PageUrlNaming => $"mp{pageId.ToString("D2")}"; //********
-        private static readonly string IMG_EXTENSION = ".webp";
-
-        // CHAPTER AND PAGE INFO
-        private static int chapterId = 1098; //*******
-        private static readonly int START_CHAPTER = 0;
-        private static readonly int END_CHAPTER = 0;
-        private static readonly int PAGE_START_ID = 1;
-        private static int pageId = PAGE_START_ID;
-
-
-        // OUTPUT FOLDER
-        // Book folder 
-        private static readonly string BOOK_FOLDER = "One Piece Scan";
-        // Classic download folder path
-        private static readonly string USER_FOLDER_PATH = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        private static readonly string USER_DOWNLOAD_FOLDER_PATH = Path.Combine(USER_FOLDER_PATH, "Downloads");
-        // My download folder path
-
-        
-        // Download directory
-        private static readonly string OUTPUT_DIRECTORY = string.IsNullOrEmpty(CUSTOM_FOLDER_PATH) ? USER_DOWNLOAD_FOLDER_PATH : CUSTOM_FOLDER_PATH;
-        // BOOK NAME
-        private static readonly string BOOK_NAME = "OnePiece";
-
-        //OUTPUT FILE
-        private static string ImgName => $"{BOOK_NAME}_{chapterId}-{pageId.ToString("D3")}{IMG_EXTENSION}";
-
-        // CHAR AND SEPARATORS
-        private static readonly string[] URL_BLOCK_START_SEPARATOR = new string[] { "<div class=\"viewer-cnt\">" };
-        private static readonly string[] URL_BLOCK_END_SEPARATOR = new string[] { "<div id=\"ppp\" style>" };
-        private static readonly string[] CLEAN_BEFORE_IMG_TAG_SEPARATOR = new string[] { "<div id=\"all\" style=\" display: none; \">" };
-        private static readonly string[] IMG_TAG_END_SEPARATOR = new string[] { "/>" };
-        private static readonly char QUOTE_CHAR = '\"';
-        private static readonly char SLASH_CHAR = '/';
-        private static readonly char DASH_CHAR = '-';
-        private static readonly char UNDERSCORE_CHAR = '_';
-        private static readonly char POINT_CHAR = '.';
-        private static readonly string HTTP_ADDRESS = "https://";
-        private static readonly string SPACE = " ";
         #endregion
 
         #region Main
         static void Main(string[] args)
         {
-            string appTitle = $"$--- SCAN.NET DOWNLOADER ---$";
+            string appTitle = $"$$$--- SCAN.NET DOWNLOADER ---$$$";
             Console.WriteLine($"\n{AdaptativeLineOfCharForHeader(appTitle, '$')}");
             Console.WriteLine(appTitle);
             Console.WriteLine($"{AdaptativeLineOfCharForHeader(appTitle, '$')}\n");
@@ -161,35 +85,24 @@ namespace ScanDownloader
             CheckOutputDirectory();
 
             bool isNo = WaitForYesOrNoReadKey("\nPress Y to start or N to quit...") == ConsoleKey.N;
-            if (isNo) return; // Quit App prematurely
+            if (isNo) QuitConsole(); 
 
             DownloadFromChaptersUrl();
-            //DownloadFromImgUrl(downloadFolder);
 
-            Console.WriteLine("Downloaded, press any key to close...");
+            Console.WriteLine("Finished, press any key to close...");
             Console.ReadKey();
 
             // TODO: improve this to open the more relevant folder
             // (1 chapter -> open the chapter folder, Several chapter of the same book -> Open Book folder, Several Book Open Output directory)
-            if (openOutputDirectoryWhenClosing) OpenFolder(OUTPUT_DIRECTORY); 
+            if (openOutputDirectoryWhenClosing) OpenFolder(OUTPUT_DIRECTORY);
+
+            QuitConsole();
         }
         #endregion
 
         #region Downloading
-        // Attempt to search in the html file the links of all images store them and to have the correct img naming every time
         static void DownloadFromChaptersUrl()
         {
-            //////////////////////////////////////////////////////////////////////////////////
-            // Download html file to check code consistency
-            //List<string> imgUrlsToTest = new List<string>
-            //{
-            //    "https://www.scan-vf.net/uploads/manga/kingdom/chapters/chapitre-810/01.webp",
-            //    "https://www.scan-vf.net/uploads/manga/attaque-des-titans/chapters/chapitre-139.5/01.jpg",
-            //    "https://www.scan-vf.net/uploads/manga/one-punch-man/chapters/chapitre-230/mp-01.webp",
-            //    "https://www.scan-vf.net/uploads/manga/one_piece/chapters/chapitre-1091/001.webp",
-            //};
-            ////////////////////////////////////////////////////////////////////////////
-
             foreach (string url in CHAPTERS_TO_DOWNLOAD_URL)
             {
                 string bookName = GetBookNameFromUrl(url);
@@ -237,107 +150,19 @@ namespace ScanDownloader
                         }
                         catch (WebException ex)
                         {
-                            Debug.WriteLine($"Error while downloading: {ex}");
-                            Console.WriteLine($"Download failed for {imgUrl} ! Exception:{ex}");
-                            Console.WriteLine($"Press any key to continue...\n");
-                            Console.ReadKey();
+                            ErrorMessageForImgDownload(ex, imgUrl);
                         }
                     }
                     pageId++;
                 }
-                // Create cbz here
-                if (createCbzArchive) // TODO: Put this in a dedicated function
+
+                if (createCbzArchive)
                 {
-                    Console.WriteLine($"=> Create .CBZ for {bookName}-{chapterId}...");
-                    string folderToArchive = downloadPath;
-                    string cbzFilePath = Path.Combine(Directory.GetParent(downloadPath).FullName, $"{bookName}-chapter{chapterId}.cbz");
-                    if (File.Exists(cbzFilePath) == false)
-                    {
-                        ZipFile.CreateFromDirectory(folderToArchive, cbzFilePath);
-                        Console.WriteLine($"=> {bookName}-{chapterId} .CBZ successfully created!\n");
-                    }
-                    else
-                    {
-                        if (File.ReadAllBytes(cbzFilePath).Length > 0)
-                        {
-                            Console.WriteLine($"=> .CBZ already created!\n");
-                        }
-                        else
-                        {
-                            File.Delete(cbzFilePath);
-                            ZipFile.CreateFromDirectory(folderToArchive, cbzFilePath);
-                            Console.WriteLine($"=> {bookName}-{chapterId} .CBZ successfully created!\n");
-                        }
-                    }
+                    CreateCbzArchive(bookName, chapterId, downloadPath);
                 }
             }
         }
 
-        // TODO : Remove this once other solution is functionnal
-        // Better solution than this can be found -> Parse html file to find img links
-        // Inconsistent file naming cause missing img and prevent to download several chapter at once
-        // Could try to test several naming but it would way suboptimal and tricky than parsing html to find the img links
-        static void DownloadFromImgUrl(string downloadPath)
-        {          
-            string downloadedFile = Path.Combine(downloadPath, ImgName);
-            string downloadUrl = $"{BASE_URL}{chapterId}/{PageUrlNaming}{IMG_EXTENSION}";
-
-            int webExCounter = 0;
-
-            while (webExCounter < 3)
-            {
-                using (WebClient client = new WebClient())
-                {
-                    try
-                    {
-                        Console.WriteLine($"\nDownloading {ImgName} from {downloadUrl} ...");
-
-                        if (File.Exists(downloadedFile) == true && File.ReadAllBytes(downloadedFile).Length > 0 == true)
-                        {
-                            Console.WriteLine($"File already downloaded!\n");
-                        }
-                        else
-                        {
-                            client.DownloadFile(new Uri(downloadUrl), downloadedFile);
-                            Console.WriteLine($"Sucessfully downloaded!\n");
-                        }
-
-                        CheckForMissingPages(webExCounter, downloadPath);
-                        webExCounter = 0;
-                    }
-                    catch (WebException ex)
-                    {
-                        // TODO: Need to test several name possibility due to inconsisten file naming 
-                        Debug.WriteLine($"EXCEPTION: {ex}");
-                        webExCounter++;
-                        Console.WriteLine($"Download failed ! ({webExCounter}/3)\n");
-                    }
-                }
-
-                if (webExCounter < 3)
-                {
-                    pageId++;
-                    downloadedFile = Path.Combine(downloadPath, ImgName);
-                    downloadUrl = $"{BASE_URL}{chapterId}/{PageUrlNaming}{IMG_EXTENSION}";
-                }
-            }
-        }
-
-        static void CheckForMissingPages(int exCounter, string chapterDirectory)
-        {
-            if (exCounter > 0)
-            {
-                for (int i = exCounter; i > 0; i--)
-                {
-                    int missingPageId = pageId - i;
-                    string missingFile = Path.Combine(chapterDirectory, $"{BOOK_NAME}_{chapterId}-{missingPageId.ToString("D3")}{IMG_EXTENSION}");
-                    File.Create(missingFile);
-                    Console.WriteLine($" Page #{missingPageId} is missing. Press any key to continue");
-                }
-
-                Console.ReadKey();
-            }
-        }
         #endregion
 
         #region String Parsing
@@ -353,40 +178,34 @@ namespace ScanDownloader
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine($"Error while loading {htmlUrl} content. Ex: {ex}");
-                    Console.WriteLine($"Error while loading {htmlUrl} content, this chapter won't be downloaded. Ex: {ex}");
-                    Console.WriteLine($"Verify you entered a correct chapter url\n");
-                    Console.WriteLine($"Ex: {ex}\n");
-                    Console.WriteLine($"Press any key when you're ready to continue");
-                    Console.ReadKey(true);
+                    ErrorMessageForHtmlDownload(ex, htmlUrl);
                     return new List<string>();
-                }
-                
+                }  
             }
 
-            string[] splitContent = htmlContent.Split(URL_BLOCK_START_SEPARATOR, StringSplitOptions.RemoveEmptyEntries); // Split before the block with all the img url
+            string[] splitContent = htmlContent.Split(Constants.URL_BLOCK_START_SEPARATOR, StringSplitOptions.RemoveEmptyEntries); // Split before the block with all the img url
             string urlSplit = splitContent[1]; // Keep the split after our separator (trim the beginning)
 
-            splitContent = urlSplit.Split(URL_BLOCK_END_SEPARATOR, StringSplitOptions.RemoveEmptyEntries); // Split after the block with all the img url
+            splitContent = urlSplit.Split(Constants.URL_BLOCK_END_SEPARATOR, StringSplitOptions.RemoveEmptyEntries); // Split after the block with all the img url
             urlSplit = splitContent[0]; // Keep the split before our separator (trim the end)
 
-            splitContent = urlSplit.Split(CLEAN_BEFORE_IMG_TAG_SEPARATOR, StringSplitOptions.RemoveEmptyEntries); // Clean the html code that is still before the first <img/>
+            splitContent = urlSplit.Split(Constants.CLEAN_BEFORE_IMG_TAG_SEPARATOR, StringSplitOptions.RemoveEmptyEntries); // Clean the html code that is still before the first <img/>
             urlSplit = splitContent[1]; // Keep the split after our separator (trim the beginning)
 
             Debug.WriteLine($"---- URL SPLIT ---- \n {urlSplit} \n ---- URL SPLIT END ----");
 
-            List<string> imgUrls = urlSplit.Split(IMG_TAG_END_SEPARATOR, StringSplitOptions.RemoveEmptyEntries).ToList(); // Split each img tag in a list
+            List<string> imgUrls = urlSplit.Split(Constants.IMG_TAG_END_SEPARATOR, StringSplitOptions.RemoveEmptyEntries).ToList(); // Split each img tag in a list
 
             // Keep only the urls in the list
             for (int i = imgUrls.Count - 1; i >= 0; i--)
             {
-                if (imgUrls[i].ToLower().Contains(HTTP_ADDRESS))
+                if (imgUrls[i].ToLower().Contains(Constants.HTTP_ADDRESS))
                 {
-                    string[] imgUrlSplit = imgUrls[i].Split(QUOTE_CHAR);
+                    string[] imgUrlSplit = imgUrls[i].Split(Constants.QUOTE_CHAR);
                     foreach (string split in imgUrlSplit)
                     {
                         // Keep only the split containing the url
-                        if (split.ToLower().Contains(HTTP_ADDRESS))
+                        if (split.ToLower().Contains(Constants.HTTP_ADDRESS))
                         {
                             imgUrls[i] = split;
                             imgUrls[i] = imgUrls[i].Replace(" ", string.Empty); // Remove space in the string
@@ -400,8 +219,7 @@ namespace ScanDownloader
                 }
             }
 
-            // DEBUG.WRITE LIST ITEMS
-            LogListItems(imgUrls);
+            imgUrls.Log(); // Debug log of list items
 
             return imgUrls;
         }
@@ -428,10 +246,10 @@ namespace ScanDownloader
             int splitIdForImgUrl = 5;
             bool isImgUrl = url.Contains("uploads"); // Check if we are using a link of a chapter or an image
 
-            string bookName = url.Split(SLASH_CHAR)[isImgUrl ? splitIdForImgUrl : splitIdForChapterUrl];
+            string bookName = url.Split(Constants.SLASH_CHAR)[isImgUrl ? splitIdForImgUrl : splitIdForChapterUrl];
             bookName = bookName.ToTitleCase();
-            bookName = bookName.Replace(DASH_CHAR.ToString(), removeSpace ? string.Empty : SPACE);
-            bookName = bookName.Replace(UNDERSCORE_CHAR.ToString(), removeSpace ? string.Empty : SPACE);
+            bookName = bookName.Replace(Constants.DASH_CHAR.ToString(), removeSpace ? string.Empty : Constants.SPACE);
+            bookName = bookName.Replace(Constants.UNDERSCORE_CHAR.ToString(), removeSpace ? string.Empty : Constants.SPACE);
 
             Debug.WriteLine($"GetBookNameFromUrl ({(isImgUrl ? "IMG URL" : "CHAPTER URL")}) -> {bookName}");
             return bookName;
@@ -459,8 +277,8 @@ namespace ScanDownloader
             int splitIdForImgUrl = 7;
             bool isImgUrl = url.Contains("uploads"); // Check if we are using a link of a chapter or an image
 
-            string chapterId = url.Split(SLASH_CHAR)[isImgUrl ? splitIdForImgUrl : splitIdForChapterUrl];
-            if (keepNumberOnly) chapterId = chapterId.Split(DASH_CHAR)[1];            
+            string chapterId = url.Split(Constants.SLASH_CHAR)[isImgUrl ? splitIdForImgUrl : splitIdForChapterUrl];
+            if (keepNumberOnly) chapterId = chapterId.Split(Constants.DASH_CHAR)[1];            
             
             Debug.WriteLine($"GetChapterIdFromUrl ({(isImgUrl ? "IMG URL" : "CHAPTER URL")}) -> {chapterId}");
             return chapterId;
@@ -484,8 +302,8 @@ namespace ScanDownloader
             // https://www.scan-vf.net/uploads/manga/one_piece/chapters/chapitre-1091/001.webp 
             #endregion
 
-            string fileExtension = url.Split(SLASH_CHAR)[8];
-            fileExtension = "." + fileExtension.Split(POINT_CHAR)[1];
+            string fileExtension = url.Split(Constants.SLASH_CHAR)[8];
+            fileExtension = "." + fileExtension.Split(Constants.POINT_CHAR)[1];
 
             Debug.WriteLine($"GetFileExtensionFromUrl -> {fileExtension}");
             return fileExtension;
@@ -497,10 +315,23 @@ namespace ScanDownloader
         {
             if (Directory.Exists(OUTPUT_DIRECTORY) == false)
             {
-                Console.WriteLine("ERROR => Impossible to find the expected download directory");
-                Console.WriteLine("Press any key to close..."); // TODO: Ask to create the folder the instead of closing 
-                Console.ReadKey();
-                return;
+                ErrorMessageNoOutputDirectory();
+
+                Console.WriteLine($"Do you want to create the directory \"{OUTPUT_DIRECTORY}\" ? ");
+
+                if (WaitForYesOrNoReadKey($"Press Y (yes) or N (no)...") == ConsoleKey.Y)
+                {
+                    Directory.CreateDirectory(OUTPUT_DIRECTORY);
+                    Console.WriteLine($"\"{OUTPUT_DIRECTORY}\" sucessfully created. Ready to download!");
+                }
+                else
+                {
+                    Console.WriteLine("Please modify the output directory setting with a valid directory.");
+                    Console.WriteLine("Press any key to close the app...");
+                    Console.ReadKey();
+
+                    QuitConsole();
+                }
             }
         }
 
@@ -529,10 +360,121 @@ namespace ScanDownloader
                 Process.Start(startInfo);
             }
         }
+        #endregion
 
-        static string AdaptativeLineOfCharForHeader(string header, char charToUseForLine)
+        #region Cbz Archive
+        static void CreateCbzArchive(string bookName, string chapterId, string downloadPath)
         {
-            return new string(charToUseForLine, header.Length);
+            Console.WriteLine($"=> Create .CBZ for {bookName}-{chapterId}...");
+
+            string folderToArchive = downloadPath;
+            string cbzFilePath = Path.Combine(Directory.GetParent(downloadPath).FullName, $"{bookName}-chapter{chapterId}.cbz");
+
+            if (File.Exists(cbzFilePath) == false)
+            {
+                try
+                {
+                    ZipFile.CreateFromDirectory(folderToArchive, cbzFilePath);
+                    Console.WriteLine($"=> {bookName}-{chapterId} .CBZ successfully created!\n");
+                }
+                catch (Exception ex)
+                {
+                    ErrorMessageForCbzCreation(ex, bookName, chapterId);
+                    return;
+                }
+            }
+            else
+            {
+                if (File.ReadAllBytes(cbzFilePath).Length > 0)
+                {
+                    Console.WriteLine($"=> .CBZ already created!\n");
+                }
+                else // Replace empty Cbz
+                {
+                    try
+                    {
+                        File.Delete(cbzFilePath);
+                        ZipFile.CreateFromDirectory(folderToArchive, cbzFilePath);
+                        Console.WriteLine($"=> {bookName}-{chapterId} .CBZ successfully created!\n");
+                    }
+                    catch (Exception ex)
+                    {
+                        ErrorMessageForCbzCreation(ex, bookName, chapterId);
+                        return;
+                    }
+                }
+            }
+
+            if (deleteImagesAfterCbzCreation)
+            {
+                if (Directory.Exists(downloadPath)) Directory.Delete(downloadPath, true);
+            }
+        }
+        #endregion
+
+        #region Error Messages
+
+        static void ErrorMessageNoOutputDirectory()
+        {
+            ChangeConsoleColor(ConsoleColor.DarkRed);
+            Console.WriteLine("\nError, impossible to find the expected download directory.\n");
+            ResetConsoleColor();
+        }
+
+        static void ErrorMessageForHtmlDownload(Exception ex, string htmlUrl)
+        {
+            Debug.WriteLine($"Error while loading {htmlUrl} content: {ex}");
+
+            ChangeConsoleColor(ConsoleColor.DarkRed);
+            Console.WriteLine($"\nError while loading {htmlUrl} content, this chapter won't be downloaded.");
+            Console.WriteLine($"Verify you entered a correct chapter url.\n");
+
+            ChangeConsoleColor(ConsoleColor.Red);
+            Console.WriteLine($"Exception: {ex}\n");
+
+            ResetConsoleColor();
+            Console.WriteLine($"Press any key to continue...\n");
+            Console.ReadKey(true);
+        }
+
+        static void ErrorMessageForImgDownload(Exception ex, string imgUrl)
+        {
+            Debug.WriteLine($"Error while downloading: {ex}");
+
+            ChangeConsoleColor(ConsoleColor.DarkRed);
+            Console.WriteLine($"\nDownload failed for {imgUrl}! Exception:{ex}");
+            Console.WriteLine($"Verify the image URL is working in a web browser.\n");
+
+            ChangeConsoleColor(ConsoleColor.Red);
+            Console.WriteLine($"Exception: {ex}\n");
+
+            ResetConsoleColor();
+            Console.WriteLine($"Press any key to continue...\n");
+            Console.ReadKey();
+        }
+
+        static void ErrorMessageForCbzCreation(Exception ex, string bookName, string chapterId)
+        {
+            Debug.WriteLine($"=> Error while creating CBZ archive for {bookName}-{chapterId}: {ex}");
+
+            ChangeConsoleColor(ConsoleColor.DarkRed);
+
+            Console.WriteLine($"=> An error occured while creating the CBZ archive for {bookName}-{chapterId}!");
+            if (deleteImagesAfterCbzCreation)
+            {
+                Console.WriteLine($"=> The scan images won't be deleted so you can create the CBZ manually.\n");
+            }
+            else
+            {
+                Console.Write('\n');
+            }
+
+            ChangeConsoleColor(ConsoleColor.Red);
+            Console.WriteLine($"=> Exception: {ex}\n");
+
+            ResetConsoleColor();
+            Console.WriteLine($"=> Press any key to continue...\n");
+            Console.ReadKey();
         }
         #endregion
 
@@ -544,11 +486,11 @@ namespace ScanDownloader
 
             while (IsEnteredKeyValid(keyEntered.Key, new ConsoleKey[] { ConsoleKey.Y, ConsoleKey.N }) == false)
             {
-                Console.WriteLine(" -> Invalid Key");
+                Console.WriteLine(" -> Invalid Key, please press Y (yes) or N (no)");
                 keyEntered = Console.ReadKey();
             }
-
             Console.WriteLine("\n");
+            Thread.Sleep(Constants.HALF_SECOND_IN_MILLISECONDS); // Wait one second to make the user has the time to remove his finger from the key
             return keyEntered.Key;
         }
 
@@ -566,6 +508,32 @@ namespace ScanDownloader
             }
 
             return isValid;
+        }
+        #endregion
+
+        #region Visual
+
+        static void ChangeConsoleColor(ConsoleColor textColor, ConsoleColor backgroundColor=ConsoleColor.Black)
+        {
+            Console.ForegroundColor = textColor;
+            Console.BackgroundColor = backgroundColor;
+        }
+
+        static void ResetConsoleColor()
+        {
+            Console.ResetColor();
+        }
+
+        static string AdaptativeLineOfCharForHeader(string header, char charToUseForLine)
+        {
+            return new string(charToUseForLine, header.Length);
+        }
+        #endregion
+
+        #region Quit Console
+        static void QuitConsole()
+        {
+            Environment.Exit(0);
         }
         #endregion
 
@@ -589,16 +557,6 @@ namespace ScanDownloader
             Console.ReadKey();
             openOutputDirectoryWhenClosing = false;
             OpenFolder(OUTPUT_DIRECTORY);
-        }
-
-        static void LogListItems<T>(List<T> list)
-        {
-            Debug.WriteLine($"\n---- {nameof(list)} ----");
-            foreach (T imgUrl in list)
-            {
-                Debug.WriteLine($"{imgUrl}");
-            }
-            Debug.WriteLine($"\n---- {nameof(list)} END ----");
         }
         #endregion
     }
