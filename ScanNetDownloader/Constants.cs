@@ -26,12 +26,16 @@ namespace ScanNetDownloader
         #region Char and String
         public static readonly char QUOTE_CHAR = '\"';
         public static readonly char SLASH_CHAR = '/';
+        public static readonly char BACKSLASH_CHAR = '\\';
         public static readonly char DASH_CHAR = '-';
         public static readonly char UNDERSCORE_CHAR = '_';
         public static readonly char POINT_CHAR = '.';
 
         public static readonly string HTTP_ADDRESS = "https://";
         public static readonly string SPACE = " ";
+        public static readonly string SCAN_SUFFIX = " Scan";
+        public static readonly string CHAPTER_PREFIX = "Chapter ";
+        public static readonly string SCAN_CHAPTER_PATH = $"{SCAN_SUFFIX}{BACKSLASH_CHAR}{CHAPTER_PREFIX}";
         #endregion
 
         #region Time values
