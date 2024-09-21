@@ -26,6 +26,13 @@ namespace ScanDownloader
         // TODO: Switch from console app to an interface (WPF ?)
         // TODO: Scrap a list of all the books available and create a search engine
 
+        // KEEP FOR TEST
+        // https://anime-sama.fr/catalogue/berserk/scan/vf/
+        // https://anime-sama.fr/catalogue/20th-century-boys/scan/vf/
+        // https://anime-sama.fr/catalogue/alice-in-borderland/scan/vf/
+        // https://anime-sama.fr/catalogue/fairy-tail/scan/vf/
+        // https://anime-sama.fr/catalogue/the-terminally-ill-young-master-of-the-baek-clan/scan/vf/
+
         #region Parameters
         /// <summary>
         /// Provide the url of the first page of any chapter you want to download
@@ -91,8 +98,35 @@ namespace ScanDownloader
             CheckOutputDirectory();
 
             bool isNo = WaitForYesOrNoReadKey("\nPress Y to start or N to quit...") == ConsoleKey.N;
-            if (isNo) QuitConsole(); 
+            if (isNo) QuitConsole();
 
+            // DEBUG ANIME SAME
+            List<string> animeSamaDebugUrl = new List<string>()
+            {
+                //"https://anime-sama.fr/catalogue/berserk/scan/vf/",
+                //"https://anime-sama.fr/catalogue/20th-century-boys/scan/vf/",
+                //"https://anime-sama.fr/catalogue/alice-in-borderland/scan/vf/",
+                "https://anime-sama.fr/catalogue/fairy-tail/scan/vf/",
+                "https://anime-sama.fr/catalogue/the-terminally-ill-young-master-of-the-baek-clan/scan/vf/"
+            };
+
+            //SaveHtmlFiles(animeSamaDebugUrl);
+
+            // https://anime-sama.fr/s2/scans/Berserk/2/1.jpg
+            // https://anime-sama.fr/s2/scans/20th%20Century%20boys/1/1.jpg
+            // https://anime-sama.fr/s2/scans/Alice%20in%20Borderland/1/1.jpg
+            // https://anime-sama.fr/s2/scans/Fairy%20Tail/1/1.jpg
+            // https://anime-sama.fr/s2/scans/The%20Terminally%20Ill%20Young%20Master%20of%20the%20Baek%20Clan/1/1.jpg
+
+            Console.WriteLine($"????????? ANIME SAMA DEBUG ?????????");
+
+            foreach (var item in animeSamaDebugUrl)
+            {
+                GetImgUrlsFromHtmlContent(item);
+            }
+            Console.ReadKey();
+            return;
+            // DEBUG END
             DownloadFromChaptersUrl();
 
             Console.WriteLine("Finished, press any key to close...");
@@ -165,6 +199,24 @@ namespace ScanDownloader
             }
         }
 
+        static bool IsUrlValid(string url, int timeout=1000)
+        {
+            WebRequest webRequest = WebRequest.Create(url);
+            webRequest.Method = "HEAD";
+            webRequest.Timeout = timeout;
+
+            try
+            {
+                WebResponse response = webRequest.GetResponse();
+                response.Close();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         #endregion
 
         #region String Parsing
@@ -185,16 +237,35 @@ namespace ScanDownloader
                 }  
             }
 
-            string[] splitContent = htmlContent.Split(Constants.URL_BLOCK_START_SEPARATOR, StringSplitOptions.RemoveEmptyEntries); // Split before the block with all the img url
+            switch (htmlUrl)
+            {
+                case string a when a.Contains(Constants.SCANVF_DOMAIN_NAME):
+                    Debug.WriteLine($"\nUrl is from scan-vf.net: {htmlUrl}");
+                    return ParseHtmlForScanVf(htmlContent, htmlUrl);
+
+                case string a when a.Contains(Constants.ANIMESAMA_DOMAIN_NAME):
+                    Debug.WriteLine($"\nUrl is from anime-same.fr: {htmlUrl}");
+                    return ParseHtmlForAnimeSama(htmlContent, htmlUrl);
+
+                default: // Default, unknown domain name
+                    // TODO: Add Error unknown website cannot download scan from this domain
+                    Debug.WriteLine($"\nError unknown website cannot download scan from this url: {htmlUrl}");
+                    return new List<string>();
+            }
+        }
+
+        static List<string> ParseHtmlForScanVf(string htmlContent, string htmlUrl)
+        {
+            string[] splitContent = htmlContent.Split(Constants.SCANVF_URL_BLOCK_START_SEPARATOR, StringSplitOptions.RemoveEmptyEntries); // Split before the block with all the img url
             string urlSplit = splitContent[1]; // Keep the split after our separator (trim the beginning)
 
-            splitContent = urlSplit.Split(Constants.URL_BLOCK_END_SEPARATOR, StringSplitOptions.RemoveEmptyEntries); // Split after the block with all the img url
+            splitContent = urlSplit.Split(Constants.SCANVF_URL_BLOCK_END_SEPARATOR, StringSplitOptions.RemoveEmptyEntries); // Split after the block with all the img url
             urlSplit = splitContent[0]; // Keep the split before our separator (trim the end)
 
-            splitContent = urlSplit.Split(Constants.CLEAN_BEFORE_IMG_TAG_SEPARATOR, StringSplitOptions.RemoveEmptyEntries); // Clean the html code that is still before the first <img/>
+            splitContent = urlSplit.Split(Constants.SCANVF_CLEAN_BEFORE_IMG_TAG_SEPARATOR, StringSplitOptions.RemoveEmptyEntries); // Clean the html code that is still before the first <img/>
             urlSplit = splitContent[1]; // Keep the split after our separator (trim the beginning)
 
-            List<string> imgUrls = urlSplit.Split(Constants.IMG_TAG_END_SEPARATOR, StringSplitOptions.RemoveEmptyEntries).ToList(); // Split each img tag in a list
+            List<string> imgUrls = urlSplit.Split(Constants.SCANVF_IMG_TAG_END_SEPARATOR, StringSplitOptions.RemoveEmptyEntries).ToList(); // Split each img tag in a list
 
             // Keep only the urls in the list
             for (int i = imgUrls.Count - 1; i >= 0; i--)
@@ -221,6 +292,108 @@ namespace ScanDownloader
             Debug.WriteLine($"\nList of images url found for {htmlUrl}");
             imgUrls.Log(); // Debug log of list items
             Debug.WriteLine("\n");
+
+            return imgUrls;
+        }
+
+        static List<string> ParseHtmlForAnimeSama(string htmlContent, string htmlUrl)
+        {
+            // V1 Recreate url since we can't get the page after js loading
+
+            // https://anime-sama.fr/s2/scans/Berserk/2/1.jpg
+            // https://anime-sama.fr/s2/scans/20th%20Century%20boys/1/1.jpg
+            // https://anime-sama.fr/s2/scans/Alice%20in%20Borderland/1/1.jpg
+            // https://anime-sama.fr/s2/scans/Fairy%20Tail/1/1.jpg
+            // https://anime-sama.fr/s2/scans/The%20Terminally%20Ill%20Young%20Master%20of%20the%20Baek%20Clan/1/1.jpg
+
+            // info needed
+            // Book name with correct casing -> <meta name="description" ...
+            // Chapter Number -> ask for chapter number
+            // number of page (Can deal without it)
+            // img extension (Seems to be always jpg)
+
+            // Book Name
+            string[] splitContent = htmlContent.Split(Constants.ANIMESAMA_BOOK_NAME_START_SEPARATOR, StringSplitOptions.RemoveEmptyEntries); // Split before the meta tag with the book name
+            string bookName = splitContent[1]; // Keep the split after our separator (trim the beginning)
+
+            splitContent = bookName.Split(Constants.ANIMESAMA_BOOK_NAME_END_SEPARATOR, StringSplitOptions.RemoveEmptyEntries); // Split after the book name
+            bookName = splitContent[0]; // Keep the split before our separator (trim the end)
+
+            Debug.WriteLine($"\nBook Name found = \"{bookName}\"");
+
+            // Chapter Number
+            Console.WriteLine($"\nWrite the number of every chapter you want to download for {htmlUrl} separated by a ; and press enter"); // TODO: Detect range of chapter
+            string lineRead = Console.ReadLine();
+            Debug.WriteLine($"\nselectedChapters = {lineRead}");
+
+            List<string> chaptersRead = lineRead.Split(Constants.SEMICOLON_CHAR).ToList();
+            List<int> selectedChaptersId = new List<int>();
+            List<string> selectedChapterUrls = new List<string>();
+
+
+            for (int i = chaptersRead.Count - 1; i >= 0; i--)
+            {
+                if (int.TryParse(chaptersRead[i], out int chapterId))
+                {
+                    Debug.WriteLine($"Valid Chapter number Found: {chapterId} ({htmlUrl})");
+
+                    int firstImgId = 1;
+                    string chapterUrl = $"{Constants.ANIMESAMA_IMG_URL_START}{bookName}/{chapterId}/";
+                    string firstImgUrl = $"{chapterUrl}{firstImgId}{Constants.JPG_EXTENSION}";
+
+                    // Test if chapter url is valid for first image
+                    if (IsUrlValid(firstImgUrl))
+                    {
+                        Debug.WriteLine($"Valid chapter confirmed, img url is working");
+                        selectedChaptersId.Add(chapterId);
+                        selectedChapterUrls.Add(chapterUrl);
+                    }
+                    else
+                    {
+                        // TODO: Add error management
+                        Debug.WriteLine($"Invalid chapter url ({firstImgUrl}) for chapter {chapterId}. Check if chapter really exist, entry will not be added to the chapter list ({htmlUrl})");
+                    }
+                }
+                else
+                {
+                    // TODO: Add error management
+                    Debug.WriteLine($"Cannot parse \"{chaptersRead[i]}\" to int => invalid chapter number: {chapterId}, entry will not be added to the chapter list ({htmlUrl})");
+                }
+            }
+
+            Debug.WriteLine($"\nChapter Id: ");
+            selectedChaptersId.Log();
+
+            Console.WriteLine($"\nList of chapter found for {htmlUrl}: ");
+            foreach (int chapterId in selectedChaptersId)
+            {
+                Console.WriteLine($"-Chapter {chapterId} ");
+            }
+            Console.WriteLine($"\n Press any key to continue... "); // TODO: Replace by yes/no question
+            Console.ReadKey();
+
+            // Build Url
+            Debug.WriteLine($"\nChapter url: ");
+            selectedChapterUrls.Log();
+
+            // PageNumber
+            
+            List<string> imgUrls = new List<string>();
+            foreach (string chapterUrl in selectedChapterUrls)
+            {
+                int pageId = 1;
+                string imgUrl = $"{chapterUrl}{pageId}{Constants.JPG_EXTENSION}";
+                while(IsUrlValid(imgUrl))
+                {
+                    Console.WriteLine($"Valid img url found: {imgUrl}");
+                    Debug.WriteLine($"Valid img url found: {imgUrl}");
+                    imgUrls.Add(imgUrl);
+                    pageId++;
+                    imgUrl = $"{chapterUrl}{pageId}{Constants.JPG_EXTENSION}";
+                }
+                Console.WriteLine($"Finish to img found valid img url at page {pageId-1}\n");
+                Debug.WriteLine($"Finish to img found valid img url at page {pageId-1}\n");
+            }
 
             return imgUrls;
         }

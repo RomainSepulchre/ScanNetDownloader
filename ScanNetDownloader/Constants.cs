@@ -17,10 +17,16 @@ namespace ScanNetDownloader
 
 
         #region Split Separator Strings
-        public static readonly string[] URL_BLOCK_START_SEPARATOR = new string[] { "<div class=\"viewer-cnt\">" };
-        public static readonly string[] URL_BLOCK_END_SEPARATOR = new string[] { "<div id=\"ppp\" style>" };
-        public static readonly string[] CLEAN_BEFORE_IMG_TAG_SEPARATOR = new string[] { "<div id=\"all\" style=\" display: none; \">" };
-        public static readonly string[] IMG_TAG_END_SEPARATOR = new string[] { "/>" };
+
+        // Scan VF
+        public static readonly string[] SCANVF_URL_BLOCK_START_SEPARATOR = new string[] { "<div class=\"viewer-cnt\">" };
+        public static readonly string[] SCANVF_URL_BLOCK_END_SEPARATOR = new string[] { "<div id=\"ppp\" style>" };
+        public static readonly string[] SCANVF_CLEAN_BEFORE_IMG_TAG_SEPARATOR = new string[] { "<div id=\"all\" style=\" display: none; \">" };
+        public static readonly string[] SCANVF_IMG_TAG_END_SEPARATOR = new string[] { "/>" };
+
+        // Anime Sama
+        public static readonly string[] ANIMESAMA_BOOK_NAME_START_SEPARATOR = new string[] { "<meta name=\"description\" content=\"" };
+        public static readonly string[] ANIMESAMA_BOOK_NAME_END_SEPARATOR = new string[] { " - Scans" };
         #endregion
 
         #region Char and String
@@ -30,12 +36,20 @@ namespace ScanNetDownloader
         public static readonly char DASH_CHAR = '-';
         public static readonly char UNDERSCORE_CHAR = '_';
         public static readonly char POINT_CHAR = '.';
+        public static readonly char SEMICOLON_CHAR = ';';
 
         public static readonly string HTTP_ADDRESS = "https://";
         public static readonly string SPACE = " ";
         public static readonly string SCAN_SUFFIX = " Scan";
         public static readonly string CHAPTER_PREFIX = "Chapter ";
         public static readonly string SCAN_CHAPTER_PATH = $"{SCAN_SUFFIX}{BACKSLASH_CHAR}{CHAPTER_PREFIX}";
+
+        public static readonly string SCANVF_DOMAIN_NAME = "scan-vf.net";
+        public static readonly string ANIMESAMA_DOMAIN_NAME = "anime-sama.fr";
+        public static readonly string ANIMESAMA_IMG_URL_START = "https://anime-sama.fr/s2/scans/";
+
+        public static readonly string WEBP_EXTENSION = ".webp";
+        public static readonly string JPG_EXTENSION = ".jpg";
         #endregion
 
         #region Time values
