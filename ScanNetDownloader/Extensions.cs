@@ -17,12 +17,10 @@ namespace ScanNetDownloader
 
         public static void Log<T>(this List<T> list)
         {
-            Debug.WriteLine($"\n---- {nameof(list)} ----");
             foreach (T item in list)
             {
-                Debug.WriteLine($"{item}");
+                Debug.WriteLine($"- {item}");
             }
-            Debug.WriteLine($"\n---- {nameof(list)} END ----");
         }
     }
 }
