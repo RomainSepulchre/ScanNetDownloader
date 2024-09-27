@@ -44,12 +44,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AnimeSamaFr.cs" />
+    <Compile Include="AnimeSamaFrUrl.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ScanVfNet.cs" />
+    <Compile Include="ScanVfNetUrl.cs" />
     <Compile Include="ScanWebsiteUrl.cs" />
   </ItemGroup>
   <ItemGroup>
