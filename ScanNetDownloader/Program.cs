@@ -18,7 +18,7 @@ namespace ScanDownloader
     internal class Program
     {
 
-        // TODO: Replace chapter list by link of book main page, ask a range of chapter to download and generate myself the chapter links instead of having to enter manually each chapter links
+        // TODO: FOR SCANVF.NET Add possibility of giving book url, ask a range of chapter to download and generate myself the chapter links instead of having to enter manually each chapter links
         //--> handle out of range chapter if user enter chapter not available yet
         //--> One chapter url was .../episode-1101/... instead of .../chapitre-1101/...
         // TODO: Save User Settings in a Json file
@@ -238,7 +238,7 @@ namespace ScanDownloader
                 Console.WriteLine(header);
                 Console.WriteLine($"{AdaptativeLineOfCharForHeader(header, '*')}");
 
-                Console.WriteLine($"\nLook for images url for {url}...");
+                Console.WriteLine($"\nLook for images url for {bookName}-{chapterNumber} at {url}...");
                 List<string> imgsToDownload = scanUrl.GetScanImagesUrl();
                 if (imgsToDownload.Count == 0) { continue; } // if list is empty (in case of error while getting html content) skip directly to the next url
 

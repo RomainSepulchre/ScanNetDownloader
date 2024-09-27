@@ -142,8 +142,7 @@ namespace ScanNetDownloader
 
             if (IsUrlValid(firstImgUrl) == false)
             {
-                // TODO: Add error management
-                Debug.WriteLine($"Invalid chapter url ({firstImgUrl}) for chapter {ChapterId}. Check if chapter really exist, entry will not be added to the chapter list ({Url})");
+                Error.ChapterDoesntExist(this, firstImgUrl);
                 return new List<string>();
             }
 

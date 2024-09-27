@@ -21,6 +21,7 @@ namespace ScanNetDownloader
             FailedCbzCreation = 6,
             FailedToReplaceEmptyCbz = 7,
             FailedToParseChapterEnteredByUser = 8,
+            ChapterDoesntExist = 9
         }
 
         public string Message
@@ -177,6 +178,20 @@ namespace ScanNetDownloader
             Console.ForegroundColor = ConsoleColor.DarkRed;
             Console.WriteLine($" -> Failed to parse \"{chapterEnteredByUser}\" to int, this is not a valid number. \"{chapterEnteredByUser}\" will not be added to the chapter list for {scanUrl.BookName}!");
             Console.ResetColor();
+        }
+
+        public static void ChapterDoesntExist(ScanWebsiteUrl scanUrl, string chapterUrl)
+        {
+            errorList.Add(new Error($"{scanUrl.BookName}-{scanUrl.ChapterId} | {chapterUrl} doesn't exist on the website", ErrorType.ChapterDoesntExist));
+
+            Debug.WriteLine($"Invalid chapter url ({chapterUrl}) for {scanUrl.BookName}-{scanUrl.ChapterId}. Check if chapter really exist, entry will not be added to the chapter list ({scanUrl.Url})");
+
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine($"\n{scanUrl.BookName} chapter {scanUrl.ChapterId} doesn't exist on the website ({chapterUrl}). Make sure this chapter really exist.\n");
+
+            Console.ResetColor();
+            Console.WriteLine($"Press any key to continue...\n");
+            Console.ReadKey();
         }
     }
 }
