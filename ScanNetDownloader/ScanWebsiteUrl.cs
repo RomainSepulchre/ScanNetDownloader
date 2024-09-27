@@ -44,10 +44,9 @@ namespace ScanNetDownloader
                 {
                     htmlContent = client.DownloadString(Url); // Save html code in a variable
                 }
-                catch (Exception ex)
+                catch (WebException ex)
                 {
-                    //TODO: HANDLE ERROR MANAGEMENT
-                    //ErrorMessageForHtmlDownload(ex, Url);
+                    Error.FailedHtmlDownload(ex, Url);
                     return new List<string>();
                 }
             }

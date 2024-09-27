@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="AnimeSamaFrUrl.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="Error.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

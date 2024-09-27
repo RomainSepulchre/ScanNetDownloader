@@ -45,10 +45,10 @@ namespace ScanNetDownloader
         public static readonly string SCAN_CHAPTER_PATH = $"{SCAN_SUFFIX}{BACKSLASH_CHAR}{CHAPTER_PREFIX}";
 
         public static readonly string SCANVF_DOMAIN_NAME = "scan-vf.net";
-        public static readonly string SCANVF_IMG_URL_SPECIFICITY = "uploads";
+        public static readonly string SCANVF_IMG_URL_MARKER = "uploads";
         public static readonly string ANIMESAMA_DOMAIN_NAME = "anime-sama.fr";
         public static readonly string ANIMESAMA_IMG_URL_START = "https://anime-sama.fr/s2/scans/";
-        public static readonly string ANIMESAMA_IMG_URL_SPECIFICITY = "scans";
+        public static readonly string ANIMESAMA_IMG_URL_MARKER = "scans";
 
         public static readonly string WEBP_EXTENSION = ".webp";
         public static readonly string JPG_EXTENSION = ".jpg";

@@ -38,7 +38,7 @@ namespace ScanNetDownloader
 
             int splitIdForChapterUrl = 3;
             int splitIdForImgUrl = 5;
-            bool isImgUrl = url.Contains(Constants.SCANVF_IMG_URL_SPECIFICITY); // Check if we are using a link of a chapter or an image
+            bool isImgUrl = url.Contains(Constants.SCANVF_IMG_URL_MARKER); // Check if we are using a link of a chapter or an image
 
             string bookName = url.Split(Constants.SLASH_CHAR)[isImgUrl ? splitIdForImgUrl : splitIdForChapterUrl];
             bookName = bookName.ToTitleCase();
@@ -68,7 +68,7 @@ namespace ScanNetDownloader
 
             int splitIdForChapterUrl = 4;
             int splitIdForImgUrl = 7;
-            bool isImgUrl = url.Contains(Constants.SCANVF_IMG_URL_SPECIFICITY); // Check if we are using a link of a chapter or an image
+            bool isImgUrl = url.Contains(Constants.SCANVF_IMG_URL_MARKER); // Check if we are using a link of a chapter or an image
 
             string chapterNumber = url.Split(Constants.SLASH_CHAR)[isImgUrl ? splitIdForImgUrl : splitIdForChapterUrl];
             if (keepNumberOnly) chapterNumber = chapterNumber.Split(Constants.DASH_CHAR)[1];
