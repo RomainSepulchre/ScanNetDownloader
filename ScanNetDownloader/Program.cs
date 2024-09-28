@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO.Compression;
 using System.Threading;
+using Newtonsoft.Json;
 
 
 namespace ScanDownloader
@@ -35,11 +36,10 @@ namespace ScanDownloader
         // https://anime-sama.fr/catalogue/fairy-tail/scan/vf/
         // https://anime-sama.fr/catalogue/the-terminally-ill-young-master-of-the-baek-clan/scan/vf/
 
-        #region Parameters
         /// <summary>
-        /// Provide the url of the first page of any chapter you want to download
+        /// Kept as back for dev test
         /// </summary>
-        private static readonly List<string> SCANS_TO_DOWNLOAD_URL = new List<string>
+        private static List<string> SCANS_TO_DOWNLOAD_URL = new List<string>
         {
             "https://anime-sama.fr/catalogue/20th-century-boys/scan/vf/",
             "https://www.scan-vf.net/one_piece/chapitre-1079/1",
@@ -54,33 +54,17 @@ namespace ScanDownloader
             "https://www.scan-vf.net/my-hero-academia/chapitre-358/2"
         };
 
-        private static List<ScanWebsiteUrl> scanWebsiteUrls;
+        private static readonly Dictionary<string, string> DEFAULT_SCANS_LIST = new Dictionary<string, string>
+        {
+            {"https://www.scan-vf.net/one_piece/chapitre-1/1",""},
+            {"https://anime-sama.fr/catalogue/berserk/scan/vf/","1-3;4;5"}
+        };
 
-        /// <summary>
-        /// Set a custom output folder (if null or empty, we use the default user download folder) (Default=string.Empty)
-        /// </summary>
-        private static readonly string CUSTOM_FOLDER_PATH = @"D:\Download\ScanNetDownloader\Dev";
+        private static List<ScanWebsiteUrl> ScanWebsiteUrls;
 
-        /// <summary>
-        /// The output directory used by the program
-        /// </summary>
-        private static readonly string OUTPUT_DIRECTORY = string.IsNullOrEmpty(CUSTOM_FOLDER_PATH) ? Constants.USER_DOWNLOAD_FOLDER_PATH : CUSTOM_FOLDER_PATH;
+        private static Settings settings;
 
-        /// <summary>
-        /// Do you want to create a .cbz archive of every chapter downloaded (Default=True)
-        /// </summary>
-        private static readonly bool createCbzArchive = true;
-
-        /// <summary>
-        /// Do you want to keep the images downloaded once the cbz has been created (Default=False)
-        /// </summary>
-        private static readonly bool deleteImagesAfterCbzCreation = false;
-
-        /// <summary>
-        /// Should the program automatically open the output directory when closing (Default=True)
-        /// </summary>
-        private static bool openOutputDirectoryWhenClosing = true;
-        #endregion
+        private static string OutputDirectory => string.IsNullOrEmpty(settings.CustomFolderPath) ? Constants.USER_DOWNLOAD_FOLDER_PATH : settings.CustomFolderPath;
 
         #region Main
         static void Main(string[] args)
@@ -89,38 +73,44 @@ namespace ScanDownloader
 
             WriteAppTitle();
 
-            if(SCANS_TO_DOWNLOAD_URL.Count <= 0)
+            // Load settings
+            settings = LoadSettings(Constants.SETTINGS_JSON_PATH);
+            settings.Log();
+
+            List<string> scansUrlToDownload = settings.ScansUrlAndCorrespondingChapters.Keys.ToList();
+            if(scansUrlToDownload.Count <= 0)
             {
-                Error.NoScansUrl(nameof(SCANS_TO_DOWNLOAD_URL));
+                Error.NoScansUrl(nameof(settings.ScansUrlAndCorrespondingChapters));
+                // TODO: Add Json settings opening
                 QuitConsole();
             }
 
             // Create list of website url
             Console.WriteLine($"\nCreation of the list of scan to download...\n");
-            scanWebsiteUrls = CreateListOfScanWebsiteUrl(SCANS_TO_DOWNLOAD_URL);
+            ScanWebsiteUrls = CreateListOfScanWebsiteUrl(scansUrlToDownload);
 
             Thread.Sleep(Constants.HALF_SECOND_IN_MILLISECONDS);
             Console.Clear();
             WriteAppTitle();
 
             Console.WriteLine($"\nHere is the list of scans you are going to download:");
-            foreach (ScanWebsiteUrl item in scanWebsiteUrls)
+            foreach (ScanWebsiteUrl item in ScanWebsiteUrls)
             {
                 Console.WriteLine($"-> {item.BookName} - {item.ChapterId} (source:{item.Url})");
             }
 
-            Console.WriteLine($"\nThe files will be downloaded in {OUTPUT_DIRECTORY}, a folder will automatically be created for each title and chapters");
+            Console.WriteLine($"\nThe files will be downloaded in {OutputDirectory}, a folder will automatically be created for each title and chapters");
             CheckOutputDirectory();
 
             bool isNo = WaitForYesOrNoReadKey("\nPress Y to start or N to quit...") == ConsoleKey.N;
             if (isNo) QuitConsole();
              
-            DownloadScans(scanWebsiteUrls);
+            DownloadScans(ScanWebsiteUrls);
 
             Console.WriteLine("Finished, press any key to close...");
             Console.ReadKey();
 
-            if (openOutputDirectoryWhenClosing)
+            if (settings.OpenOutputDirectoryWhenClosing)
             {
                 OpenRelevantFolder();                
             }
@@ -140,6 +130,7 @@ namespace ScanDownloader
                 switch (url)
                 {
                     case string s when s.Contains(Constants.SCANVF_DOMAIN_NAME):
+                        //TODO: Manage url with no chapter selected and chapter already selected in the Settings dictionnary
                         ScanWebsiteUrl scanVfNetUrl = new ScanVfNetUrl(url);
                         newScanWebsiteUrls.Add(scanVfNetUrl);
                         Console.WriteLine($"{scanVfNetUrl.BookName} - Chapter {scanVfNetUrl.ChapterId} added ({scanVfNetUrl.WebsiteDomain}).\n");
@@ -147,6 +138,8 @@ namespace ScanDownloader
 
                     case string s when s.Contains(Constants.ANIMESAMA_DOMAIN_NAME):
                         ScanWebsiteUrl temporaryAnimeSamaUrl = new AnimeSamaFrUrl(url); // Temporary obj to get book name
+
+                        //TODO: Manage chapter already selected in the Settings dictionnary
 
                         // Ask For chapter to download
                         Console.WriteLine($"Select chapters for \"{temporaryAnimeSamaUrl.BookName}\" ({temporaryAnimeSamaUrl.Url}):");
@@ -277,9 +270,9 @@ namespace ScanDownloader
                     pageId++;
                 }
 
-                if (createCbzArchive)
+                if (settings.CreateCbzArchive)
                 {
-                    CreateCbzArchive(scanUrl, downloadPath);
+                    BuildCbzArchive(scanUrl, downloadPath);
                 }
             }
         }
@@ -288,16 +281,16 @@ namespace ScanDownloader
         #region Folder Management
         static void CheckOutputDirectory()
         {
-            if (Directory.Exists(OUTPUT_DIRECTORY) == false)
+            if (Directory.Exists(OutputDirectory) == false)
             {
                 Error.NoOutputDirectory();
 
-                Console.WriteLine($"Do you want to create the directory \"{OUTPUT_DIRECTORY}\" ? ");
+                Console.WriteLine($"Do you want to create the directory \"{OutputDirectory}\" ? ");
 
                 if (WaitForYesOrNoReadKey($"Press Y (yes) or N (no)...") == ConsoleKey.Y)
                 {
-                    Directory.CreateDirectory(OUTPUT_DIRECTORY);
-                    Console.WriteLine($"\"{OUTPUT_DIRECTORY}\" sucessfully created. Ready to download!");
+                    Directory.CreateDirectory(OutputDirectory);
+                    Console.WriteLine($"\"{OutputDirectory}\" sucessfully created. Ready to download!");
                 }
                 else
                 {
@@ -313,7 +306,7 @@ namespace ScanDownloader
         static string CreateChapterDirectory(string bookName, string chapterNumber)
         {
             
-            string chapterDirectory = Path.Combine(OUTPUT_DIRECTORY, $"{bookName}{Constants.SCAN_CHAPTER_PATH}{chapterNumber}");
+            string chapterDirectory = Path.Combine(OutputDirectory, $"{bookName}{Constants.SCAN_CHAPTER_PATH}{chapterNumber}");
 
             if (Directory.Exists(chapterDirectory) == false)
             {
@@ -324,24 +317,24 @@ namespace ScanDownloader
 
         static void OpenRelevantFolder()
         {
-            if (scanWebsiteUrls.Count == 1) 
+            if (ScanWebsiteUrls.Count == 1) 
             {
                 // One chapter downloaded, open this chapter folder
-                string chapterDirectory = GetChapterDirectoryPath(scanWebsiteUrls[0]);
+                string chapterDirectory = GetChapterDirectoryPath(ScanWebsiteUrls[0]);
                 OpenFolder(chapterDirectory);
             }
             else
             {
-                bool moreThanOneBook = MoreThanOneBookInUrlList(scanWebsiteUrls);
+                bool moreThanOneBook = MoreThanOneBookInUrlList(ScanWebsiteUrls);
                 if (moreThanOneBook) 
                 {
                     // Several books downloaded, open the output folder
-                    OpenFolder(OUTPUT_DIRECTORY);
+                    OpenFolder(OutputDirectory);
                 }
                 else 
                 {
                     // Several chapters of the same book downloaded, open the book folder
-                    string bookDirectory = GetBookDirectoryPath(scanWebsiteUrls[0]);
+                    string bookDirectory = GetBookDirectoryPath(ScanWebsiteUrls[0]);
                     OpenFolder(bookDirectory);
                 }
             }
@@ -364,7 +357,7 @@ namespace ScanDownloader
         static string GetBookDirectoryPath(ScanWebsiteUrl scanUrl)
         {
             string bookName = scanUrl.BookName;
-            string bookDirectoryPath = Path.Combine(OUTPUT_DIRECTORY, $"{bookName}{Constants.SCAN_SUFFIX}");
+            string bookDirectoryPath = Path.Combine(OutputDirectory, $"{bookName}{Constants.SCAN_SUFFIX}");
 
             return bookDirectoryPath;
         }
@@ -373,7 +366,7 @@ namespace ScanDownloader
         {
             string bookName = scanUrl.BookName;
             string chapterNumber = scanUrl.ChapterId.ToString();
-            string chapterDirectoryPath = Path.Combine(OUTPUT_DIRECTORY, $"{bookName}{Constants.SCAN_CHAPTER_PATH}{chapterNumber}");
+            string chapterDirectoryPath = Path.Combine(OutputDirectory, $"{bookName}{Constants.SCAN_CHAPTER_PATH}{chapterNumber}");
 
             return chapterDirectoryPath;
         }
@@ -396,8 +389,59 @@ namespace ScanDownloader
         }
         #endregion
 
+        #region Settings
+        static Settings LoadSettings(string jsonPath)
+        {
+            Settings loadedSettings;
+            if (File.Exists(jsonPath))
+            {
+                try
+                {
+                    loadedSettings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(Constants.SETTINGS_JSON_PATH));
+                    return loadedSettings;
+                }
+                catch (Exception ex) // TODO: Choose more precise Exception (IOException or JsonException) ?
+                {
+                    Error.FailedToLoadSettingsJson(jsonPath, ex);
+                    QuitConsole();
+                    return null;
+                    // TODO: What to do in this case ? Ask if user want to replace json with a new default one otherwise app quit and user must check the json himself
+                }
+            }
+            else // Missing Json Settings
+            {
+                Error.MissingSettingsJson(jsonPath);
+                loadedSettings = ResetToDefaultSettings();
+                return loadedSettings;
+            }
+        }
+
+        static Settings ResetToDefaultSettings()
+        {
+            Settings defaultSettings = new Settings() // Use default Settings
+            {
+                ScansUrlAndCorrespondingChapters = DEFAULT_SCANS_LIST
+                // Other settings already have default value asssigned
+            };
+            SaveSettings(defaultSettings);
+            return defaultSettings;
+        }
+
+        static void SaveSettings(Settings newSettings)
+        {
+            try
+            {
+                File.WriteAllText(Constants.SETTINGS_JSON_PATH, JsonConvert.SerializeObject(newSettings, Formatting.Indented));
+            }
+            catch
+            {
+                // TODO: ERROR MANAGEMENT WHEN SAVING JSON
+            }  
+        }
+        #endregion
+
         #region Cbz Archive
-        static void CreateCbzArchive(ScanWebsiteUrl scanUrl, string downloadPath)
+        static void BuildCbzArchive(ScanWebsiteUrl scanUrl, string downloadPath)
         {
             Console.WriteLine($"=> Create .CBZ for {scanUrl.BookName}-{scanUrl.ChapterId}...");
 
@@ -416,7 +460,7 @@ namespace ScanDownloader
                 }
                 catch (IOException ex)
                 {
-                    Error.FailedCbzCreation(ex, scanUrl, deleteImagesAfterCbzCreation);
+                    Error.FailedCbzCreation(ex, scanUrl, settings.DeleteImagesAfterCbzCreation);
                     return;
                 }
             }
@@ -436,13 +480,13 @@ namespace ScanDownloader
                     }
                     catch (IOException ex)
                     {
-                        Error.FailedToReplaceEmptyCbz(ex, scanUrl, deleteImagesAfterCbzCreation);
+                        Error.FailedToReplaceEmptyCbz(ex, scanUrl, settings.DeleteImagesAfterCbzCreation);
                         return;
                     }
                 }
             }
 
-            if (deleteImagesAfterCbzCreation)
+            if (settings.DeleteImagesAfterCbzCreation)
             {
                 if (Directory.Exists(downloadPath)) Directory.Delete(downloadPath, true);
             }
@@ -515,15 +559,15 @@ namespace ScanDownloader
                     string htmlFileName = urlToDl.Remove(0, 8); // Remove "https://"
                     htmlFileName = htmlFileName.Replace('/', '_');
                     htmlFileName = htmlFileName + ".html";
-                    client.DownloadFile(urlToDl, Path.Combine(OUTPUT_DIRECTORY, htmlFileName));
+                    client.DownloadFile(urlToDl, Path.Combine(OutputDirectory, htmlFileName));
 
                     Console.WriteLine($"\n {htmlFileName} downloaded...");
                 }
             }
             Console.WriteLine($"Html file saved, press to open folder location...");
             Console.ReadKey();
-            openOutputDirectoryWhenClosing = false;
-            OpenFolder(OUTPUT_DIRECTORY);
+            settings.OpenOutputDirectoryWhenClosing = false;
+            OpenFolder(OutputDirectory);
         }
         #endregion
     }

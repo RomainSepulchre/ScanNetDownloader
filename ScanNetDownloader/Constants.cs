@@ -8,9 +8,12 @@ using System.Threading.Tasks;
 
 namespace ScanNetDownloader
 {
-    public static class Constants
+    public class Constants
     {
         #region Paths
+        public static readonly string BASE_DIRECTORY_PATH = AppDomain.CurrentDomain.BaseDirectory;
+        public const string SETTINGS_JSON_FILENAME = "Settings.json";
+        public static readonly string SETTINGS_JSON_PATH = BASE_DIRECTORY_PATH + SETTINGS_JSON_FILENAME;
         public static readonly string USER_FOLDER_PATH = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile); // User directory path
         public static readonly string USER_DOWNLOAD_FOLDER_PATH = Path.Combine(USER_FOLDER_PATH, "Downloads"); // Default download directory path
         #endregion
@@ -30,33 +33,35 @@ namespace ScanNetDownloader
         #endregion
 
         #region Char and String
-        public static readonly char QUOTE_CHAR = '\"';
-        public static readonly char SLASH_CHAR = '/';
-        public static readonly char BACKSLASH_CHAR = '\\';
-        public static readonly char DASH_CHAR = '-';
-        public static readonly char UNDERSCORE_CHAR = '_';
-        public static readonly char POINT_CHAR = '.';
-        public static readonly char SEMICOLON_CHAR = ';';
+        public const char QUOTE_CHAR = '\"';
+        public const char SLASH_CHAR = '/';
+        public const char BACKSLASH_CHAR = '\\';
+        public const char DASH_CHAR = '-';
+        public const char UNDERSCORE_CHAR = '_';
+        public const char POINT_CHAR = '.';
+        public const char SEMICOLON_CHAR = ';';
 
-        public static readonly string HTTP_ADDRESS = "https://";
-        public static readonly string SPACE = " ";
-        public static readonly string SCAN_SUFFIX = " Scan";
-        public static readonly string CHAPTER_PREFIX = "Chapter ";
+        public const string HTTP_ADDRESS = "https://";
+        public const string SPACE = " ";
+        public const string SCAN_SUFFIX = " Scan";
+        public const string CHAPTER_PREFIX = "Chapter ";
         public static readonly string SCAN_CHAPTER_PATH = $"{SCAN_SUFFIX}{BACKSLASH_CHAR}{CHAPTER_PREFIX}";
 
-        public static readonly string SCANVF_DOMAIN_NAME = "scan-vf.net";
-        public static readonly string SCANVF_IMG_URL_MARKER = "uploads";
-        public static readonly string ANIMESAMA_DOMAIN_NAME = "anime-sama.fr";
-        public static readonly string ANIMESAMA_IMG_URL_START = "https://anime-sama.fr/s2/scans/";
-        public static readonly string ANIMESAMA_IMG_URL_MARKER = "scans";
+        public const string SCANVF_DOMAIN_NAME = "scan-vf.net";
+        public const string SCANVF_IMG_URL_MARKER = "uploads";
+        public const string ANIMESAMA_DOMAIN_NAME = "anime-sama.fr";
+        public const string ANIMESAMA_IMG_URL_START = "https://anime-sama.fr/s2/scans/";
+        public const string ANIMESAMA_IMG_URL_MARKER = "scans";
 
-        public static readonly string WEBP_EXTENSION = ".webp";
-        public static readonly string JPG_EXTENSION = ".jpg";
+        public const string WEBP_EXTENSION = ".webp";
+        public const string JPG_EXTENSION = ".jpg";
+
+        
         #endregion
 
         #region Time values
-        public static readonly int ONE_SECOND_IN_MILLISECONDS = 1000;
-        public static readonly int HALF_SECOND_IN_MILLISECONDS = 500;
+        public const int ONE_SECOND_IN_MILLISECONDS = 1000;
+        public const int HALF_SECOND_IN_MILLISECONDS = 500;
         #endregion
 
 
