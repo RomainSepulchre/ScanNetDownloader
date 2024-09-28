@@ -1,24 +1,19 @@
 {
-    "ScansUrlAndCorrespondingChapters":
-    {
-        "https://anime-sama.fr/catalogue/20th-century-boys/scan/vf/": "1-100",
-        "https://www.scan-vf.net/one_piece/chapitre-1079/1": "1-100",
-        "https://www.scan-vf.net/one_piece/chapitre-1120/5": "1-100",
-        "https://www.scan-vf.net/one_piece/chapitre-140/1": "1-100",
-        "https://www.scan-vf.net/one_piece/chapitre-1087/7": "1-100",
-        "https://anime-sama.fr/catalogue/berserk/scan/vf/": "1-100",
-        "https://anime-sama.fr/catalogue/alice-in-borderland/scan/vf/": "1-100",
-        "https://www.scan-vf.net/jujutsu-kaisen/chapitre-268/1": "1-100",
-        "https://www.scan-vf.net/dragon-Ball-Super/chapitre-73/4": "1-100",
-        "https://anime-sama.fr/catalogue/fairy-tail/scan/vf/": "1-100",
-        "https://www.scan-vf.net/my-hero-academia/chapitre-358/2": "1-100"
-    },
+  "ScansUrlAndCorrespondingChapters":
+  {
+    "https://www.scan-vf.net/one_piece/chapitre-1/1": "",
+    "https://anime-sama.fr/catalogue/berserk/scan/vf/": "1-3;4;5"
+  },
 
-    "CustomFolderPath": "D:\\Download\\ScanNetDownloader\\Dev",
+  "CustomFolderPath": "",
 
-    "CreateCbzArchive": true,
+  "CreateCbzArchive": true,
 
-    "DeleteImagesAfterCbzCreation": false,
+  "DeleteImagesAfterCbzCreation": false,
 
-    "OpenOutputDirectoryWhenClosing": true
+  "OpenOutputDirectoryWhenClosing": true,
+
+  "ErrorsPauseApp": true,
+
+  "AutoOpenJsonWhenNecessary": true
 }

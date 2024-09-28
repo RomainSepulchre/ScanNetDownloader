@@ -22,12 +22,10 @@ namespace ScanDownloader
         // TODO: FOR SCANVF.NET Add possibility of giving book url, ask a range of chapter to download and generate myself the chapter links instead of having to enter manually each chapter links
         //--> handle out of range chapter if user enter chapter not available yet
         //--> One chapter url was .../episode-1101/... instead of .../chapitre-1101/...
-        // TODO: Save User Settings in a Json file
         // TODO: Manage weird image format from anime-same by cropping image automatically
         // TODO: Select Output folder by opening explorer window 
         // TODO: Switch from console app to an interface (WPF ?)
         // TODO: Scrap a list of all the books available and create a search engine
-        // TODO: Option to pause or not when an error happen ?
 
         // KEEP FOR TEST
         // https://anime-sama.fr/catalogue/berserk/scan/vf/
@@ -62,9 +60,9 @@ namespace ScanDownloader
 
         private static List<ScanWebsiteUrl> ScanWebsiteUrls;
 
-        private static Settings settings;
+        private static Settings CurrentSettings => Settings.instance;
 
-        private static string OutputDirectory => string.IsNullOrEmpty(settings.CustomFolderPath) ? Constants.USER_DOWNLOAD_FOLDER_PATH : settings.CustomFolderPath;
+        private static string OutputDirectory => string.IsNullOrEmpty(CurrentSettings.CustomFolderPath) ? Constants.USER_DOWNLOAD_FOLDER_PATH : CurrentSettings.CustomFolderPath;
 
         #region Main
         static void Main(string[] args)
@@ -74,22 +72,25 @@ namespace ScanDownloader
             WriteAppTitle();
 
             // Load settings
-            settings = LoadSettings(Constants.SETTINGS_JSON_PATH);
-            settings.Log();
+            Settings.instance = LoadSettings(Constants.SETTINGS_JSON_PATH);
+            CurrentSettings.Log();
 
-            List<string> scansUrlToDownload = settings.ScansUrlAndCorrespondingChapters.Keys.ToList();
+            List<string> scansUrlToDownload = CurrentSettings.ScansUrlAndCorrespondingChapters.Keys.ToList();
             if(scansUrlToDownload.Count <= 0)
             {
-                Error.NoScansUrl(nameof(settings.ScansUrlAndCorrespondingChapters));
-                // TODO: Add Json settings opening
+                Error.NoScansUrl(nameof(CurrentSettings.ScansUrlAndCorrespondingChapters));
+                OpenSettingsJsonFile();
                 QuitConsole();
             }
 
             // Create list of website url
+            Console.Clear();
+            WriteAppTitle();
             Console.WriteLine($"\nCreation of the list of scan to download...\n");
             ScanWebsiteUrls = CreateListOfScanWebsiteUrl(scansUrlToDownload);
-
             Thread.Sleep(Constants.HALF_SECOND_IN_MILLISECONDS);
+
+            // Main menu (definitive download list)
             Console.Clear();
             WriteAppTitle();
 
@@ -104,13 +105,17 @@ namespace ScanDownloader
 
             bool isNo = WaitForYesOrNoReadKey("\nPress Y to start or N to quit...") == ConsoleKey.N;
             if (isNo) QuitConsole();
-             
+
+            // Main menu (definitive download list)
+            Console.Clear();
+            WriteAppTitle();
+
             DownloadScans(ScanWebsiteUrls);
 
             Console.WriteLine("Finished, press any key to close...");
             Console.ReadKey();
 
-            if (settings.OpenOutputDirectoryWhenClosing)
+            if (CurrentSettings.OpenOutputDirectoryWhenClosing)
             {
                 OpenRelevantFolder();                
             }
@@ -270,7 +275,7 @@ namespace ScanDownloader
                     pageId++;
                 }
 
-                if (settings.CreateCbzArchive)
+                if (CurrentSettings.CreateCbzArchive)
                 {
                     BuildCbzArchive(scanUrl, downloadPath);
                 }
@@ -294,10 +299,12 @@ namespace ScanDownloader
                 }
                 else
                 {
-                    Console.WriteLine("Please modify the output directory setting with a valid directory.");
-                    Console.WriteLine("Press any key to close the app...");
+                    Console.WriteLine("Please modify the output directory in Settings.json, it must be a valid directory.");
+                    if(CurrentSettings.AutoOpenJsonWhenNecessary) Console.WriteLine("Press any key to open Settings.json and close the app...");
+                    else Console.WriteLine("Press any key to close the app...");
                     Console.ReadKey();
 
+                    OpenSettingsJsonFile();
                     QuitConsole();
                 }
             }
@@ -400,15 +407,30 @@ namespace ScanDownloader
                     loadedSettings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(Constants.SETTINGS_JSON_PATH));
                     return loadedSettings;
                 }
-                catch (Exception ex) // TODO: Choose more precise Exception (IOException or JsonException) ?
+                catch (Exception ex)
                 {
                     Error.FailedToLoadSettingsJson(jsonPath, ex);
-                    QuitConsole();
-                    return null;
-                    // TODO: What to do in this case ? Ask if user want to replace json with a new default one otherwise app quit and user must check the json himself
+
+                    Console.WriteLine($"Do you want to reset settings.json to it's default values ? ");
+                    if (WaitForYesOrNoReadKey($"Press Y (yes) or N (no)...") == ConsoleKey.Y)
+                    {
+                        loadedSettings = ResetToDefaultSettings();
+                        return loadedSettings;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Please make sure nothing is wrong with the value in Settings.json, if the problem persist backup your settings and reset the json to it's default values.");
+                        if (CurrentSettings.AutoOpenJsonWhenNecessary) Console.WriteLine("Press any key to open Settings.json and close the app...");
+                        else Console.WriteLine("Press any key close the app...");
+                        Console.ReadKey();
+
+                        OpenSettingsJsonFile();
+                        QuitConsole();
+                        return null;
+                    }
                 }
             }
-            else // Missing Json Settings
+            else // Missing Settings.json
             {
                 Error.MissingSettingsJson(jsonPath);
                 loadedSettings = ResetToDefaultSettings();
@@ -429,14 +451,23 @@ namespace ScanDownloader
 
         static void SaveSettings(Settings newSettings)
         {
+            Settings.instance = newSettings;
             try
             {
                 File.WriteAllText(Constants.SETTINGS_JSON_PATH, JsonConvert.SerializeObject(newSettings, Formatting.Indented));
             }
-            catch
+            catch (Exception ex)
             {
-                // TODO: ERROR MANAGEMENT WHEN SAVING JSON
+                Error.FailedToSaveSettingsJson(Constants.SETTINGS_JSON_PATH, ex);
             }  
+        }
+
+        static void OpenSettingsJsonFile()
+        {
+            if (CurrentSettings.AutoOpenJsonWhenNecessary)
+            {
+                Process.Start(Constants.SETTINGS_JSON_PATH);
+            }    
         }
         #endregion
 
@@ -460,7 +491,7 @@ namespace ScanDownloader
                 }
                 catch (IOException ex)
                 {
-                    Error.FailedCbzCreation(ex, scanUrl, settings.DeleteImagesAfterCbzCreation);
+                    Error.FailedCbzCreation(ex, scanUrl, CurrentSettings.DeleteImagesAfterCbzCreation);
                     return;
                 }
             }
@@ -480,13 +511,13 @@ namespace ScanDownloader
                     }
                     catch (IOException ex)
                     {
-                        Error.FailedToReplaceEmptyCbz(ex, scanUrl, settings.DeleteImagesAfterCbzCreation);
+                        Error.FailedToReplaceEmptyCbz(ex, scanUrl, CurrentSettings.DeleteImagesAfterCbzCreation);
                         return;
                     }
                 }
             }
 
-            if (settings.DeleteImagesAfterCbzCreation)
+            if (CurrentSettings.DeleteImagesAfterCbzCreation)
             {
                 if (Directory.Exists(downloadPath)) Directory.Delete(downloadPath, true);
             }
@@ -566,7 +597,7 @@ namespace ScanDownloader
             }
             Console.WriteLine($"Html file saved, press to open folder location...");
             Console.ReadKey();
-            settings.OpenOutputDirectoryWhenClosing = false;
+            CurrentSettings.OpenOutputDirectoryWhenClosing = false;
             OpenFolder(OutputDirectory);
         }
         #endregion
