@@ -22,6 +22,9 @@ namespace ScanDownloader
         // TODO: FOR SCANVF.NET Add possibility of giving book url, ask a range of chapter to download and generate myself the chapter links instead of having to enter manually each chapter links
         //--> handle out of range chapter if user enter chapter not available yet
         //--> One chapter url was .../episode-1101/... instead of .../chapitre-1101/...
+        // TODO: Improve menu (draw schematics of the menu and make everything doable directly in app with simple console interface (ex: adding url and chapter, changing parameter, ... ))
+        // TODO: Improve chapter selection visual to give a better understanding of what happening
+        // TODO: Warn for invalid url as soon as possible (new function chck url validity in ScanWebsiteUrl-> url must contains at least a book name)
         // TODO: Manage weird image format from anime-same by cropping image automatically
         // TODO: Select Output folder by opening explorer window 
         // TODO: Switch from console app to an interface (WPF ?)
@@ -129,73 +132,46 @@ namespace ScanDownloader
         {
             bool errorOccured = false;
             List<ScanWebsiteUrl> newScanWebsiteUrls = new List<ScanWebsiteUrl>();
+            List<int> selectedChaptersId;
             Random random = new Random();
             foreach (string url in urls)
             {
+                Debug.WriteLine($"\nURL ==> {url}\n");
                 switch (url)
                 {
                     case string s when s.Contains(Constants.SCANVF_DOMAIN_NAME):
-                        //TODO: Manage url with no chapter selected and chapter already selected in the Settings dictionnary
-                        ScanWebsiteUrl scanVfNetUrl = new ScanVfNetUrl(url);
-                        newScanWebsiteUrls.Add(scanVfNetUrl);
-                        Console.WriteLine($"{scanVfNetUrl.BookName} - Chapter {scanVfNetUrl.ChapterId} added ({scanVfNetUrl.WebsiteDomain}).\n");
+                        // TODO: Do I need to provide "/1" after chapter link to get correct html ?
+                        //https://www.scan-vf.net/jujutsu-kaisen/chapitre-164/1 = url with chapter -> at least 5 split
+                        //https://www.scan-vf.net/jujutsu-kaisen = url without chapter -> less than 5 split
+                        bool chapterIsInUrl = url.Split(Constants.SLASH_CHAR).Count() > 4 ; // Check if the url has a chapter name (the number of split let us know if url stop at book name or not)
+                        if (chapterIsInUrl)
+                        {
+                            ScanWebsiteUrl scanVfNetUrl = new ScanVfNetUrl(url);
+                            newScanWebsiteUrls.Add(scanVfNetUrl);
+                            Console.WriteLine($"{scanVfNetUrl.BookName} - Chapter {scanVfNetUrl.ChapterId} added ({scanVfNetUrl.WebsiteDomain}).\n");
+                        }
+                        else
+                        {
+                            // Chapters to download
+                            ScanWebsiteUrl temporaryScanVfNetUrl = new ScanVfNetUrl(url, false);
+                            selectedChaptersId = ChapterSelection(temporaryScanVfNetUrl, ref errorOccured);
+                            // Create link
+                            foreach (int chapterId in selectedChaptersId)
+                            {
+                                string urlWithChapter = $"{url}/chapitre-{chapterId}/1"; // TODO: Clean this with const
+                                ScanWebsiteUrl scanVfNetUrl = new ScanVfNetUrl(urlWithChapter);
+                                newScanWebsiteUrls.Add(scanVfNetUrl);
+                                Console.WriteLine($" -> {scanVfNetUrl.BookName} - Chapter {scanVfNetUrl.ChapterId} added ({scanVfNetUrl.WebsiteDomain}).");
+                            }
+                            Console.WriteLine("");
+                        }                        
                         break;
 
                     case string s when s.Contains(Constants.ANIMESAMA_DOMAIN_NAME):
                         ScanWebsiteUrl temporaryAnimeSamaUrl = new AnimeSamaFrUrl(url); // Temporary obj to get book name
 
-                        //TODO: Manage chapter already selected in the Settings dictionnary
-
-                        // Ask For chapter to download
-                        Console.WriteLine($"Select chapters for \"{temporaryAnimeSamaUrl.BookName}\" ({temporaryAnimeSamaUrl.Url}):");
-                        Console.ForegroundColor = ConsoleColor.DarkGray;
-                        Console.WriteLine($"Write a range of chapter (ex: 1-10) or the number of the chapters you want to download separated by ; (ex:4;6;8) and press enter.");
-                        Console.ResetColor();
-                        string lineRead = Console.ReadLine();
-
-                        List<string> chaptersEnteredByUser = lineRead.Split(Constants.SEMICOLON_CHAR).ToList();
-                        List<int> selectedChaptersId = new List<int>();
-
-                        for (int i = chaptersEnteredByUser.Count - 1; i >= 0; i--)
-                        {
-                            // Detect range of chapter
-                            string[] rangeSplitAttempt = chaptersEnteredByUser[i].Split(Constants.DASH_CHAR);
-                            if (rangeSplitAttempt.Count() == 2) // Range of chapter
-                            {
-                                // Get start and end of range
-                                bool startParsed = int.TryParse(rangeSplitAttempt[0], out int startRange);
-                                bool endParsed = int.TryParse(rangeSplitAttempt[1], out int endRange);
-
-                                if (startParsed == false || endParsed == false)
-                                {
-                                    errorOccured = true;
-                                    Error.FailedToParseChapterEnteredByUser(temporaryAnimeSamaUrl, chaptersEnteredByUser[i]);
-                                    continue;
-                                }
-                                else
-                                {
-                                    if (startRange > endRange) (startRange, endRange) = (endRange, startRange); // invert
-
-                                    for (int j = startRange; j <= endRange; j++)
-                                    {
-                                        selectedChaptersId.Add(j);
-                                    }
-                                }
-                            }
-                            else // Single chapter
-                            {
-                                if (int.TryParse(chaptersEnteredByUser[i], out int chapterId))
-                                {
-                                    selectedChaptersId.Add(chapterId);
-                                }
-                                else
-                                {
-                                    errorOccured = true;
-                                    Error.FailedToParseChapterEnteredByUser(temporaryAnimeSamaUrl, chaptersEnteredByUser[i]);
-                                }
-                            }
-                        }
-                        selectedChaptersId.Sort();
+                        // Get chapters to download
+                        selectedChaptersId = ChapterSelection(temporaryAnimeSamaUrl, ref errorOccured);                       
 
                         // Create link
                         foreach (int chapterId in selectedChaptersId)
@@ -221,6 +197,91 @@ namespace ScanDownloader
             }
 
             return newScanWebsiteUrls;
+        }
+
+        static List<int> ChapterSelection(ScanWebsiteUrl scanUrl, ref bool errorOccured)
+        {
+            List<int> selectedChaptersId = new List<int>();
+            string chaptersSelectedInSettings = CurrentSettings.ScansUrlAndCorrespondingChapters[scanUrl.Url];
+            if (string.IsNullOrEmpty(chaptersSelectedInSettings) == false)
+            {
+                selectedChaptersId = ParseToFindChapters(scanUrl, chaptersSelectedInSettings, ref errorOccured);
+                if (selectedChaptersId.Count <= 0)
+                {
+                    selectedChaptersId = AskUserToProvideChapters(scanUrl, ref errorOccured);
+                }
+                else
+                {
+                    selectedChaptersId.Log();
+                }
+            }
+            else
+            {
+                selectedChaptersId = AskUserToProvideChapters(scanUrl, ref errorOccured);
+            }
+            selectedChaptersId.Sort();
+            return selectedChaptersId;
+        }
+
+        static List<int> AskUserToProvideChapters(ScanWebsiteUrl scanUrl, ref bool errorOccured)
+        {
+            Console.WriteLine($"Select chapters for \"{scanUrl.BookName}\" ({scanUrl.Url}):");
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.WriteLine($"Write a range of chapter (ex: 1-10) or the number of the chapters you want to download separated by ; (ex:4;6;8) and press enter.");
+            Console.ResetColor();
+            string lineRead = Console.ReadLine();
+
+            List<int> chaptersFound = ParseToFindChapters(scanUrl, lineRead, ref errorOccured);
+            return chaptersFound;
+
+        }
+
+        static List<int> ParseToFindChapters(ScanWebsiteUrl scanUrl, string stringToParse, ref bool errorOccured)
+        {
+            List<int> validChapters = new List<int>();
+            List<string> chaptersEnteredByUser = stringToParse.Split(Constants.SEMICOLON_CHAR).ToList();
+
+            for (int i = chaptersEnteredByUser.Count - 1; i >= 0; i--)
+            {
+                // Detect range of chapter
+                string[] rangeSplitAttempt = chaptersEnteredByUser[i].Split(Constants.DASH_CHAR);
+                if (rangeSplitAttempt.Count() == 2) // Range of chapter
+                {
+                    // Get start and end of range
+                    bool startParsed = int.TryParse(rangeSplitAttempt[0], out int startRange);
+                    bool endParsed = int.TryParse(rangeSplitAttempt[1], out int endRange);
+
+                    if (startParsed == false || endParsed == false)
+                    {
+                        errorOccured = true;
+                        Error.FailedToParseChapterEnteredByUser(scanUrl, chaptersEnteredByUser[i]);
+                        continue;
+                    }
+                    else
+                    {
+                        if (startRange > endRange) (startRange, endRange) = (endRange, startRange); // invert
+
+                        for (int j = startRange; j <= endRange; j++)
+                        {
+                            validChapters.Add(j);
+                        }
+                    }
+                }
+                else // Single chapter
+                {
+                    if (int.TryParse(chaptersEnteredByUser[i], out int chapterId))
+                    {
+                        validChapters.Add(chapterId);
+                    }
+                    else
+                    {
+                        errorOccured = true;
+                        Error.FailedToParseChapterEnteredByUser(scanUrl, chaptersEnteredByUser[i]);
+                    }
+                }
+            }
+
+            return validChapters;
         }
 
         static void DownloadScans(List<ScanWebsiteUrl> scansToDownload)
