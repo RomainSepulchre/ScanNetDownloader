@@ -21,7 +21,10 @@ namespace ScanNetDownloader
             FailedCbzCreation = 6,
             FailedToReplaceEmptyCbz = 7,
             FailedToParseChapterEnteredByUser = 8,
-            ChapterDoesntExist = 9
+            ChapterDoesntExist = 9,
+            MissingSettingsJson = 10,
+            FailedToLoadSettingsJson = 11,
+            FailedToSaveSettingsJson = 12
         }
 
         public string Message
@@ -48,16 +51,51 @@ namespace ScanNetDownloader
 
         public static List<Error> errorList = new List<Error>();
 
+        public static void ShowDownloadErrors()
+        {
+            Console.WriteLine("Finished, some error happened during downloading:\n");
+
+            Console.ForegroundColor = ConsoleColor.Red;
+            foreach (var error in errorList)
+            {
+                switch (error.Type)
+                {
+                    case ErrorType.None:
+                    case ErrorType.NoScansUrl:
+                    case ErrorType.UnknownScanWebDomain:
+                    case ErrorType.NoOutputDirectory:
+                    case ErrorType.FailedToParseChapterEnteredByUser:
+                    case ErrorType.MissingSettingsJson:
+                    case ErrorType.FailedToLoadSettingsJson:
+                    case ErrorType.FailedToSaveSettingsJson:
+                    default:
+                        break;
+                    
+                    case ErrorType.FailedHtmlDownload:
+                    case ErrorType.FailedImageDownload:
+                    case ErrorType.FailedCbzCreation:
+                    case ErrorType.FailedToReplaceEmptyCbz:
+                    case ErrorType.ChapterDoesntExist:
+                        Console.WriteLine($"-{error.Type} | {error.Message}");
+                        break;
+                }
+            }
+
+            Console.ResetColor();
+        }
+
         public static void NoScansUrl(string nameOfEmptyList)
         {
             errorList.Add(new Error("No scans URL have been provided by the user", ErrorType.NoScansUrl));
 
             Console.ForegroundColor = ConsoleColor.DarkRed;
             Console.WriteLine($"No scans URL have been provided.");
-            Console.WriteLine($"Add the URL of the scans you want to download in the list {nameOfEmptyList} in Program.cs.\n"); // TODO: Change this when json settings are finished
+            Console.WriteLine($"Open Settings.json (located next to the .exe) and add the URL of the scans you want to download in the Dictionnary \"{nameOfEmptyList}\".");
+            Console.WriteLine($"Check the README file for more info on how to add url and select chapters.\n");// TODO: ADD README (FILES + Github)
 
             Console.ResetColor();
-            Console.WriteLine($"Press any key to close the app...");
+            if(Settings.instance.AutoOpenJsonWhenNecessary) Console.WriteLine($"Press any key to close the app and open json settings...");
+            else Console.WriteLine($"Press any key to close the app...");
             Console.ReadKey();
         }
 
@@ -95,8 +133,11 @@ namespace ScanNetDownloader
             Console.WriteLine($"Exception: {ex}\n");
 
             Console.ResetColor();
-            Console.WriteLine($"Press any key to continue...\n");
-            Console.ReadKey(true);
+            if (Settings.instance.ErrorsPauseApp)
+            {
+                Console.WriteLine($"Press any key to continue...\n");
+                Console.ReadKey(true);
+            }
         }
 
         public static void FailedImageDownload(Exception ex, string imgUrl)
@@ -113,8 +154,11 @@ namespace ScanNetDownloader
             Console.WriteLine($"Exception: {ex}\n");
 
             Console.ResetColor();
-            Console.WriteLine($"Press any key to continue...\n");
-            Console.ReadKey();
+            if (Settings.instance.ErrorsPauseApp)
+            {
+                Console.WriteLine($"Press any key to continue...\n");
+                Console.ReadKey();
+            }     
         }
 
         public static void FailedCbzCreation(Exception ex, ScanWebsiteUrl scanUrl, bool deleteImagesAfterCbzCreation)
@@ -139,8 +183,11 @@ namespace ScanNetDownloader
             Console.WriteLine($"=> Exception: {ex}\n");
 
             Console.ResetColor();
-            Console.WriteLine($"=> Press any key to continue...\n");
-            Console.ReadKey();
+            if (Settings.instance.ErrorsPauseApp)
+            {
+                Console.WriteLine($"=> Press any key to continue...\n");
+                Console.ReadKey();
+            }               
         }
 
         public static void FailedToReplaceEmptyCbz(Exception ex, ScanWebsiteUrl scanUrl, bool deleteImagesAfterCbzCreation)
@@ -165,8 +212,11 @@ namespace ScanNetDownloader
             Console.WriteLine($"=> Exception: {ex}\n");
 
             Console.ResetColor();
-            Console.WriteLine($"=> Press any key to continue...\n");
-            Console.ReadKey();
+            if (Settings.instance.ErrorsPauseApp)
+            {
+                Console.WriteLine($"=> Press any key to continue...\n");
+                Console.ReadKey();
+            }
         }
 
         public static void FailedToParseChapterEnteredByUser(ScanWebsiteUrl scanUrl, string chapterEnteredByUser)
@@ -188,6 +238,53 @@ namespace ScanNetDownloader
 
             Console.ForegroundColor = ConsoleColor.DarkRed;
             Console.WriteLine($"\n{scanUrl.BookName} chapter {scanUrl.ChapterId} doesn't exist on the website ({chapterUrl}). Make sure this chapter really exist.\n");
+
+            Console.ResetColor();
+            if (Settings.instance.ErrorsPauseApp)
+            {
+                Console.WriteLine($"Press any key to continue...\n");
+                Console.ReadKey();
+            }
+        }
+
+        public static void MissingSettingsJson(string jsonPath)
+        {
+            errorList.Add(new Error($"The settings.json file ({jsonPath}) is missing", ErrorType.MissingSettingsJson));
+
+            Debug.WriteLine($"The settings.json file ({jsonPath}) is missing");
+
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine($"\nThe settings.json file ({jsonPath}) is missing, a new json file will be created with the default settings.\n");
+
+            Console.ResetColor();
+            Console.WriteLine($"Press any key to continue...\n");
+            Console.ReadKey();
+        }
+
+        public static void FailedToLoadSettingsJson(string jsonPath, Exception ex)
+        {
+            errorList.Add(new Error($"Failed to load the settings json ({jsonPath}), an error happened during json deserialization", ErrorType.FailedToLoadSettingsJson, ex));
+            
+            Debug.WriteLine($"Failed to load the settings json ({jsonPath}), an error happened during json deserialization");
+
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine($"\nImpossible to load the settings from the json ({jsonPath}), an error happened during json deserialization\n");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"Exception: {ex}\n");
+
+            Console.ResetColor();
+        }
+
+        public static void FailedToSaveSettingsJson(string jsonPath, Exception ex)
+        {
+            errorList.Add(new Error($"Failed to save the settings in the json ({jsonPath}), an error happened.", ErrorType.FailedToSaveSettingsJson, ex));
+
+            Debug.WriteLine($"Failed to save the settings in the json ({jsonPath}), an error happened.");
+
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine($"\nImpossible to save the settings in the json ({jsonPath}), the changes you made will be reverted after an app restart.\n");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"Exception: {ex}\n");
 
             Console.ResetColor();
             Console.WriteLine($"Press any key to continue...\n");

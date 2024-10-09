@@ -1,0 +1,19 @@
+{
+  "ScansUrlAndCorrespondingChapters":
+  {
+    "https://www.scan-vf.net/one_piece/chapitre-1/1": "",
+    "https://anime-sama.fr/catalogue/berserk/scan/vf/": "1-3;4;5"
+  },
+
+  "CustomFolderPath": "",
+
+  "CreateCbzArchive": true,
+
+  "DeleteImagesAfterCbzCreation": false,
+
+  "OpenOutputDirectoryWhenClosing": true,
+
+  "ErrorsPauseApp": true,
+
+  "AutoOpenJsonWhenNecessary": true
+}
