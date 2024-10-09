@@ -18,10 +18,6 @@ namespace ScanDownloader
 {
     internal class Program
     {
-
-        // TODO: FOR SCANVF.NET Add possibility of giving book url, ask a range of chapter to download and generate myself the chapter links instead of having to enter manually each chapter links
-        //--> handle out of range chapter if user enter chapter not available yet
-        //--> One chapter url was .../episode-1101/... instead of .../chapitre-1101/...
         // TODO: Improve menu (draw schematics of the menu and make everything doable directly in app with simple console interface (ex: adding url and chapter, changing parameter, ... ))
         // TODO: Improve chapter selection visual to give a better understanding of what happening
         // TODO: Warn for invalid url as soon as possible (new function chck url validity in ScanWebsiteUrl-> url must contains at least a book name)
@@ -115,8 +111,17 @@ namespace ScanDownloader
 
             DownloadScans(ScanWebsiteUrls);
 
-            Console.WriteLine("Finished, press any key to close...");
-            Console.ReadKey();
+            if (CurrentSettings.ErrorsPauseApp)
+            {
+                Console.WriteLine("Finished, press any key to close...");
+                Console.ReadKey();
+            }
+            else
+            {
+                Error.ShowDownloadErrors();
+                Console.WriteLine("\nPress any key to close...");
+                Console.ReadKey();
+            }           
 
             if (CurrentSettings.OpenOutputDirectoryWhenClosing)
             {
@@ -140,7 +145,6 @@ namespace ScanDownloader
                 switch (url)
                 {
                     case string s when s.Contains(Constants.SCANVF_DOMAIN_NAME):
-                        // TODO: Do I need to provide "/1" after chapter link to get correct html ?
                         //https://www.scan-vf.net/jujutsu-kaisen/chapitre-164/1 = url with chapter -> at least 5 split
                         //https://www.scan-vf.net/jujutsu-kaisen = url without chapter -> less than 5 split
                         bool chapterIsInUrl = url.Split(Constants.SLASH_CHAR).Count() > 4 ; // Check if the url has a chapter name (the number of split let us know if url stop at book name or not)
@@ -158,7 +162,7 @@ namespace ScanDownloader
                             // Create link
                             foreach (int chapterId in selectedChaptersId)
                             {
-                                string urlWithChapter = $"{url}/chapitre-{chapterId}/1"; // TODO: Clean this with const
+                                string urlWithChapter = $"{url}{Constants.SCANVF_CHAPTER_IN_URL}{chapterId}"; // No need to specify "/1" after chapter number redirection is done by website
                                 ScanWebsiteUrl scanVfNetUrl = new ScanVfNetUrl(urlWithChapter);
                                 newScanWebsiteUrls.Add(scanVfNetUrl);
                                 Console.WriteLine($" -> {scanVfNetUrl.BookName} - Chapter {scanVfNetUrl.ChapterId} added ({scanVfNetUrl.WebsiteDomain}).");
@@ -169,6 +173,9 @@ namespace ScanDownloader
 
                     case string s when s.Contains(Constants.ANIMESAMA_DOMAIN_NAME):
                         ScanWebsiteUrl temporaryAnimeSamaUrl = new AnimeSamaFrUrl(url); // Temporary obj to get book name
+
+                        // TODO: If possible manage Book URL instead of chapter url
+                        // -> check if chapter url is stable or if it changes too much
 
                         // Get chapters to download
                         selectedChaptersId = ChapterSelection(temporaryAnimeSamaUrl, ref errorOccured);                       
@@ -314,7 +321,7 @@ namespace ScanDownloader
                     using (WebClient client = new WebClient())
                     {
                         try
-                        {
+                        {                            
                             Console.WriteLine($"\nDownloading {imgName} from {imgUrl}");
                             Console.WriteLine($"...");
 
@@ -543,6 +550,12 @@ namespace ScanDownloader
             string folderToArchive = downloadPath;
             string cbzFilePath = Path.Combine(Directory.GetParent(downloadPath).FullName, $"{bookName} - chapter {chapterNumber}.cbz");
 
+            if (Directory.EnumerateFileSystemEntries(folderToArchive).Any() == false)
+            {
+                Console.WriteLine($"=> No images downloaded for {bookName}-{chapterNumber}, CBZ creation will be skipped!\n");
+                return;
+            }
+
             if (File.Exists(cbzFilePath) == false)
             {
                 try
@@ -556,7 +569,7 @@ namespace ScanDownloader
                     return;
                 }
             }
-            else
+            else // a cbz file already exist
             {
                 if (File.ReadAllBytes(cbzFilePath).Length > 0)
                 {

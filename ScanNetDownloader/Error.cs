@@ -51,6 +51,39 @@ namespace ScanNetDownloader
 
         public static List<Error> errorList = new List<Error>();
 
+        public static void ShowDownloadErrors()
+        {
+            Console.WriteLine("Finished, some error happened during downloading:\n");
+
+            Console.ForegroundColor = ConsoleColor.Red;
+            foreach (var error in errorList)
+            {
+                switch (error.Type)
+                {
+                    case ErrorType.None:
+                    case ErrorType.NoScansUrl:
+                    case ErrorType.UnknownScanWebDomain:
+                    case ErrorType.NoOutputDirectory:
+                    case ErrorType.FailedToParseChapterEnteredByUser:
+                    case ErrorType.MissingSettingsJson:
+                    case ErrorType.FailedToLoadSettingsJson:
+                    case ErrorType.FailedToSaveSettingsJson:
+                    default:
+                        break;
+                    
+                    case ErrorType.FailedHtmlDownload:
+                    case ErrorType.FailedImageDownload:
+                    case ErrorType.FailedCbzCreation:
+                    case ErrorType.FailedToReplaceEmptyCbz:
+                    case ErrorType.ChapterDoesntExist:
+                        Console.WriteLine($"-{error.Type} | {error.Message}");
+                        break;
+                }
+            }
+
+            Console.ResetColor();
+        }
+
         public static void NoScansUrl(string nameOfEmptyList)
         {
             errorList.Add(new Error("No scans URL have been provided by the user", ErrorType.NoScansUrl));

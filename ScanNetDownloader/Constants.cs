@@ -49,6 +49,7 @@ namespace ScanNetDownloader
 
         public const string SCANVF_DOMAIN_NAME = "scan-vf.net";
         public const string SCANVF_IMG_URL_MARKER = "uploads";
+        public const string SCANVF_CHAPTER_IN_URL = "/chapitre-";
         public const string ANIMESAMA_DOMAIN_NAME = "anime-sama.fr";
         public const string ANIMESAMA_IMG_URL_START = "https://anime-sama.fr/s2/scans/";
         public const string ANIMESAMA_IMG_URL_MARKER = "scans";

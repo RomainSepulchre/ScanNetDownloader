@@ -41,7 +41,7 @@ namespace ScanNetDownloader
         /// Should the program pause the app and wait for an user input when an error is triggered (Default=True)
         /// A major error requiring user input bypass this and pause the app anyway
         /// </summary>
-        public bool ErrorsPauseApp { get; set; } = true; // TODO: Add a resume of all the download error that happened when this is enabled, create an ErrorLog file ?
+        public bool ErrorsPauseApp { get; set; } = true;
 
         /// <summary>
         /// Should the program automatically open Settings.json when you need to check something in it (Default=True)
