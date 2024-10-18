@@ -39,7 +39,7 @@ To add a the url of a scan look for the section called *ScansUrlAndCorresponding
  "ScansUrlAndCorrespondingChapters":
  {
      "https://www.scan-vf.net/one_piece/chapitre-1/1": "",
-     "https://anime-sama.fr/catalogue/one-piece/scan/vf/": "1-3;4;5"
+     "https://anime-sama.fr/catalogue/one-piece/scan/vf/": "2-4;5"
  },
 ```
 Every line inside *ScansUrlAndCorrespondingChapters* represent a scan url and, optionnally, the chapters to download. *Providing the chapter number here is optionnal, if no chapter are specified the app will ask you the chapters before downloading*. <br>
@@ -49,9 +49,9 @@ Let's check exactly what represent each line:
 > The first part (before :) is the url of the scan (https://www.scan-vf.net/one_piece/chapitre-1/1), in this case the url already specify a chapter<br>
 > The second part (after :) is the chapter to download (""), this is optionnal and since the chapter is already specified in the url we leave it empty.
 
-- `"https://anime-sama.fr/catalogue/one-piece/scan/vf/": "1-3;4;5"`<br>
+- `"https://anime-sama.fr/catalogue/one-piece/scan/vf/": "2-4;5"`<br>
 > The first part (before :) is the url of the scan (https://anime-sama.fr/catalogue/one-piece/scan/vf/)<br>
-> The second part (after :) are the chapters to download ("1-3;4;5"), here we provide chapters 1 to 3 and chapter 4 and 5. [See more about Chapter selection here](#chapter-selection).
+> The second part (after :) are the chapters to download ("2-4;5"), here we provide chapters 2 to 4 and chapter 5. [See more about Chapter selection here](#chapter-selection).
 
 ### Adding a new url
 
@@ -62,7 +62,7 @@ Now the section *ScansUrlAndCorrespondingChapters* should look like this:
 "ScansUrlAndCorrespondingChapters":
 {
     "https://www.scan-vf.net/one_piece/chapitre-1/1": "",
-    "https://anime-sama.fr/catalogue/one-piece/scan/vf/": "1-3;4;5",
+     "https://anime-sama.fr/catalogue/one-piece/scan/vf/": "2-4;5"
     "https://anime-sama.fr/catalogue/berserk/scan/vf/": "1"
 },
 ```
@@ -94,7 +94,7 @@ It's quite simple: either you provide a range of chapter (separated by -), eithe
   "ScansUrlAndCorrespondingChapters":
   {
     "https://www.scan-vf.net/one_piece/chapitre-1/1": "",
-    "https://anime-sama.fr/catalogue/berserk/scan/vf/": "1-3;4;5"
+     "https://anime-sama.fr/catalogue/one-piece/scan/vf/": "2-4;5"
   },
 
   "CustomFolderPath": "",
