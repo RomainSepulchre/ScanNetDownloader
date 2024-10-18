@@ -6,18 +6,18 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ScanNetDownloader
+namespace ScanNetDownloader.ConsoleApp
 {
     public class ScanVfNetUrl : ScanWebsiteUrl
     {
-        public ScanVfNetUrl(string url, bool chapterIsInUrl=true) : base(url)
+        public ScanVfNetUrl(string url, bool chapterIsInUrl = true) : base(url)
         {
-            this.Url = url;
+            Url = url;
             WebsiteDomain = "https://www.scan-vf.net/";
             BookName = GetBookNameFromUrl(url);
             if (chapterIsInUrl) ChapterId = int.Parse(GetChapterNumberFromUrl(url));
             else ChapterId = -1;
-            
+
         }
 
         public override string GetBookNameFromUrl(string url, bool removeSpace = false)

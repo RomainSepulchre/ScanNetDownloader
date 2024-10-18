@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ScanNetDownloader
+namespace ScanNetDownloader.ConsoleApp
 {
     public class AnimeSamaFrUrl: ScanWebsiteUrl
     {

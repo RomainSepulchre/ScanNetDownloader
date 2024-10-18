@@ -6,18 +6,18 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ScanNetDownloader
+namespace ScanNetDownloader.ConsoleApp
 {
     public abstract class ScanWebsiteUrl
     {
         public string Url
-        { 
+        {
             get; protected set;
         }
 
         public string WebsiteDomain
         {
-             get; protected set;
+            get; protected set;
         }
 
         public string BookName
@@ -32,7 +32,7 @@ namespace ScanNetDownloader
 
         public ScanWebsiteUrl(string url)
         {
-            this.Url = url;
+            Url = url;
         }
 
         public List<string> GetScanImagesUrl()
@@ -56,9 +56,9 @@ namespace ScanNetDownloader
 
         protected abstract List<string> ParseHtmlToGetImgLinks(string htmlContent);
 
-        public abstract string GetBookNameFromUrl(string url, bool removeSpace=false);
+        public abstract string GetBookNameFromUrl(string url, bool removeSpace = false);
 
-        public abstract string GetChapterNumberFromUrl(string url, bool keepNumberOnly=true);
+        public abstract string GetChapterNumberFromUrl(string url, bool keepNumberOnly = true);
 
         public abstract string GetFileExtensionFromUrl(string url);
 

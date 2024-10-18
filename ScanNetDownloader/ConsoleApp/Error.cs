@@ -6,7 +6,7 @@ using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ScanNetDownloader
+namespace ScanNetDownloader.ConsoleApp
 {
     public class Error
     {
@@ -42,12 +42,12 @@ namespace ScanNetDownloader
             get; private set;
         }
 
-        public Error(string errorMessage, ErrorType errorType, Exception ex=null)
+        public Error(string errorMessage, ErrorType errorType, Exception ex = null)
         {
             Message = errorMessage;
             Type = errorType;
             Exception = ex;
-        }        
+        }
 
         public static List<Error> errorList = new List<Error>();
 
@@ -70,7 +70,7 @@ namespace ScanNetDownloader
                     case ErrorType.FailedToSaveSettingsJson:
                     default:
                         break;
-                    
+
                     case ErrorType.FailedHtmlDownload:
                     case ErrorType.FailedImageDownload:
                     case ErrorType.FailedCbzCreation:
@@ -94,7 +94,7 @@ namespace ScanNetDownloader
             Console.WriteLine($"Check the README file for more info on how to add url and select chapters.\n");// TODO: ADD README (FILES + Github)
 
             Console.ResetColor();
-            if(Settings.instance.AutoOpenJsonWhenNecessary) Console.WriteLine($"Press any key to close the app and open json settings...");
+            if (Settings.instance.AutoOpenJsonWhenNecessary) Console.WriteLine($"Press any key to close the app and open json settings...");
             else Console.WriteLine($"Press any key to close the app...");
             Console.ReadKey();
         }
@@ -158,7 +158,7 @@ namespace ScanNetDownloader
             {
                 Console.WriteLine($"Press any key to continue...\n");
                 Console.ReadKey();
-            }     
+            }
         }
 
         public static void FailedCbzCreation(Exception ex, ScanWebsiteUrl scanUrl, bool deleteImagesAfterCbzCreation)
@@ -187,7 +187,7 @@ namespace ScanNetDownloader
             {
                 Console.WriteLine($"=> Press any key to continue...\n");
                 Console.ReadKey();
-            }               
+            }
         }
 
         public static void FailedToReplaceEmptyCbz(Exception ex, ScanWebsiteUrl scanUrl, bool deleteImagesAfterCbzCreation)
@@ -264,7 +264,7 @@ namespace ScanNetDownloader
         public static void FailedToLoadSettingsJson(string jsonPath, Exception ex)
         {
             errorList.Add(new Error($"Failed to load the settings json ({jsonPath}), an error happened during json deserialization", ErrorType.FailedToLoadSettingsJson, ex));
-            
+
             Debug.WriteLine($"Failed to load the settings json ({jsonPath}), an error happened during json deserialization");
 
             Console.ForegroundColor = ConsoleColor.DarkRed;

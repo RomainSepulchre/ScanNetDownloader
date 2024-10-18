@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ScanNetDownloader
+namespace ScanNetDownloader.ConsoleApp
 {
     public static class Extensions
     {

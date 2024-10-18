@@ -14,7 +14,7 @@ using System.Threading;
 using Newtonsoft.Json;
 
 
-namespace ScanDownloader
+namespace ScanNetDownloader.ConsoleApp
 {
     internal class Program
     {

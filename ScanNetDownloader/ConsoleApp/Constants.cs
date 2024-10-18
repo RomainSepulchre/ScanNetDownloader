@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ScanNetDownloader
+namespace ScanNetDownloader.ConsoleApp
 {
     public class Constants
     {
@@ -57,7 +57,7 @@ namespace ScanNetDownloader
         public const string WEBP_EXTENSION = ".webp";
         public const string JPG_EXTENSION = ".jpg";
 
-        
+
         #endregion
 
         #region Time values
