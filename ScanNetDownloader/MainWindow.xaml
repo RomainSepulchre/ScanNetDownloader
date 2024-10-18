@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ScanNetDownloader"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="ScanNetDownloader" Height="450" Width="800">
     <Grid>
-
+        <Button Name="btnStart" Content="Start" Click="btnStart_Click" Height="40" Width="100"/>
     </Grid>
 </Window>

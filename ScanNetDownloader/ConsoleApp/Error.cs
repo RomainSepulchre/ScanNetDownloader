@@ -5,9 +5,11 @@ using System.Linq;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace ScanNetDownloader.ConsoleApp
 {
+    // TODO : Build WPF error system
     public class Error
     {
         public enum ErrorType
@@ -53,9 +55,8 @@ namespace ScanNetDownloader.ConsoleApp
 
         public static void ShowDownloadErrors()
         {
-            Console.WriteLine("Finished, some error happened during downloading:\n");
+            Debug.WriteLine("Finished, some error happened during downloading:\n");
 
-            Console.ForegroundColor = ConsoleColor.Red;
             foreach (var error in errorList)
             {
                 switch (error.Type)
@@ -76,67 +77,62 @@ namespace ScanNetDownloader.ConsoleApp
                     case ErrorType.FailedCbzCreation:
                     case ErrorType.FailedToReplaceEmptyCbz:
                     case ErrorType.ChapterDoesntExist:
-                        Console.WriteLine($"-{error.Type} | {error.Message}");
+                        Debug.WriteLine($"-{error.Type} | {error.Message}");
                         break;
                 }
             }
 
-            Console.ResetColor();
         }
 
         public static void NoScansUrl(string nameOfEmptyList)
         {
             errorList.Add(new Error("No scans URL have been provided by the user", ErrorType.NoScansUrl));
 
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.WriteLine($"No scans URL have been provided.");
-            Console.WriteLine($"Open Settings.json (located next to the .exe) and add the URL of the scans you want to download in the Dictionnary \"{nameOfEmptyList}\".");
-            Console.WriteLine($"Check the README file for more info on how to add url and select chapters.\n");// TODO: ADD README (FILES + Github)
+            Debug.WriteLine($"No scans URL have been provided.");
+            Debug.WriteLine($"Open Settings.json (located next to the .exe) and add the URL of the scans you want to download in the Dictionnary \"{nameOfEmptyList}\".");
+            Debug.WriteLine($"Check the README file for more info on how to add url and select chapters.\n");
 
-            Console.ResetColor();
-            if (Settings.instance.AutoOpenJsonWhenNecessary) Console.WriteLine($"Press any key to close the app and open json settings...");
-            else Console.WriteLine($"Press any key to close the app...");
-            Console.ReadKey();
+            if (Settings.instance.AutoOpenJsonWhenNecessary)
+            {
+                Debug.WriteLine($"No scans URL have been provided. Press any key to close the app and open json settings...");
+                MessageBox.Show("Press ok to open Settings.json and close the app...", "Quit app", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            else
+            {
+                Debug.WriteLine($"No scans URL have been provided. Press any key to close the app...");
+                MessageBox.Show("The app will be closed...", "Quit app", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
 
         public static void UnknownScanWebDomain(string url)
         {
             errorList.Add(new Error($"{url} | Unknown web domain, impossible to download scan from here", ErrorType.UnknownScanWebDomain));
 
-            Debug.WriteLine($"\nError unknown website cannot download scan from this url: {url}");
+            Debug.WriteLine($"Unknown web domain: {url}, the possibility to download scan from this website has not been implemented yet.\n");
+            MessageBox.Show($"Unknown web domain: {url}, the possibility to download scan from this website has not been implemented yet.\n", "Error", MessageBoxButton.OK, MessageBoxImage.Information);
 
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.WriteLine($"Unknown web domain: {url}, the possibility to download scan from this website has not been implemented yet.\n");
-            Console.ResetColor();
         }
 
         public static void NoOutputDirectory()
         {
             errorList.Add(new Error("The output directory doesn't exist", ErrorType.NoOutputDirectory));
 
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.WriteLine("\nError, impossible to find the expected download directory.\n");
-            Console.ResetColor();
+            Debug.WriteLine("\nError, impossible to find the expected download directory.\n");
         }
 
         public static void FailedHtmlDownload(Exception ex, string htmlUrl)
         {
             errorList.Add(new Error($"{htmlUrl} | Failed to download html content", ErrorType.FailedHtmlDownload, ex));
 
-            Debug.WriteLine($"Error while loading {htmlUrl} content: {ex}");
+            Debug.WriteLine($"\nError while loading {htmlUrl} content, this scan won't be downloaded.");
+            Debug.WriteLine($"Verify you entered a correct scan url.\n");
 
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.WriteLine($"\nError while loading {htmlUrl} content, this scan won't be downloaded.");
-            Console.WriteLine($"Verify you entered a correct scan url.\n");
+            Debug.WriteLine($"Exception: {ex}\n");
 
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"Exception: {ex}\n");
-
-            Console.ResetColor();
             if (Settings.instance.ErrorsPauseApp)
             {
-                Console.WriteLine($"Press any key to continue...\n");
-                Console.ReadKey(true);
+                Debug.WriteLine($"Press any key to continue...\n");
+                MessageBox.Show($"\nError while loading {htmlUrl} content, this scan won't be downloaded.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -144,20 +140,15 @@ namespace ScanNetDownloader.ConsoleApp
         {
             errorList.Add(new Error($"{imgUrl} | Failed to download image", ErrorType.FailedImageDownload, ex));
 
-            Debug.WriteLine($"Error while downloading: {ex}");
+            Debug.WriteLine($"\nDownload failed for {imgUrl}!");
+            Debug.WriteLine($"Verify the image URL is working in a web browser.\n");
 
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.WriteLine($"\nDownload failed for {imgUrl}!");
-            Console.WriteLine($"Verify the image URL is working in a web browser.\n");
+            Debug.WriteLine($"Exception: {ex}\n");
 
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"Exception: {ex}\n");
-
-            Console.ResetColor();
             if (Settings.instance.ErrorsPauseApp)
-            {
-                Console.WriteLine($"Press any key to continue...\n");
-                Console.ReadKey();
+            {  
+                Debug.WriteLine($"Press any key to continue...\n");
+                MessageBox.Show($"\nDownload failed for {imgUrl}!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -165,28 +156,22 @@ namespace ScanNetDownloader.ConsoleApp
         {
             errorList.Add(new Error($"{scanUrl.BookName}-{scanUrl.ChapterId} | Failed to create cbz archive", ErrorType.FailedCbzCreation, ex));
 
-            Debug.WriteLine($"=> Error while creating CBZ archive for {scanUrl.BookName}-{scanUrl.ChapterId}: {ex}");
-
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-
-            Console.WriteLine($"=> An error occured while creating the CBZ archive for {scanUrl.BookName}-{scanUrl.ChapterId}!");
+            Debug.WriteLine($"=> An error occured while creating the CBZ archive for {scanUrl.BookName}-{scanUrl.ChapterId}!");
             if (deleteImagesAfterCbzCreation)
             {
-                Console.WriteLine($"=> The scan images won't be deleted so you can create the CBZ manually.\n");
+                Debug.WriteLine($"=> The scan images won't be deleted so you can create the CBZ manually.\n");
             }
             else
             {
-                Console.Write('\n');
+                Debug.Write('\n');
             }
 
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"=> Exception: {ex}\n");
+            Debug.WriteLine($"=> Exception: {ex}\n");
 
-            Console.ResetColor();
             if (Settings.instance.ErrorsPauseApp)
             {
-                Console.WriteLine($"=> Press any key to continue...\n");
-                Console.ReadKey();
+                Debug.WriteLine($"=> Press any key to continue...\n");
+                MessageBox.Show($"=> An error occured while creating the CBZ archive for {scanUrl.BookName}-{scanUrl.ChapterId}!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -194,28 +179,22 @@ namespace ScanNetDownloader.ConsoleApp
         {
             errorList.Add(new Error($"{scanUrl.BookName}-{scanUrl.ChapterId} | Failed to replace empty cbz archive", ErrorType.FailedToReplaceEmptyCbz, ex));
 
-            Debug.WriteLine($"=> Error while replacing an empty CBZ archive for {scanUrl.BookName}-{scanUrl.ChapterId}: {ex}");
-
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-
-            Console.WriteLine($"=> An error occured while replacing an empty CBZ archive for {scanUrl.BookName}-{scanUrl.ChapterId}!");
+            Debug.WriteLine($"=> An error occured while replacing an empty CBZ archive for {scanUrl.BookName}-{scanUrl.ChapterId}!");
             if (deleteImagesAfterCbzCreation)
             {
-                Console.WriteLine($"=> The scan images won't be deleted so you can create the CBZ manually.\n");
+                Debug.WriteLine($"=> The scan images won't be deleted so you can create the CBZ manually.\n");
             }
             else
             {
-                Console.Write('\n');
+                Debug.Write('\n');
             }
 
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"=> Exception: {ex}\n");
+            Debug.WriteLine($"=> Exception: {ex}\n");
 
-            Console.ResetColor();
             if (Settings.instance.ErrorsPauseApp)
             {
-                Console.WriteLine($"=> Press any key to continue...\n");
-                Console.ReadKey();
+                Debug.WriteLine($"=> Press any key to continue...\n");
+                MessageBox.Show($"=> An error occured while replacing an empty CBZ archive for {scanUrl.BookName}-{scanUrl.ChapterId}!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -225,25 +204,20 @@ namespace ScanNetDownloader.ConsoleApp
 
             Debug.WriteLine($"Cannot parse \"{chapterEnteredByUser}\" to int => invalid chapter number. Entry will not be added to the chapter list for {scanUrl.BookName} ({scanUrl.Url})");
 
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.WriteLine($" -> Failed to parse \"{chapterEnteredByUser}\" to int, this is not a valid number. \"{chapterEnteredByUser}\" will not be added to the chapter list for {scanUrl.BookName}!");
-            Console.ResetColor();
+            Debug.WriteLine($" -> Failed to parse \"{chapterEnteredByUser}\" to int, this is not a valid number. \"{chapterEnteredByUser}\" will not be added to the chapter list for {scanUrl.BookName}!");
+            MessageBox.Show($"Cannot parse \"{chapterEnteredByUser}\" to int => invalid chapter number. Entry will not be added to the chapter list for {scanUrl.BookName} ({scanUrl.Url})", "Error", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         public static void ChapterDoesntExist(ScanWebsiteUrl scanUrl, string chapterUrl)
         {
             errorList.Add(new Error($"{scanUrl.BookName}-{scanUrl.ChapterId} | {chapterUrl} doesn't exist on the website", ErrorType.ChapterDoesntExist));
 
-            Debug.WriteLine($"Invalid chapter url ({chapterUrl}) for {scanUrl.BookName}-{scanUrl.ChapterId}. Check if chapter really exist, entry will not be added to the chapter list ({scanUrl.Url})");
+            Debug.WriteLine($"\n{scanUrl.BookName} chapter {scanUrl.ChapterId} doesn't exist on the website ({chapterUrl}). Make sure this chapter really exist.\n");
 
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.WriteLine($"\n{scanUrl.BookName} chapter {scanUrl.ChapterId} doesn't exist on the website ({chapterUrl}). Make sure this chapter really exist.\n");
-
-            Console.ResetColor();
             if (Settings.instance.ErrorsPauseApp)
             {
-                Console.WriteLine($"Press any key to continue...\n");
-                Console.ReadKey();
+                Debug.WriteLine($"Press any key to continue...\n");
+                MessageBox.Show($"\n{scanUrl.BookName} chapter {scanUrl.ChapterId} doesn't exist on the website ({chapterUrl}). Make sure this chapter really exist.\n", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -251,44 +225,32 @@ namespace ScanNetDownloader.ConsoleApp
         {
             errorList.Add(new Error($"The settings.json file ({jsonPath}) is missing", ErrorType.MissingSettingsJson));
 
-            Debug.WriteLine($"The settings.json file ({jsonPath}) is missing");
+            Debug.WriteLine($"\nThe settings.json file ({jsonPath}) is missing, a new json file will be created with the default settings.\n");
 
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.WriteLine($"\nThe settings.json file ({jsonPath}) is missing, a new json file will be created with the default settings.\n");
+            // TODO: Proper management of error pop-up
+            string errorInfo = $"The settings.json file ({jsonPath}) is missing, a new json file will be created with the default settings.";
 
-            Console.ResetColor();
-            Console.WriteLine($"Press any key to continue...\n");
-            Console.ReadKey();
+            MessageBox.Show(errorInfo, "Error - missing json file", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
 
         public static void FailedToLoadSettingsJson(string jsonPath, Exception ex)
         {
             errorList.Add(new Error($"Failed to load the settings json ({jsonPath}), an error happened during json deserialization", ErrorType.FailedToLoadSettingsJson, ex));
 
-            Debug.WriteLine($"Failed to load the settings json ({jsonPath}), an error happened during json deserialization");
+            Debug.WriteLine($"\nImpossible to load the settings from the json ({jsonPath}), an error happened during json deserialization\n");
+            Debug.WriteLine($"Exception: {ex}\n");
 
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.WriteLine($"\nImpossible to load the settings from the json ({jsonPath}), an error happened during json deserialization\n");
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"Exception: {ex}\n");
-
-            Console.ResetColor();
         }
 
         public static void FailedToSaveSettingsJson(string jsonPath, Exception ex)
         {
             errorList.Add(new Error($"Failed to save the settings in the json ({jsonPath}), an error happened.", ErrorType.FailedToSaveSettingsJson, ex));
 
-            Debug.WriteLine($"Failed to save the settings in the json ({jsonPath}), an error happened.");
+            Debug.WriteLine($"\nImpossible to save the settings in the json ({jsonPath}), the changes you made will be reverted after an app restart.\n");
+            Debug.WriteLine($"Exception: {ex}\n");
 
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.WriteLine($"\nImpossible to save the settings in the json ({jsonPath}), the changes you made will be reverted after an app restart.\n");
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"Exception: {ex}\n");
-
-            Console.ResetColor();
-            Console.WriteLine($"Press any key to continue...\n");
-            Console.ReadKey();
+            Debug.WriteLine($"Press any key to continue...\n");
+            MessageBox.Show($"\nImpossible to save the settings in the json ({jsonPath}), the changes you made will be reverted after an app restart.\n", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 }

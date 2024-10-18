@@ -1,0 +1,18 @@
+﻿<Window x:Class="ScanNetDownloader.View.InputPopUp"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ScanNetDownloader.View"
+        mc:Ignorable="d"
+        Title="InputPopUp" Height="200" Width="300"
+        WindowStyle="None" WindowStartupLocation="CenterOwner"
+        Background="Beige">
+    <Grid>
+        <StackPanel VerticalAlignment="Center">
+            <Label Name="popUpInfo" Content="..." HorizontalAlignment="Center"/>
+            <TextBox Name="txtInput" Margin="30 10 30 10" Height="60" TextChanged="txtInput_TextChanged"/>
+            <Button Name="btnOk" Content="Ok" Click="btnOk_Click" Width="100" Height="30"/>
+        </StackPanel>
+    </Grid>
+</Window>

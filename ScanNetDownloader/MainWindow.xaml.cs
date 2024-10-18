@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using ScanNetDownloader.ConsoleApp;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -19,6 +20,11 @@ namespace ScanNetDownloader
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void btnStart_Click(object sender, RoutedEventArgs e)
+        {
+            Program.StartDownloader(this); // Run console App program
         }
     }
 }
