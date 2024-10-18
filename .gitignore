@@ -399,3 +399,5 @@ FodyWeavers.xsd
 
 # CUSTOM
 /JsonFiles/MySettings.json
+/JsonFiles/TestSettings.json
+*.xd
