@@ -1,0 +1,29 @@
+﻿<Window x:Class="ScanNetDownloader.View.AddScanWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ScanNetDownloader.View"
+        mc:Ignorable="d"
+        WindowStyle="None" WindowStartupLocation="CenterOwner"
+        Title="Add a new scan" Height="260" Width="400">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.2*"/>
+            <RowDefinition Height="0.6*" />
+            <RowDefinition Height="0.2*" />
+        </Grid.RowDefinitions>
+        <TextBlock Text="Enter the scan url..." VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <StackPanel Grid.Row="1" Margin="10 0 10 0">
+            <Label Content="Scan url" />
+            <TextBox Name="inputUrl" TextChanged="inputUrl_TextChanged" Height="30" Background="Beige"/>
+            <Label Content="Chapter"/>
+            <TextBox Name="inputChapter" IsEnabled="False" TextChanged="inputChapter_TextChanged" Height="30" Background="Beige"/>
+        </StackPanel>
+        
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button Name="btnAdd" Content="Add" Click="btnAdd_Click" IsEnabled="False" Height="30" Width="100" Margin="5 0 5 0"/>
+            <Button Name="btnCancel" Content="Cancel" Click="btnCancel_Click" Height="30" Width="100" Margin="5 0 5 0"/>
+        </StackPanel>
+    </Grid>
+</Window>

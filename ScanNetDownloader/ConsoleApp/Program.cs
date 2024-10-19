@@ -59,30 +59,10 @@ namespace ScanNetDownloader.ConsoleApp
         private static Window mainWindow = new Window();
 
         #region Main
+
         public static void StartDownloader(Window _mainWindow)
         {
             mainWindow = _mainWindow;
-            WriteAppTitle();
-
-            // Load settings
-            Settings.instance = LoadSettings(Constants.SETTINGS_JSON_PATH);
-            CurrentSettings.Log();
-
-            List<string> scansUrlToDownload = CurrentSettings.ScansUrlAndCorrespondingChapters.Keys.ToList();
-            if(scansUrlToDownload.Count <= 0)
-            {
-                Error.NoScansUrl(nameof(CurrentSettings.ScansUrlAndCorrespondingChapters));
-                OpenSettingsJsonFile();
-                QuitApp();
-            }
-
-            // Create list of website url
-            WriteAppTitle();
-            Debug.WriteLine($"\nCreation of the list of scan to download...\n");
-            ScanWebsiteUrls = CreateListOfScanWebsiteUrl(scansUrlToDownload);
-
-            // Main menu (definitive download list)
-            WriteAppTitle();
 
             Debug.WriteLine($"\nHere is the list of scans you are going to download:");
             foreach (ScanWebsiteUrl item in ScanWebsiteUrls)
@@ -123,7 +103,26 @@ namespace ScanNetDownloader.ConsoleApp
         #endregion
 
         #region Scan Website Url
-        static List<ScanWebsiteUrl> CreateListOfScanWebsiteUrl(List<string> urls)
+
+        public static List<ScanWebsiteUrl> LoadSavedScanWebsiteUrl()
+        {
+            // Create Url obj from settings
+            List<string> scansUrlToDownload = Settings.instance.ScansUrlAndCorrespondingChapters.Keys.ToList(); // TODO: Save ScanWebsiteUrl separetely from the Settings
+
+            // TODO: Not needed anymore, kept for now but clean later
+            //if (scansUrlToDownload.Count <= 0)
+            //{
+            //    Error.NoScansUrl(nameof(Settings.instance.ScansUrlAndCorrespondingChapters));
+            //    OpenSettingsJsonFile();
+            //    QuitApp();
+            //}
+
+            Debug.WriteLine($"\nCreation of the list of scan to download...\n");
+            ScanWebsiteUrls = CreateListOfScanWebsiteUrl(scansUrlToDownload);
+            return ScanWebsiteUrls;
+        }
+
+        public static List<ScanWebsiteUrl> CreateListOfScanWebsiteUrl(List<string> urls)
         {
             bool errorOccured = false;
             List<ScanWebsiteUrl> newScanWebsiteUrls = new List<ScanWebsiteUrl>();
@@ -469,7 +468,14 @@ namespace ScanNetDownloader.ConsoleApp
         #endregion
 
         #region Settings
-        static Settings LoadSettings(string jsonPath)
+
+        public static void InitializeAppSettings()
+        {
+            Settings.instance = LoadSettings(Constants.SETTINGS_JSON_PATH);
+            Settings.instance.Log();
+        }
+
+        public static Settings LoadSettings(string jsonPath)
         {
             Settings loadedSettings;
             if (File.Exists(jsonPath))
@@ -528,7 +534,7 @@ namespace ScanNetDownloader.ConsoleApp
             return defaultSettings;
         }
 
-        static void SaveSettings(Settings newSettings)
+        public static void SaveSettings(Settings newSettings)
         {
             Settings.instance = newSettings;
             try
@@ -541,7 +547,7 @@ namespace ScanNetDownloader.ConsoleApp
             }  
         }
 
-        static void OpenSettingsJsonFile()
+        public static void OpenSettingsJsonFile()
         {
             if (CurrentSettings.AutoOpenJsonWhenNecessary)
             {
@@ -653,7 +659,7 @@ namespace ScanNetDownloader.ConsoleApp
         #endregion
 
         #region Quit Console
-        static void QuitApp()
+        public static void QuitApp()
         {
             Debug.WriteLine("Pass through QuitApp");
             Environment.Exit(0); // TODO: Weird things happening with Application.Current.Shutdown && Window.Close, the app continue to run anyway even with window closed

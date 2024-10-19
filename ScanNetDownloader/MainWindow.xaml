@@ -7,6 +7,35 @@
         mc:Ignorable="d"
         Title="ScanNetDownloader" Height="450" Width="800">
     <Grid>
-        <Button Name="btnStart" Content="Start" Click="btnStart_Click" Height="40" Width="100"/>
+        <TabControl>
+            <TabItem Header="Main">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="16"/>
+                    </Grid.RowDefinitions>
+
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="10 10 10 0">
+                        <ListView Name="scanListView" Background="Beige">
+                            <TextBlock Text="Berserk - chapter 1"/>
+                            <TextBlock Text="Berserk - chapter 1"/>
+                            <TextBlock Text="Berserk - chapter 1"/>
+                        </ListView>
+                    </ScrollViewer>
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button Name="btnAdd" Content="Add" Click="btnAdd_Click" Height="40" Width="100" Margin="5"/>
+                        <Button Name="btnStart" Content="Start" Click="btnStart_Click" Height="40" Width="100" Margin="5"/>
+                    </StackPanel>
+                    <Rectangle Grid.Row="3" Fill="DarkSlateBlue"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Download">
+            </TabItem>
+            <TabItem Header="Options">
+            </TabItem>
+        </TabControl>
+        
+        
     </Grid>
 </Window>
