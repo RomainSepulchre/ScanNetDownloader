@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -10,6 +11,16 @@ namespace ScanNetDownloader.ConsoleApp
 {
     public class ScanVfNetUrl : ScanWebsiteUrl
     {
+        [JsonConstructor] // Only for Json deserialization, apparently passed variable name ABSOLUTELY must the same as its destination value name  (ex: url-> Url, websiteDomain -> WebsiteDomain)
+        public ScanVfNetUrl(string url, string websiteDomain, string bookName, int chapterId, bool isSelectedForDownload) : base(url, websiteDomain, bookName, chapterId, isSelectedForDownload)
+        {
+            Url = url;
+            WebsiteDomain = websiteDomain;
+            BookName = bookName;
+            ChapterId = chapterId;
+            IsSelectedForDownload = isSelectedForDownload;
+        }
+
         public ScanVfNetUrl(string url, bool chapterIsInUrl = true) : base(url)
         {
             Url = url;
@@ -17,6 +28,7 @@ namespace ScanNetDownloader.ConsoleApp
             BookName = GetBookNameFromUrl(url);
             if (chapterIsInUrl) ChapterId = int.Parse(GetChapterNumberFromUrl(url));
             else ChapterId = -1;
+            IsSelectedForDownload = true;
 
         }
 

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace ScanNetDownloader.ConsoleApp
 {
@@ -28,6 +29,22 @@ namespace ScanNetDownloader.ConsoleApp
         public int ChapterId
         {
             get; protected set;
+        }
+
+        public bool IsSelectedForDownload
+        {
+            get; set;
+        }
+
+
+        [JsonConstructor] // Only for Json deserialization, apparently passed variable name ABSOLUTELY must the same as its destination value name  (ex: url-> Url, websiteDomain -> WebsiteDomain)
+        public ScanWebsiteUrl(string url, string websiteDomain, string bookName, int chapterId, bool isSelectedForDownload)
+        {
+            Url = url;
+            WebsiteDomain = websiteDomain;
+            BookName = bookName;
+            ChapterId = chapterId;
+            IsSelectedForDownload = isSelectedForDownload;
         }
 
         public ScanWebsiteUrl(string url)

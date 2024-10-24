@@ -50,8 +50,6 @@ namespace ScanNetDownloader.ConsoleApp
             {"https://anime-sama.fr/catalogue/berserk/scan/vf/","1-3;4;5"}
         };
 
-        private static List<ScanWebsiteUrl> ScanWebsiteUrls;
-
         private static Settings CurrentSettings => Settings.instance;
 
         private static string OutputDirectory => string.IsNullOrEmpty(CurrentSettings.CustomFolderPath) ? Constants.USER_DOWNLOAD_FOLDER_PATH : CurrentSettings.CustomFolderPath;
@@ -85,12 +83,12 @@ namespace ScanNetDownloader.ConsoleApp
 
         #region Main
 
-        public static async void StartDownloader(Window _mainWindow)
+        public static async void StartDownloader(List<ScanWebsiteUrl> scansToDownload, Window _mainWindow)
         {
             mainWindow = _mainWindow;
 
             WriteDlInfoLine($"\nHere is the list of scans you are going to download:");
-            foreach (ScanWebsiteUrl item in ScanWebsiteUrls)
+            foreach (ScanWebsiteUrl item in scansToDownload)
             {
                 WriteDlInfoLine($"-> {item.BookName} - {item.ChapterId} (source:{item.Url})");
             }
@@ -104,7 +102,7 @@ namespace ScanNetDownloader.ConsoleApp
             // Main menu (definitive download list)
             WriteAppTitle();
 
-            await DownloadScans(ScanWebsiteUrls);
+            await DownloadScans(scansToDownload);
 
             if (CurrentSettings.ErrorsPauseApp)
             {
@@ -120,7 +118,7 @@ namespace ScanNetDownloader.ConsoleApp
 
             if (CurrentSettings.OpenOutputDirectoryWhenClosing)
             {
-                OpenRelevantFolder();                
+                OpenRelevantFolder(scansToDownload);                
             }
 
             QuitApp();
@@ -132,7 +130,7 @@ namespace ScanNetDownloader.ConsoleApp
         public static List<ScanWebsiteUrl> LoadSavedScanWebsiteUrl()
         {
             // Create Url obj from settings
-            List<string> scansUrlToDownload = Settings.instance.ScansUrlAndCorrespondingChapters.Keys.ToList(); // TODO: Save ScanWebsiteUrl separetely from the Settings
+            //List<string> scansUrlToDownload = Settings.instance.ScansUrlAndCorrespondingChapters.Keys.ToList(); // TODO: Save ScanWebsiteUrl separetely from the Settings
 
             // TODO: Not needed anymore, kept for now but clean later
             //if (scansUrlToDownload.Count <= 0)
@@ -143,11 +141,12 @@ namespace ScanNetDownloader.ConsoleApp
             //}
 
             Debug.WriteLine($"\nCreation of the list of scan to download...\n");
-            ScanWebsiteUrls = CreateListOfScanWebsiteUrl(scansUrlToDownload);
-            return ScanWebsiteUrls;
+            //ScanWebsiteUrls = CreateListOfScanWebsiteUrlFromJson(scansUrlToDownload);
+            return Settings.instance.ScanUrlList;
         }
 
-        public static List<ScanWebsiteUrl> CreateListOfScanWebsiteUrl(List<string> urls)
+        [Obsolete("Now we should load a List<ScanWebsiteUrl> directly and not create it from the dictionnary")]
+        public static List<ScanWebsiteUrl> CreateListOfScanWebsiteUrlFromJson(List<string> urls)
         {
             bool errorOccured = false;
             List<ScanWebsiteUrl> newScanWebsiteUrls = new List<ScanWebsiteUrl>();
@@ -221,6 +220,77 @@ namespace ScanNetDownloader.ConsoleApp
             return newScanWebsiteUrls;
         }
 
+        public static List<ScanWebsiteUrl> CreateNewScanWebsiteUrls(string urlEntered, string chaptersEntered)
+        {
+            bool errorOccured = false;
+            List<ScanWebsiteUrl> newScanWebsiteUrls = new List<ScanWebsiteUrl>();
+            List<int> selectedChaptersId;
+
+            Debug.WriteLine($"\nURL ==> {urlEntered}\n");
+            switch (urlEntered)
+            {
+                case string s when s.Contains(Constants.SCANVF_DOMAIN_NAME):
+                    //https://www.scan-vf.net/jujutsu-kaisen/chapitre-164/1 = url with chapter -> at least 5 split
+                    //https://www.scan-vf.net/jujutsu-kaisen = url without chapter -> less than 5 split
+                    bool chapterIsInUrl = urlEntered.Split(Constants.SLASH_CHAR).Count() > 4; // Check if the url has a chapter name (the number of split let us know if url stop at book name or not)
+                    if (chapterIsInUrl)
+                    {
+                        ScanWebsiteUrl scanVfNetUrl = new ScanVfNetUrl(urlEntered);
+                        newScanWebsiteUrls.Add(scanVfNetUrl);
+                        Debug.WriteLine($"{scanVfNetUrl.BookName} - Chapter {scanVfNetUrl.ChapterId} added ({scanVfNetUrl.WebsiteDomain}).\n");
+                    }
+                    else
+                    {
+                        // Chapters to download
+                        ScanWebsiteUrl temporaryScanVfNetUrl = new ScanVfNetUrl(urlEntered, false);
+                        selectedChaptersId = ChapterSelection(temporaryScanVfNetUrl, chaptersEntered, ref errorOccured);
+                        // Create link
+                        foreach (int chapterId in selectedChaptersId)
+                        {
+                            string urlWithChapter = $"{urlEntered}{Constants.SCANVF_CHAPTER_IN_URL}{chapterId}"; // No need to specify "/1" after chapter number redirection is done by website
+                            ScanWebsiteUrl scanVfNetUrl = new ScanVfNetUrl(urlWithChapter);
+                            newScanWebsiteUrls.Add(scanVfNetUrl);
+                            // TODO: we neveer check if chapter exist with ScanVf ?
+                            Debug.WriteLine($" -> {scanVfNetUrl.BookName} - Chapter {scanVfNetUrl.ChapterId} added ({scanVfNetUrl.WebsiteDomain}).");
+                        }
+                        Debug.WriteLine("");
+                    }
+                    break;
+
+                case string s when s.Contains(Constants.ANIMESAMA_DOMAIN_NAME):
+                    ScanWebsiteUrl temporaryAnimeSamaUrl = new AnimeSamaFrUrl(urlEntered); // Temporary obj to get book name
+
+                    // TODO: If possible manage Book URL instead of chapter url
+                    // -> check if chapter url is stable or if it changes too much
+
+                    // Get chapters to download
+                    selectedChaptersId = ChapterSelection(temporaryAnimeSamaUrl, chaptersEntered, ref errorOccured);
+
+                    // Create link
+                    foreach (int chapterId in selectedChaptersId)
+                    {
+                        ScanWebsiteUrl animeSamaUrl = new AnimeSamaFrUrl(urlEntered, chapterId);
+                        newScanWebsiteUrls.Add(animeSamaUrl);
+                        Debug.WriteLine($" -> {animeSamaUrl.BookName} - Chapter {animeSamaUrl.ChapterId} added ({animeSamaUrl.WebsiteDomain}).");
+                    }
+                    Debug.WriteLine("");
+                    break;
+
+                default: // Default, unknown domain name
+                    errorOccured = true;
+                    Error.UnknownScanWebDomain(urlEntered);
+                    break;
+            }
+
+            if (errorOccured)
+            {
+                Debug.WriteLine($"Make sure to check the errors and press any key to continue...");
+                MessageBox.Show("Make sure to check the errors and press any key to continue...", "Check errrors", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+
+            return newScanWebsiteUrls;
+        }
+
         static List<int> ChapterSelection(ScanWebsiteUrl scanUrl, ref bool errorOccured)
         {
             List<int> selectedChaptersId = new List<int>();
@@ -228,6 +298,30 @@ namespace ScanNetDownloader.ConsoleApp
             if (string.IsNullOrEmpty(chaptersSelectedInSettings) == false)
             {
                 selectedChaptersId = ParseToFindChapters(scanUrl, chaptersSelectedInSettings, ref errorOccured);
+                if (selectedChaptersId.Count <= 0)
+                {
+                    selectedChaptersId = AskUserToProvideChapters(scanUrl, ref errorOccured);
+                }
+                else
+                {
+                    selectedChaptersId.Log();
+                }
+            }
+            else
+            {
+                selectedChaptersId = AskUserToProvideChapters(scanUrl, ref errorOccured);
+            }
+            selectedChaptersId.Sort();
+            return selectedChaptersId;
+        }
+
+        static List<int> ChapterSelection(ScanWebsiteUrl scanUrl, string enteredChapters, ref bool errorOccured)
+        {
+            List<int> selectedChaptersId = new List<int>();
+            
+            if (string.IsNullOrEmpty(enteredChapters) == false)
+            {
+                selectedChaptersId = ParseToFindChapters(scanUrl, enteredChapters, ref errorOccured);
                 if (selectedChaptersId.Count <= 0)
                 {
                     selectedChaptersId = AskUserToProvideChapters(scanUrl, ref errorOccured);
@@ -435,17 +529,17 @@ namespace ScanNetDownloader.ConsoleApp
             return chapterDirectory;
         }
 
-        static void OpenRelevantFolder()
+        static void OpenRelevantFolder(List<ScanWebsiteUrl> scansToDownload)
         {
-            if (ScanWebsiteUrls.Count == 1) 
+            if (scansToDownload.Count == 1) 
             {
                 // One chapter downloaded, open this chapter folder
-                string chapterDirectory = GetChapterDirectoryPath(ScanWebsiteUrls[0]);
+                string chapterDirectory = GetChapterDirectoryPath(scansToDownload[0]);
                 OpenFolder(chapterDirectory);
             }
             else
             {
-                bool moreThanOneBook = MoreThanOneBookInUrlList(ScanWebsiteUrls);
+                bool moreThanOneBook = MoreThanOneBookInUrlList(scansToDownload);
                 if (moreThanOneBook) 
                 {
                     // Several books downloaded, open the output folder
@@ -454,7 +548,7 @@ namespace ScanNetDownloader.ConsoleApp
                 else 
                 {
                     // Several chapters of the same book downloaded, open the book folder
-                    string bookDirectory = GetBookDirectoryPath(ScanWebsiteUrls[0]);
+                    string bookDirectory = GetBookDirectoryPath(scansToDownload[0]);
                     OpenFolder(bookDirectory);
                 }
             }
@@ -520,11 +614,17 @@ namespace ScanNetDownloader.ConsoleApp
         public static Settings LoadSettings(string jsonPath)
         {
             Settings loadedSettings;
+
+            JsonSerializerSettings serializerSettings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All
+            };
+
             if (File.Exists(jsonPath))
             {
                 try
                 {
-                    loadedSettings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(Constants.SETTINGS_JSON_PATH));
+                    loadedSettings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(Constants.SETTINGS_JSON_PATH), serializerSettings);
                     return loadedSettings;
                 }
                 catch (Exception ex)
@@ -540,7 +640,8 @@ namespace ScanNetDownloader.ConsoleApp
                     else
                     {
                         Debug.WriteLine("Please make sure nothing is wrong with the value in Settings.json, if the problem persist backup your settings and reset the json to it's default values.");
-                        if (CurrentSettings.AutoOpenJsonWhenNecessary)
+
+                        if (CurrentSettings != null && CurrentSettings.AutoOpenJsonWhenNecessary)
                         {
                             Debug.WriteLine("Press any key to open Settings.json and close the app...");
                             MessageBox.Show("Press ok to open Settings.json and close the app...", "Quit app", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -549,7 +650,8 @@ namespace ScanNetDownloader.ConsoleApp
                         {
                             Debug.WriteLine("Press any key close the app...");
                             MessageBox.Show("The app will be closed...", "Quit app", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        } 
+                        }
+                        
 
                         OpenSettingsJsonFile();
                         QuitApp();
@@ -569,7 +671,7 @@ namespace ScanNetDownloader.ConsoleApp
         {
             Settings defaultSettings = new Settings() // Use default Settings
             {
-                ScansUrlAndCorrespondingChapters = DEFAULT_SCANS_LIST
+                //ScansUrlAndCorrespondingChapters = DEFAULT_SCANS_LIST
                 // Other settings already have default value asssigned
             };
             SaveSettings(defaultSettings);
@@ -578,10 +680,16 @@ namespace ScanNetDownloader.ConsoleApp
 
         public static void SaveSettings(Settings newSettings)
         {
+            JsonSerializerSettings serializerSettings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All,
+                Formatting = Formatting.Indented
+            };
+
             Settings.instance = newSettings;
             try
             {
-                File.WriteAllText(Constants.SETTINGS_JSON_PATH, JsonConvert.SerializeObject(newSettings, Formatting.Indented));
+                File.WriteAllText(Constants.SETTINGS_JSON_PATH, JsonConvert.SerializeObject(newSettings, serializerSettings));
             }
             catch (Exception ex)
             {
@@ -591,7 +699,7 @@ namespace ScanNetDownloader.ConsoleApp
 
         public static void OpenSettingsJsonFile()
         {
-            if (CurrentSettings.AutoOpenJsonWhenNecessary)
+            if (CurrentSettings != null && CurrentSettings.AutoOpenJsonWhenNecessary)
             {
                 new Process { StartInfo = new ProcessStartInfo(Constants.SETTINGS_JSON_PATH) { UseShellExecute = true } }.Start();
                 //Process.Start(Constants.SETTINGS_JSON_PATH);

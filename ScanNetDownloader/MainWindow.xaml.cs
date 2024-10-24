@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ScanNetDownloader.View.CustomControls;
 
 namespace ScanNetDownloader
 {
@@ -32,14 +33,14 @@ namespace ScanNetDownloader
             set
             {
                 _dlInfo = value;
-                dlInfoScrollBar.ScrollToBottom();
+                dlInfoScrollBar?.ScrollToBottom();
                 OnPropertyChanged();
             }
         }
 
-        private ObservableCollection<TextBlock> _scanListItems;
+        private ObservableCollection<ScanItem> _scanListItems;
 
-        public ObservableCollection<TextBlock> ScanListItems
+        public ObservableCollection<ScanItem> ScanListItems
         {
             get { return _scanListItems; }
             set
@@ -55,7 +56,7 @@ namespace ScanNetDownloader
         public MainWindow()
         {
             DataContext = this;
-            _scanListItems = new ObservableCollection<TextBlock>();
+            _scanListItems = new ObservableCollection<ScanItem>();
 
             // Events
             Program.DlInfoWriteLine += new EventHandler<string>(WriteDlStatusLine);
@@ -86,7 +87,14 @@ namespace ScanNetDownloader
         private void btnStart_Click(object sender, RoutedEventArgs e)
         {
             MainTabs.SelectedIndex = 1; // Switch to download tab
-            Program.StartDownloader(this); // Run console App program
+
+            List<ScanWebsiteUrl> scansToDownload = new List<ScanWebsiteUrl>();
+            foreach (ScanItem item in _scanListItems)
+            {
+                if (item.IsSelectedForDownload) scansToDownload.Add(item.linkedScanWebsiteUrl);
+            }
+
+            Program.StartDownloader(scansToDownload, this); // Run console App program
         }
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
@@ -99,17 +107,16 @@ namespace ScanNetDownloader
             if(addWindow.Success) // TODO: Clean this
             {
                 string urlInput = addWindow.UrlInput;
-                string chapterInput = addWindow.ChapterInput;                
+                string chapterInput = addWindow.ChapterInput;
 
-                List<string> newUrl = new List<string>();
-                newUrl.Add(urlInput);
-                List<ScanWebsiteUrl> newScansToAdd = Program.CreateListOfScanWebsiteUrl(newUrl);                
+                List<ScanWebsiteUrl> newScansToAdd = Program.CreateNewScanWebsiteUrls(urlInput, chapterInput);                
 
                 if (newScansToAdd.Any())
                 {
                     ScanWebsiteUrls.AddRange(newScansToAdd); // TODO: Also update variable on Program --> keep only one of the two variable
 
                     // Save the settings
+                    Settings.instance.ScanUrlList = ScanWebsiteUrls;
                     Settings.instance.ScansUrlAndCorrespondingChapters.Add(urlInput, chapterInput);
                     Program.SaveSettings(Settings.instance);
                 }
@@ -122,6 +129,16 @@ namespace ScanNetDownloader
                 RefreshScanListView();
             }
         }
+
+        private void btnDbgSave_Click(object sender, RoutedEventArgs e)
+        {
+            bool sameRef = ReferenceEquals(ScanWebsiteUrls, Settings.instance.ScanUrlList);
+            Debug.WriteLine($"Is Settings.instance.ScanUrlList same as MainWindow.ScanWebsiteUrls ? => {sameRef}");
+            Settings.instance.ScanUrlList = ScanWebsiteUrls;
+            //Settings.instance.ScansUrlAndCorrespondingChapters.Add(urlInput, chapterInput);
+            Program.SaveSettings(Settings.instance);
+        }
+
         #endregion
 
         #region Events
@@ -143,10 +160,12 @@ namespace ScanNetDownloader
 
             foreach (var scanWebsiteUrl in ScanWebsiteUrls)
             {
-                TextBlock scanLine = new TextBlock();
-                scanLine.Text = $"{scanWebsiteUrl.BookName} - Chapter {scanWebsiteUrl.ChapterId} ({scanWebsiteUrl.Url})";
-                ScanListItems.Add(scanLine);
+                int itemId = ScanWebsiteUrls.IndexOf(scanWebsiteUrl);
+                ScanItem item = new ScanItem(itemId, scanWebsiteUrl);
+                ScanListItems.Add(item);
             }
         }
+
+        
     }
 }

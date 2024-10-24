@@ -5,17 +5,29 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace ScanNetDownloader.ConsoleApp
 {
     public class AnimeSamaFrUrl: ScanWebsiteUrl
     {
+        [JsonConstructor] // Only for Json deserialization, apparently passed variable name ABSOLUTELY must the same as its destination value name  (ex: url-> Url, websiteDomain -> WebsiteDomain)
+        public AnimeSamaFrUrl(string url, string websiteDomain, string bookName, int chapterId, bool isSelectedForDownload) : base(url, websiteDomain, bookName, chapterId, isSelectedForDownload)
+        {
+            Url = url;
+            WebsiteDomain = websiteDomain;
+            BookName = bookName;
+            ChapterId = chapterId;
+            IsSelectedForDownload = isSelectedForDownload;
+        }
+
         public AnimeSamaFrUrl(string url) : base(url)
         {
             this.Url = url;
             WebsiteDomain = "https://anime-sama.fr/";
             ChapterId = -1; // Fake chapter to get book info
             BookName = GetBookNameFromUrl(url);
+            IsSelectedForDownload = true;
         }
 
         public AnimeSamaFrUrl(string url, int chapterId) : base(url)
@@ -24,6 +36,7 @@ namespace ScanNetDownloader.ConsoleApp
             WebsiteDomain = "anime-sama.fr";
             ChapterId = chapterId;
             BookName = GetBookNameFromUrl(url);
+            IsSelectedForDownload = true;
         }
 
         public override string GetBookNameFromUrl(string url, bool removeSpace = false)

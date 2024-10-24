@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ScanNetDownloader"
+        xmlns:customControls="clr-namespace:ScanNetDownloader.View.CustomControls"
         mc:Ignorable="d"
         Title="ScanNetDownloader" Height="450" Width="800">
     <Grid>
@@ -17,39 +18,12 @@
                     </Grid.RowDefinitions>
 
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="10 10 10 0">
-                        <ListView Name="scanListView" ItemsSource="{Binding ScanListItems, UpdateSourceTrigger=PropertyChanged}" Background="Beige">
-                            <!--<ListViewItem Background="#bbbbbb" Height="30" HorizontalContentAlignment="Stretch">
-                                <Grid >
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="20"/>
-                                        <ColumnDefinition Width="1"/>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition Width="1"/>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition Width="1"/>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition Width="1"/>
-                                        <ColumnDefinition Width="65"/>
-                                    </Grid.ColumnDefinitions>
-                                    <CheckBox VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                    <Rectangle Grid.Column="1" Fill="#333333"/>
-                                    <Label Grid.Column="2" Content="BookName"/>
-                                    <Rectangle Grid.Column="3" Fill="#333333"/>
-                                    <Label Grid.Column="4" Content="Chapter"/>
-                                    <Rectangle Grid.Column="5" Fill="#333333"/>
-                                    <Label Grid.Column="6" Content="Website"/>
-                                    <Rectangle Grid.Column="7" Fill="#333333"/>
-                                    <StackPanel Grid.Column="8" Orientation="Horizontal">
-                                        <Button Content="?" Height="15" Width="15" FontSize="9" Margin="3 0 3 0"/>
-                                        <Button Content="📁" Height="15" Width="15" FontSize="9"  Margin="3 0 3 0"/>
-                                        <Button Content="X" Height="15" Width="15" FontSize="9"  Margin="3 0 3 0"/>
-                                    </StackPanel>
-                                </Grid>
-                            </ListViewItem>-->
+                        <ListView Name="scanListView" ItemsSource="{Binding ScanListItems, UpdateSourceTrigger=PropertyChanged}" Background="Beige" HorizontalContentAlignment="Stretch">
                         </ListView>
                     </ScrollViewer>
                     <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
                         <Button Name="btnAdd" Content="Add" Click="btnAdd_Click" Height="40" Width="100" Margin="5"/>
+                        <Button Name="btnDbgSave" Content="Debug_Save" Click="btnDbgSave_Click" Background="Orchid" Height="40" Width="100" Margin="5"/>
                         <Button Name="btnStart" Content="Start" Click="btnStart_Click" Height="40" Width="100" Margin="5"/>
                     </StackPanel>
                     <Rectangle Grid.Row="3" Fill="DarkSlateBlue"/>
