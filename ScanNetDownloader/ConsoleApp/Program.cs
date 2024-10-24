@@ -58,19 +58,44 @@ namespace ScanNetDownloader.ConsoleApp
 
         private static Window mainWindow = new Window();
 
+        public static event EventHandler<string> DlInfoWriteLine;
+
+        public static event EventHandler<float> UpdatDlProgressBar;
+
+        #region Events
+        // TODO: Check if work correctly before Cleaning
+        public static void WriteDlInfoLine(string lineToAdd)
+        {
+            Debug.WriteLine(lineToAdd);
+            if (DlInfoWriteLine != null)
+            {
+                DlInfoWriteLine(null, lineToAdd); 
+            }
+        }
+
+        public static void UpdateDownloadProgress(float percentageDone)
+        {
+            if (UpdatDlProgressBar != null)
+            {
+                UpdatDlProgressBar(null, percentageDone);
+            }
+        }
+        #endregion
+
+
         #region Main
 
-        public static void StartDownloader(Window _mainWindow)
+        public static async void StartDownloader(Window _mainWindow)
         {
             mainWindow = _mainWindow;
 
-            Debug.WriteLine($"\nHere is the list of scans you are going to download:");
+            WriteDlInfoLine($"\nHere is the list of scans you are going to download:");
             foreach (ScanWebsiteUrl item in ScanWebsiteUrls)
             {
-                Debug.WriteLine($"-> {item.BookName} - {item.ChapterId} (source:{item.Url})");
+                WriteDlInfoLine($"-> {item.BookName} - {item.ChapterId} (source:{item.Url})");
             }
 
-            Debug.WriteLine($"\nThe files will be downloaded in {OutputDirectory}, a folder will automatically be created for each title and chapters");
+            WriteDlInfoLine($"\nThe files will be downloaded in {OutputDirectory}, a folder will automatically be created for each title and chapters");
             CheckOutputDirectory();
 
             bool isNo = WaitForYesOrNoMsgBox("\nDo you to start the download ?") == MessageBoxResult.No;
@@ -79,17 +104,17 @@ namespace ScanNetDownloader.ConsoleApp
             // Main menu (definitive download list)
             WriteAppTitle();
 
-            DownloadScans(ScanWebsiteUrls);
+            await DownloadScans(ScanWebsiteUrls);
 
             if (CurrentSettings.ErrorsPauseApp)
             {
-                Debug.WriteLine("Finished, press any key to close...");
+                WriteDlInfoLine("Finished, press any key to close...");
                 MessageBox.Show("Finished, press any key to close...", "Finished", MessageBoxButton.OK, MessageBoxImage.None);
             }
             else
             {
                 Error.ShowDownloadErrors();
-                Debug.WriteLine("\nPress any key to close...");
+                WriteDlInfoLine("\nPress any key to close...");
                 MessageBox.Show("Finished with error, press any key to close...", "Finished", MessageBoxButton.OK, MessageBoxImage.None);
             }           
 
@@ -285,20 +310,29 @@ namespace ScanNetDownloader.ConsoleApp
             return validChapters;
         }
 
-        static void DownloadScans(List<ScanWebsiteUrl> scansToDownload)
+        static async Task DownloadScans(List<ScanWebsiteUrl> scansToDownload)
         {
+            float progress = 0;
+            float minProgress = 0;
+            float maxProgress = 0;
+
             foreach (ScanWebsiteUrl scanUrl in scansToDownload)
             {
+                minProgress = maxProgress;
+                int scanIndex = scansToDownload.IndexOf(scanUrl);
+                maxProgress = (((float)scanIndex + 1) / (scansToDownload.Count)) * 100;
+                
+
                 string url = scanUrl.Url;
                 string bookName = scanUrl.BookName;
                 string chapterNumber = scanUrl.ChapterId.ToString();
 
                 string header = $"Download {bookName} - chapter {chapterNumber} from {url}";
-                Debug.WriteLine($"\n{AdaptativeLineOfCharForHeader(header, '*')}");
-                Debug.WriteLine(header);
-                Debug.WriteLine($"{AdaptativeLineOfCharForHeader(header, '*')}");
+                WriteDlInfoLine($"\n{AdaptativeLineOfCharForHeader(header, '*')}");
+                WriteDlInfoLine(header);
+                WriteDlInfoLine($"{AdaptativeLineOfCharForHeader(header, '*')}");
 
-                Debug.WriteLine($"\nLook for images url for {bookName}-{chapterNumber} at {url}...");
+                WriteDlInfoLine($"\nLook for images url for {bookName}-{chapterNumber} at {url}...");
                 List<string> imgsToDownload = scanUrl.GetScanImagesUrl();
                 if (imgsToDownload.Count == 0) { continue; } // if list is empty (in case of error while getting html content) skip directly to the next url
 
@@ -308,25 +342,31 @@ namespace ScanNetDownloader.ConsoleApp
                 int pageId = 1;
                 foreach (string imgUrl in imgsToDownload)
                 {
+                    int pageIndex = imgsToDownload.IndexOf(imgUrl);
+                    float chapterCompletion = (float)pageIndex / (imgsToDownload.Count - 1);
+                    progress = float.Lerp(minProgress, maxProgress, chapterCompletion);
+                    UpdateDownloadProgress(progress);
+
                     string fileExtension = scanUrl.GetFileExtensionFromUrl(imgUrl);
                     string imgName = $"{bookName}_{chapterNumber}-{pageId.ToString("D3")}{fileExtension}";  
                     string downloadFile = Path.Combine(downloadPath, imgName);
 
+
                     using (WebClient client = new WebClient())
                     {
                         try
-                        {                            
-                            Debug.WriteLine($"\nDownloading {imgName} from {imgUrl}");
-                            Debug.WriteLine($"...");
+                        {
+                            WriteDlInfoLine($"\nDownloading {imgName} from {imgUrl}");
+                            WriteDlInfoLine($"...");
 
                             if (File.Exists(downloadFile) == true && File.ReadAllBytes(downloadFile).Length > 0 == true)
                             {
-                                Debug.WriteLine($"File already downloaded!\n");
+                                WriteDlInfoLine($"File already downloaded!\n");
                             }
                             else
                             {
-                                client.DownloadFile(new Uri(imgUrl), downloadFile);
-                                Debug.WriteLine($"Sucessfully downloaded!\n");
+                                await client.DownloadFileTaskAsync(new Uri(imgUrl), downloadFile);
+                                WriteDlInfoLine($"Sucessfully downloaded!\n");
                             }
                         }
                         catch (WebException ex)
@@ -343,35 +383,37 @@ namespace ScanNetDownloader.ConsoleApp
                 }
             }
         }
+
         #endregion
 
         #region Folder Management
         static void CheckOutputDirectory()
         {
+            // TODO: If no custom directory set ask if the user want to select a new one or if he's ok with the one selected
+
             if (Directory.Exists(OutputDirectory) == false)
             {
                 Error.NoOutputDirectory();
 
-                Debug.WriteLine($"Do you want to create the directory \"{OutputDirectory}\" ? ");
+                WriteDlInfoLine($"Do you want to create the directory \"{OutputDirectory}\" ? ");
 
                 if (WaitForYesOrNoMsgBox($"Do you want to create the directory \"{OutputDirectory}\" ? ") == MessageBoxResult.Yes)
                 {
                     Directory.CreateDirectory(OutputDirectory);
-                    Debug.WriteLine($"\"{OutputDirectory}\" sucessfully created. Ready to download!");
+                    WriteDlInfoLine($"\"{OutputDirectory}\" sucessfully created. Ready to download!");
                 }
                 else
                 {
-                    Debug.WriteLine("Please modify the output directory in Settings.json, it must be a valid directory.");
+                    WriteDlInfoLine("Please modify the output directory in Settings.json, it must be a valid directory.");
                     if (CurrentSettings.AutoOpenJsonWhenNecessary) // TODO: this is done several time, this could be a single function
                     {
-                        Debug.WriteLine("Press any key to open Settings.json and close the app...");
+                        WriteDlInfoLine("Press any key to open Settings.json and close the app...");
                         MessageBox.Show("Press ok to open Settings.json and close the app...", "Quit app", MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
                     else
                     {
-                        Debug.WriteLine("Press any key to close the app...");
+                        WriteDlInfoLine("Press any key to close the app...");
                         MessageBox.Show("The app will be closed...", "Quit app", MessageBoxButton.OK, MessageBoxImage.Warning);
-
                     }
                     
 
@@ -560,7 +602,7 @@ namespace ScanNetDownloader.ConsoleApp
         #region Cbz Archive
         static void BuildCbzArchive(ScanWebsiteUrl scanUrl, string downloadPath)
         {
-            Debug.WriteLine($"=> Create .CBZ for {scanUrl.BookName}-{scanUrl.ChapterId}...");
+            WriteDlInfoLine($"=> Create .CBZ for {scanUrl.BookName}-{scanUrl.ChapterId}...");
 
             string bookName = scanUrl.BookName;
             string chapterNumber = scanUrl.ChapterId.ToString();
@@ -570,7 +612,7 @@ namespace ScanNetDownloader.ConsoleApp
 
             if (Directory.EnumerateFileSystemEntries(folderToArchive).Any() == false)
             {
-                Debug.WriteLine($"=> No images downloaded for {bookName}-{chapterNumber}, CBZ creation will be skipped!\n");
+                WriteDlInfoLine($"=> No images downloaded for {bookName}-{chapterNumber}, CBZ creation will be skipped!\n");
                 return;
             }
 
@@ -579,7 +621,7 @@ namespace ScanNetDownloader.ConsoleApp
                 try
                 {
                     ZipFile.CreateFromDirectory(folderToArchive, cbzFilePath);
-                    Debug.WriteLine($"=> {bookName}-{chapterNumber} .CBZ successfully created!\n");
+                    WriteDlInfoLine($"=> {bookName}-{chapterNumber} .CBZ successfully created!\n");
                 }
                 catch (IOException ex)
                 {
@@ -591,7 +633,7 @@ namespace ScanNetDownloader.ConsoleApp
             {
                 if (File.ReadAllBytes(cbzFilePath).Length > 0)
                 {
-                    Debug.WriteLine($"=> .CBZ already created!\n");
+                    WriteDlInfoLine($"=> .CBZ already created!\n");
                 }
                 else // Replace empty Cbz
                 {
@@ -599,7 +641,7 @@ namespace ScanNetDownloader.ConsoleApp
                     {
                         File.Delete(cbzFilePath);
                         ZipFile.CreateFromDirectory(folderToArchive, cbzFilePath);
-                        Debug.WriteLine($"=> {bookName}-{chapterNumber} .CBZ successfully created!\n");
+                        WriteDlInfoLine($"=> {bookName}-{chapterNumber} .CBZ successfully created!\n");
                     }
                     catch (IOException ex)
                     {
@@ -619,10 +661,10 @@ namespace ScanNetDownloader.ConsoleApp
         #region UserInputs
         static MessageBoxResult WaitForYesOrNoMsgBox(string textDisplayed)
         {
-            Debug.WriteLine(textDisplayed);
+            WriteDlInfoLine(textDisplayed);
             MessageBoxResult result = MessageBox.Show(textDisplayed, "Continue ?", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
-            Debug.WriteLine($" YESNO RESULT = {result}");
+            WriteDlInfoLine($" YESNO RESULT = {result}");
             return result;
         }
 
@@ -647,9 +689,9 @@ namespace ScanNetDownloader.ConsoleApp
         static void WriteAppTitle()
         {
             string appTitle = $"$$$--- SCAN.NET DOWNLOADER ---$$$";
-            Debug.WriteLine($"\n{AdaptativeLineOfCharForHeader(appTitle, '$')}");
-            Debug.WriteLine(appTitle);
-            Debug.WriteLine($"{AdaptativeLineOfCharForHeader(appTitle, '$')}\n");
+            WriteDlInfoLine($"\n{AdaptativeLineOfCharForHeader(appTitle, '$')}");
+            WriteDlInfoLine(appTitle);
+            WriteDlInfoLine($"{AdaptativeLineOfCharForHeader(appTitle, '$')}\n");
         }
 
         static string AdaptativeLineOfCharForHeader(string header, char charToUseForLine)
@@ -661,7 +703,6 @@ namespace ScanNetDownloader.ConsoleApp
         #region Quit Console
         public static void QuitApp()
         {
-            Debug.WriteLine("Pass through QuitApp");
             Environment.Exit(0); // TODO: Weird things happening with Application.Current.Shutdown && Window.Close, the app continue to run anyway even with window closed
         }
         #endregion
