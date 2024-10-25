@@ -52,14 +52,14 @@ namespace ScanNetDownloader.ConsoleApp
             Url = url;
         }
 
-        public List<string> GetScanImagesUrl()
+        public async Task<List<string>> GetScanImagesUrl()
         {
             string htmlContent;
             using (WebClient client = new WebClient())
             {
                 try
                 {
-                    htmlContent = client.DownloadString(Url); // Save html code in a variable
+                    htmlContent = await client.DownloadStringTaskAsync(Url); // Save html code in a variable
                 }
                 catch (WebException ex)
                 {

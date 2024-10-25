@@ -54,8 +54,11 @@ namespace ScanNetDownloader.ConsoleApp
         public const string ANIMESAMA_IMG_URL_START = "https://anime-sama.fr/s2/scans/";
         public const string ANIMESAMA_IMG_URL_MARKER = "scans";
 
+        public const string CBZ_CHAPTER_PREFIX = " - chapter ";
+
         public const string WEBP_EXTENSION = ".webp";
         public const string JPG_EXTENSION = ".jpg";
+        public const string CBZ_EXTENSION = ".cbz";
 
 
         #endregion

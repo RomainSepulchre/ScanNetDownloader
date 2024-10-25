@@ -60,10 +60,9 @@ namespace ScanNetDownloader.ConsoleApp
 
         public static event EventHandler<float> UpdateDlProgressBarEvent;
 
-        public static event EventHandler<ScanWebsiteUrl> ScanUnselectedForDownloadEvent;
+        public static event EventHandler<ScanWebsiteUrl> ScanDownloadedEvent;
 
-        #region Events
-        // TODO: Check if work correctly before Cleaning
+        #region Download Events
         public static void WriteDlInfoLine(string lineToAdd)
         {
             Debug.WriteLine(lineToAdd);
@@ -81,11 +80,11 @@ namespace ScanNetDownloader.ConsoleApp
             }
         }
 
-        public static void ScanUnselectedForDownload(ScanWebsiteUrl unselectedScan)
+        public static void ScanDownloaded(ScanWebsiteUrl unselectedScan)
         {
-            if (ScanUnselectedForDownloadEvent != null)
+            if (ScanDownloadedEvent != null)
             {
-                ScanUnselectedForDownloadEvent(null, unselectedScan);
+                ScanDownloadedEvent(null, unselectedScan);
             }
         }
         #endregion
@@ -98,6 +97,12 @@ namespace ScanNetDownloader.ConsoleApp
         {
             mainWindow = _mainWindow;
 
+            if(scansToDownload.Count == 0)
+            {
+                WriteDlInfoLine($"No scans have been selected, select at least a scan to start the download");
+                return;
+            }
+
             WriteDlInfoLine($"\nHere is the list of scans you are going to download:");
             foreach (ScanWebsiteUrl item in scansToDownload)
             {
@@ -108,7 +113,8 @@ namespace ScanNetDownloader.ConsoleApp
             CheckOutputDirectory();
 
             bool isNo = WaitForYesOrNoMsgBox("\nDo you to start the download ?") == MessageBoxResult.No;
-            if (isNo) QuitApp();
+            if (isNo) return;
+
 
             // Main menu (definitive download list)
             WriteAppTitle();
@@ -156,7 +162,7 @@ namespace ScanNetDownloader.ConsoleApp
                 WriteDlInfoLine($"{AdaptativeLineOfCharForHeader(header, '*')}");
 
                 WriteDlInfoLine($"\nLook for images url for {bookName}-{chapterNumber} at {url}...");
-                List<string> imgsToDownload = scanUrl.GetScanImagesUrl();
+                List<string> imgsToDownload = await scanUrl.GetScanImagesUrl();
                 if (imgsToDownload.Count == 0) { continue; } // if list is empty (in case of error while getting html content) skip directly to the next url
 
                 // Create output folder if necessary
@@ -206,7 +212,7 @@ namespace ScanNetDownloader.ConsoleApp
                 }
 
                 // Deselect since we just downloaded it
-                ScanUnselectedForDownload(scanUrl);
+                ScanDownloaded(scanUrl);
             }
         }
         #endregion
@@ -243,7 +249,7 @@ namespace ScanNetDownloader.ConsoleApp
                             string urlWithChapter = $"{urlEntered}{Constants.SCANVF_CHAPTER_IN_URL}{chapterId}"; // No need to specify "/1" after chapter number redirection is done by website
                             ScanWebsiteUrl scanVfNetUrl = new ScanVfNetUrl(urlWithChapter);
                             newScanWebsiteUrls.Add(scanVfNetUrl);
-                            // TODO: we neveer check if chapter exist with ScanVf ?
+                            // TODO: we never check if chapter exist with ScanVf ? Check this before creating ScanWebsiteUrl
                             Debug.WriteLine($" -> {scanVfNetUrl.BookName} - Chapter {scanVfNetUrl.ChapterId} added ({scanVfNetUrl.WebsiteDomain}).");
                         }
                         Debug.WriteLine("");
@@ -469,7 +475,7 @@ namespace ScanNetDownloader.ConsoleApp
             string chapterDirPath = GetChapterDirectoryPath(scanUrl);
             if (Directory.Exists(chapterDirPath))
             {
-                if(Directory.GetFiles(chapterDirPath).Any()) // TODO: Improve this to know if we have the correct amount of page
+                if(Directory.GetFiles(chapterDirPath).Any()) // TODO: Improve this to know if we have the correct amount of page, need more info in ScanWebsiteUrl
                 {
                     return true;
                 }
@@ -484,6 +490,12 @@ namespace ScanNetDownloader.ConsoleApp
             }
         }
 
+        public static bool IsCbzArchiveCreated(ScanWebsiteUrl scanUrl)
+        {
+            string cbzPath = GetCbzFilePath(scanUrl);
+            return File.Exists(cbzPath) && File.ReadAllBytes(cbzPath).Length > 0;
+        }
+
         static string GetBookDirectoryPath(ScanWebsiteUrl scanUrl)
         {
             string bookName = scanUrl.BookName;
@@ -492,13 +504,22 @@ namespace ScanNetDownloader.ConsoleApp
             return bookDirectoryPath;
         }
 
-        static string GetChapterDirectoryPath(ScanWebsiteUrl scanUrl)
+        public static string GetChapterDirectoryPath(ScanWebsiteUrl scanUrl)
         {
             string bookName = scanUrl.BookName;
             string chapterNumber = scanUrl.ChapterId.ToString();
             string chapterDirectoryPath = Path.Combine(OutputDirectory, $"{bookName}{Constants.SCAN_CHAPTER_PATH}{chapterNumber}");
 
             return chapterDirectoryPath;
+        }
+
+        static string GetCbzFilePath(ScanWebsiteUrl scanUrl)
+        {
+            string bookName = scanUrl.BookName;
+            string chapterNumber = scanUrl.ChapterId.ToString();
+            string cbzFilePath = Path.Combine(GetBookDirectoryPath(scanUrl), $"{bookName}{Constants.CBZ_CHAPTER_PREFIX}{chapterNumber}{Constants.CBZ_EXTENSION}");
+
+            return cbzFilePath;
         }
 
         static bool MoreThanOneBookInUrlList(List<ScanWebsiteUrl> urlList)
@@ -622,7 +643,7 @@ namespace ScanNetDownloader.ConsoleApp
 
         // TODO: Move this in a CbzCreator Class
         #region Cbz Archive
-        static void BuildCbzArchive(ScanWebsiteUrl scanUrl, string downloadPath)
+        public static void BuildCbzArchive(ScanWebsiteUrl scanUrl, string downloadPath)
         {
             WriteDlInfoLine($"=> Create .CBZ for {scanUrl.BookName}-{scanUrl.ChapterId}...");
 
@@ -630,7 +651,7 @@ namespace ScanNetDownloader.ConsoleApp
             string chapterNumber = scanUrl.ChapterId.ToString();
 
             string folderToArchive = downloadPath;
-            string cbzFilePath = Path.Combine(Directory.GetParent(downloadPath).FullName, $"{bookName} - chapter {chapterNumber}.cbz");
+            string cbzFilePath = Path.Combine(Directory.GetParent(downloadPath).FullName, $"{bookName}{Constants.CBZ_CHAPTER_PREFIX}{chapterNumber}{Constants.CBZ_EXTENSION}"); // TODO: Add const for { - chapter } and .cbz
 
             if (Directory.EnumerateFileSystemEntries(folderToArchive).Any() == false)
             {

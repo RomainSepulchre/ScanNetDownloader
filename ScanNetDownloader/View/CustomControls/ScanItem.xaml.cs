@@ -47,9 +47,27 @@ namespace ScanNetDownloader.View.CustomControls
 
         public string Website { get; private set; }
 
-        public bool IsDownloaded { get; private set; }
+        private bool _isDownloaded;
+        public bool IsDownloaded
+        {
+            get { return _isDownloaded; }
+            set
+            {
+                _isDownloaded = value;
+                SetDownloadStatus(value);
+            }
+        }
 
-        public bool cbzArchiveCreated { get; private set; }
+        private bool _cbzArchiveCreated;
+        public bool CbzArchiveCreated
+        {
+            get { return _cbzArchiveCreated; }
+            set
+            {
+                _cbzArchiveCreated = value;
+                SetCbzCreatedStatus(value);
+            }
+        }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -83,21 +101,20 @@ namespace ScanNetDownloader.View.CustomControls
             InitializeComponent();
         }
 
-        public ScanItem(ScanWebsiteUrl _scanWebsiteUrl)
+        public ScanItem(ScanWebsiteUrl _scanWebsiteUrl, bool fileAlreadyDownloaded=false, bool cbzAlreadyCreated=false)
         {
             DataContext = this;
             
-            linkedScanWebsiteUrl = _scanWebsiteUrl;
+            InitializeComponent();
 
+            linkedScanWebsiteUrl = _scanWebsiteUrl;
             BookName = _scanWebsiteUrl.BookName;
             ChapterId = _scanWebsiteUrl.ChapterId;
             Url = _scanWebsiteUrl.Url;
             Website = _scanWebsiteUrl.WebsiteDomain;
-            IsDownloaded = false;
-            cbzArchiveCreated = false;
-            IsSelectedForDownload = _scanWebsiteUrl.IsSelectedForDownload;
-
-            InitializeComponent();
+            IsDownloaded = fileAlreadyDownloaded;
+            CbzArchiveCreated = cbzAlreadyCreated;
+            IsSelectedForDownload = _scanWebsiteUrl.IsSelectedForDownload;           
 
             bookNameLb.Content = BookName;
             chapterNumberLb.Content = ChapterId;
@@ -122,6 +139,37 @@ namespace ScanNetDownloader.View.CustomControls
         private void deleteBtn_Click(object sender, RoutedEventArgs e)
         {
             RaiseEvent(new RoutedEventArgs(DeleteBtnPressedEvent, this));
+        }
+
+        private void SetDownloadStatus(bool fileDownloaded)
+        {
+            Debug.WriteLine($"SCAN STATUS, Downloaded ={fileDownloaded}");
+            if (fileDownloaded)
+            {
+                statusBtn.Content = "ok";
+                statusBtn.Background = Brushes.Green;
+                cbzCreationBtn.IsEnabled = true;
+            }
+            else
+            {
+                statusBtn.Content = "∅";
+                statusBtn.Background = Brushes.Red;
+                cbzCreationBtn.IsEnabled = false;
+            }
+        }
+
+        private void SetCbzCreatedStatus(bool cbzCreated)
+        {
+            Debug.WriteLine($"CBZ STATUS, created ={cbzCreated}");
+
+            if (cbzCreated)
+            {
+                cbzCreationBtn.Background = Brushes.Green;
+            }
+            else
+            {
+                cbzCreationBtn.ClearValue(Button.BackgroundProperty);
+            }
         }
     }
 }
