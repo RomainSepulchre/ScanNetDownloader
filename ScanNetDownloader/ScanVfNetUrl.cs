@@ -115,7 +115,7 @@ namespace ScanNetDownloader
             {
                 if (imgUrls[i].ToLower().Contains(Constants.HTTP_ADDRESS))
                 {
-                    string[] imgUrlSplit = imgUrls[i].Split(Constants.QUOTE_CHAR);
+                    string[] imgUrlSplit = imgUrls[i].Split(new char[] { Constants.DOUBLE_QUOTE_CHAR, Constants.SINGLE_QUOTE_CHAR });
                     foreach (string split in imgUrlSplit)
                     {
                         // Keep only the split containing the url
