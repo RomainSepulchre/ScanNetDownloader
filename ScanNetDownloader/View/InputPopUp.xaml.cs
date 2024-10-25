@@ -26,18 +26,18 @@ namespace ScanNetDownloader.View
             Owner = parentWindow;
             
             InitializeComponent();
-            popUpInfo.Content = info;
+            lbPopUpInfo.Content = info;
         }
 
         private void btnOk_Click(object sender, RoutedEventArgs e)
         {
-            Input = txtInput.Text;
+            Input = txtBoxInput.Text;
             Close();
         }
 
-        private void txtInput_TextChanged(object sender, TextChangedEventArgs e)
+        private void txtBoxInput_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if(string.IsNullOrEmpty(txtInput.Text))
+            if(string.IsNullOrEmpty(txtBoxInput.Text))
             {
                 btnOk.IsEnabled = false;
             }

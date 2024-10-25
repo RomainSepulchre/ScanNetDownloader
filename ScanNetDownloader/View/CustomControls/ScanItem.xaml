@@ -18,18 +18,18 @@
             <ColumnDefinition Width="1"/>
             <ColumnDefinition Width="65"/>
         </Grid.ColumnDefinitions>
-        <CheckBox Name="IsSelectedCheckbox" IsChecked="{Binding IsSelectedForDownload, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <CheckBox Name="chBoxIsSelected" IsChecked="{Binding IsSelectedForDownload, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
         <Rectangle Grid.Column="1" Fill="#333333"/>
-        <Label Grid.Column="2" Name="bookNameLb" Content="BookName" VerticalAlignment="Center"/>
+        <Label Grid.Column="2" Name="lbBookName" Content="BookName" VerticalAlignment="Center"/>
         <Rectangle Grid.Column="3" Fill="#333333"/>
-        <Label Grid.Column="4" Name="chapterNumberLb" Content="Chapter" VerticalAlignment="Center"/>
+        <Label Grid.Column="4" Name="lbChapterNumber" Content="Chapter" VerticalAlignment="Center"/>
         <Rectangle Grid.Column="5" Fill="#333333"/>
-        <Label Grid.Column="6" Name="websiteLb" Content="Website" VerticalAlignment="Center"/>
+        <Label Grid.Column="6" Name="lbWebsite" Content="Website" VerticalAlignment="Center"/>
         <Rectangle Grid.Column="7" Fill="#333333"/>
         <StackPanel Grid.Column="8" Orientation="Horizontal" VerticalAlignment="Center">
-            <Button Name="statusBtn" Content="?" Click="statusBtn_Click" Height="15" Width="15"  FontSize="9" Margin="3 0 3 0" />
-            <Button Name="cbzCreationBtn" Content="📁" Click="cbzCreationBtn_Click" Height="15" Width="15" FontSize="9"  Margin="3 0 3 0"/>
-            <Button Name="deleteBtn" Content="X" Click="deleteBtn_Click" Height="15" Width="15" FontSize="9"  Margin="3 0 3 0"/>
+            <Button Name="btnStatus" Content="?" Click="btnStatus_Click" Height="15" Width="15"  FontSize="9" Margin="3 0 3 0" />
+            <Button Name="btnCbzCreation" Content="📁" Click="btnCbzCreation_Click" Height="15" Width="15" FontSize="9"  Margin="3 0 3 0"/>
+            <Button Name="btnDelete" Content="X" Click="btnDelete_Click" Height="15" Width="15" FontSize="9"  Margin="3 0 3 0"/>
         </StackPanel>
     </Grid>
 </UserControl>

@@ -21,6 +21,10 @@ namespace ScanNetDownloader
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    ///
+
+    // TODO: Delete unselected button
+
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         public List<ScanWebsiteUrl> ScanWebsiteUrls { get; set; }
@@ -33,7 +37,7 @@ namespace ScanNetDownloader
             set
             {
                 _dlInfo = value;
-                dlInfoScrollBar?.ScrollToBottom();
+                scrollVwDownloadInfo?.ScrollToBottom();
                 OnPropertyChanged();
             }
         }
@@ -48,8 +52,6 @@ namespace ScanNetDownloader
                 _scanListItems = value;
             }
         }
-
-
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -136,6 +138,16 @@ namespace ScanNetDownloader
             Program.OpenSettingsJsonFile();
         }
 
+        private void btnSaveOptions_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: Save options
+        }
+
+        private void btnOpenStatusBar_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: Open a scrollable list view that allow to see all status
+        }
+
         private void ScanItem_DeleteBtnPressed(object sender, RoutedEventArgs e)
         {
             ScanItem item = sender as ScanItem;
@@ -183,7 +195,7 @@ namespace ScanNetDownloader
 
         #endregion
 
-        #region Events
+        #region Events Handler
         public void WriteDlInfoLine(object sender, string lineToAdd)
         {
             DlInfo += $"{lineToAdd}\n";
@@ -192,7 +204,7 @@ namespace ScanNetDownloader
         public void UpdateDownloadProgress(object sender, float percentageDone)
         {
             // TODO: Add bindings ?
-            dlProgressBar.Value = percentageDone;
+            progrBarDownload.Value = percentageDone;
         }
 
         public void ScanDownloaded(object sender, ScanWebsiteUrl downloadedScan) // This happens when the 

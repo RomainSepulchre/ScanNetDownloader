@@ -116,9 +116,9 @@ namespace ScanNetDownloader.View.CustomControls
             CbzArchiveCreated = cbzAlreadyCreated;
             IsSelectedForDownload = _scanWebsiteUrl.IsSelectedForDownload;           
 
-            bookNameLb.Content = BookName;
-            chapterNumberLb.Content = ChapterId;
-            websiteLb.Content = Website;
+            lbBookName.Content = BookName;
+            lbChapterNumber.Content = ChapterId;
+            lbWebsite.Content = Website;
         }
 
         private void OnPropertyChanged([CallerMemberName] string property = null)
@@ -126,17 +126,17 @@ namespace ScanNetDownloader.View.CustomControls
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
 
-        private void statusBtn_Click(object sender, RoutedEventArgs e)
+        private void btnStatus_Click(object sender, RoutedEventArgs e)
         {
             RaiseEvent(new RoutedEventArgs(StatusBtnPressedEvent, this));
         }
 
-        private void cbzCreationBtn_Click(object sender, RoutedEventArgs e)
+        private void btnCbzCreation_Click(object sender, RoutedEventArgs e)
         {
             RaiseEvent(new RoutedEventArgs(CreateCbzBtnPressedEvent, this));
         }
 
-        private void deleteBtn_Click(object sender, RoutedEventArgs e)
+        private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
             RaiseEvent(new RoutedEventArgs(DeleteBtnPressedEvent, this));
         }
@@ -146,15 +146,15 @@ namespace ScanNetDownloader.View.CustomControls
             Debug.WriteLine($"SCAN STATUS, Downloaded ={fileDownloaded}");
             if (fileDownloaded)
             {
-                statusBtn.Content = "ok";
-                statusBtn.Background = Brushes.Green;
-                cbzCreationBtn.IsEnabled = true;
+                btnStatus.Content = "ok";
+                btnStatus.Background = Brushes.Green;
+                btnCbzCreation.IsEnabled = true;
             }
             else
             {
-                statusBtn.Content = "∅";
-                statusBtn.Background = Brushes.Red;
-                cbzCreationBtn.IsEnabled = false;
+                btnStatus.Content = "∅";
+                btnStatus.Background = Brushes.Red;
+                btnCbzCreation.IsEnabled = false;
             }
         }
 
@@ -164,11 +164,11 @@ namespace ScanNetDownloader.View.CustomControls
 
             if (cbzCreated)
             {
-                cbzCreationBtn.Background = Brushes.Green;
+                btnCbzCreation.Background = Brushes.Green;
             }
             else
             {
-                cbzCreationBtn.ClearValue(Button.BackgroundProperty);
+                btnCbzCreation.ClearValue(Button.BackgroundProperty);
             }
         }
     }

@@ -34,8 +34,8 @@ namespace ScanNetDownloader.View
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
             Success = true;
-            UrlInput = inputUrl.Text;
-            ChapterInput = inputChapter.Text;
+            UrlInput = txtBoxUrlInput.Text;
+            ChapterInput = txtBoxChapterInput.Text;
             Close();
         }
 
@@ -44,7 +44,7 @@ namespace ScanNetDownloader.View
             Close();
         }
 
-        private void inputUrl_TextChanged(object sender, TextChangedEventArgs e)
+        private void txtBoxUrlInput_TextChanged(object sender, TextChangedEventArgs e)
         {
             // TODO : THIS
             // Check if valid url
@@ -52,17 +52,17 @@ namespace ScanNetDownloader.View
             // if valid check if chapter provided
             // -y: keep chapter input disabled, set chapterInput, add text to tell chapter is provided through url, enable ok
             // -n: enabled chapter input
-            if (string.IsNullOrEmpty(inputUrl.Text) == false)
+            if (string.IsNullOrEmpty(txtBoxUrlInput.Text) == false)
             {
-                inputChapter.IsEnabled = true;
+                txtBoxChapterInput.IsEnabled = true;
             }
         }
 
-        private void inputChapter_TextChanged(object sender, TextChangedEventArgs e)
+        private void txtBoxChapterInput_TextChanged(object sender, TextChangedEventArgs e)
         {
             // TODO : THIS
             // if valid chapter, enable ok
-            if (string.IsNullOrEmpty(inputChapter.Text) == false)
+            if (string.IsNullOrEmpty(txtBoxChapterInput.Text) == false)
             {
                 btnAdd.IsEnabled = true;
             }

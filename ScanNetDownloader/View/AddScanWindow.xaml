@@ -16,9 +16,9 @@
         <TextBlock Text="Enter the scan url..." VerticalAlignment="Center" HorizontalAlignment="Center"/>
         <StackPanel Grid.Row="1" Margin="10 0 10 0">
             <Label Content="Scan url" />
-            <TextBox Name="inputUrl" TextChanged="inputUrl_TextChanged" Height="30" Background="Beige"/>
+            <TextBox Name="txtBoxUrlInput" TextChanged="txtBoxUrlInput_TextChanged" Height="30" Background="Beige"/>
             <Label Content="Chapter"/>
-            <TextBox Name="inputChapter" IsEnabled="False" TextChanged="inputChapter_TextChanged" Height="30" Background="Beige"/>
+            <TextBox Name="txtBoxChapterInput" IsEnabled="False" TextChanged="txtBoxChapterInput_TextChanged" Height="30" Background="Beige"/>
         </StackPanel>
         
         <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">

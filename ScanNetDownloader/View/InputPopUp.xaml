@@ -10,8 +10,8 @@
         Background="Beige">
     <Grid>
         <StackPanel VerticalAlignment="Center">
-            <Label Name="popUpInfo" Content="..." HorizontalAlignment="Center"/>
-            <TextBox Name="txtInput" Margin="30 10 30 10" Height="60" TextChanged="txtInput_TextChanged"/>
+            <Label Name="lbPopUpInfo" Content="..." HorizontalAlignment="Center"/>
+            <TextBox Name="txtBoxInput" Margin="30 10 30 10" Height="60" TextChanged="txtBoxInput_TextChanged"/>
             <Button Name="btnOk" Content="Ok" Click="btnOk_Click" Width="100" Height="30"/>
         </StackPanel>
     </Grid>
