@@ -23,7 +23,7 @@ namespace ScanNetDownloader
 
         // Scan VF
         public static readonly string[] SCANVF_URL_BLOCK_START_SEPARATOR = new string[] { "<div class=\"viewer-cnt\">" };
-        public static readonly string[] SCANVF_URL_BLOCK_END_SEPARATOR = new string[] { "<div id=\"ppp\" style>" };
+        public static readonly string[] SCANVF_URL_BLOCK_END_SEPARATOR = new string[] { "<div id=\"ppp\" style" };
         public static readonly string[] SCANVF_CLEAN_BEFORE_IMG_TAG_SEPARATOR = new string[] { "<div id=\"all\" style=\" display: none; \">" };
         public static readonly string[] SCANVF_IMG_TAG_END_SEPARATOR = new string[] { "/>" };
 
@@ -33,7 +33,8 @@ namespace ScanNetDownloader
         #endregion
 
         #region Char and String
-        public const char QUOTE_CHAR = '\"';
+        public const char DOUBLE_QUOTE_CHAR = '\"';
+        public const char SINGLE_QUOTE_CHAR = '\'';
         public const char SLASH_CHAR = '/';
         public const char BACKSLASH_CHAR = '\\';
         public const char DASH_CHAR = '-';
