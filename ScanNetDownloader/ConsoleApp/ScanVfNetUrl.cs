@@ -117,7 +117,7 @@ namespace ScanNetDownloader.ConsoleApp
             splitContent = urlSplit.Split(Constants.SCANVF_URL_BLOCK_END_SEPARATOR, StringSplitOptions.RemoveEmptyEntries); // Split after the block with all the img url
             urlSplit = splitContent[0]; // Keep the split before our separator (trim the end)
 
-            splitContent = urlSplit.Split(Constants.SCANVF_CLEAN_BEFORE_IMG_TAG_SEPARATOR, StringSplitOptions.RemoveEmptyEntries); // Clean the html code that is still before the first <img/>
+            splitContent = urlSplit.Split(Constants.SCANVF_CLEAN_BEFORE_IMG_TAG_SEPARATOR, StringSplitOptions.RemoveEmptyEntries); // Remove the html code that is before the first <img/>
             urlSplit = splitContent[1]; // Keep the split after our separator (trim the beginning)
 
             List<string> imgUrls = urlSplit.Split(Constants.SCANVF_IMG_TAG_END_SEPARATOR, StringSplitOptions.RemoveEmptyEntries).ToList(); // Split each img tag in a list
@@ -127,7 +127,7 @@ namespace ScanNetDownloader.ConsoleApp
             {
                 if (imgUrls[i].ToLower().Contains(Constants.HTTP_ADDRESS))
                 {
-                    string[] imgUrlSplit = imgUrls[i].Split(Constants.QUOTE_CHAR);
+                    string[] imgUrlSplit = imgUrls[i].Split([Constants.DOUBLE_QUOTE_CHAR, Constants.SINGLE_QUOTE_CHAR]);
                     foreach (string split in imgUrlSplit)
                     {
                         // Keep only the split containing the url
