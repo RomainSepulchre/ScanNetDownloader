@@ -17,13 +17,17 @@
                         <RowDefinition Height="16"/>
                     </Grid.RowDefinitions>
 
+
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="10 10 10 0">
                         <ListView Name="scanListView" ItemsSource="{Binding ScanListItems, UpdateSourceTrigger=PropertyChanged}" Background="Beige" HorizontalContentAlignment="Stretch">
+
                         </ListView>
                     </ScrollViewer>
+
                     <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
                         <Button Name="btnAdd" Content="Add" Click="btnAdd_Click" Height="40" Width="100" Margin="5"/>
                         <Button Name="btnDbgSave" Content="Debug_Save" Click="btnDbgSave_Click" Background="Orchid" Height="40" Width="100" Margin="5"/>
+                        <Button Name="btnOpenJSon" Content="Debug_OpenJson" Click="btnOpenJSon_Click"  Background="Orchid" Height="40" Width="100" Margin="5"/>
                         <Button Name="btnStart" Content="Start" Click="btnStart_Click" Height="40" Width="100" Margin="5"/>
                     </StackPanel>
                     <Rectangle Grid.Row="3" Fill="DarkSlateBlue"/>

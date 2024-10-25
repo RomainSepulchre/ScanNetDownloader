@@ -33,11 +33,9 @@ namespace ScanNetDownloader.View.CustomControls
                 _isSelectedForDownload = value;
                 OnPropertyChanged();
                 Debug.WriteLine($"IS SELECTED FOR DOWNLOAD CHANGED FOR {BookName}-{ChapterId}, new value = {value}");
-                linkedScanWebsiteUrl.IsSelectedForDownload = value; // TODO: when to save the value in the settings json ? Only when closing app or save everytime value is changed ?
+                if (linkedScanWebsiteUrl != null) linkedScanWebsiteUrl.IsSelectedForDownload = value; // TODO: when to save the value in the settings json ? Only when closing app or save everytime value is changed ?
             }
         }
-
-        public int ItemId { get; private set; }
 
         public ScanWebsiteUrl linkedScanWebsiteUrl { get; private set; }
 
@@ -55,17 +53,40 @@ namespace ScanNetDownloader.View.CustomControls
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
+        public static RoutedEvent DeleteBtnPressedEvent = EventManager.RegisterRoutedEvent(nameof(DeleteBtnPressed), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ScanItem));
+
+        public event RoutedEventHandler DeleteBtnPressed
+        {
+            add { AddHandler(DeleteBtnPressedEvent, value); }
+            remove { RemoveHandler(DeleteBtnPressedEvent, value); }
+        }
+
+        public static RoutedEvent CreateCbzBtnPressedEvent = EventManager.RegisterRoutedEvent(nameof(CreateCbzBtnPressed), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ScanItem));
+
+        public event RoutedEventHandler CreateCbzBtnPressed
+        {
+            add { AddHandler(CreateCbzBtnPressedEvent, value); }
+            remove { RemoveHandler(CreateCbzBtnPressedEvent, value); }
+        }
+
+        public static RoutedEvent StatusBtnPressedEvent = EventManager.RegisterRoutedEvent(nameof(StatusBtnPressed), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ScanItem));
+
+        public event RoutedEventHandler StatusBtnPressed
+        {
+            add { AddHandler(StatusBtnPressedEvent, value); }
+            remove { RemoveHandler(StatusBtnPressedEvent, value); }
+        }
+
         public ScanItem()
         {
             DataContext = this;
             InitializeComponent();
         }
 
-        public ScanItem(int _itemId, ScanWebsiteUrl _scanWebsiteUrl)
+        public ScanItem(ScanWebsiteUrl _scanWebsiteUrl)
         {
             DataContext = this;
             
-            ItemId = _itemId;
             linkedScanWebsiteUrl = _scanWebsiteUrl;
 
             BookName = _scanWebsiteUrl.BookName;
@@ -86,6 +107,21 @@ namespace ScanNetDownloader.View.CustomControls
         private void OnPropertyChanged([CallerMemberName] string property = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+        }
+
+        private void statusBtn_Click(object sender, RoutedEventArgs e)
+        {
+            RaiseEvent(new RoutedEventArgs(StatusBtnPressedEvent, this));
+        }
+
+        private void cbzCreationBtn_Click(object sender, RoutedEventArgs e)
+        {
+            RaiseEvent(new RoutedEventArgs(CreateCbzBtnPressedEvent, this));
+        }
+
+        private void deleteBtn_Click(object sender, RoutedEventArgs e)
+        {
+            RaiseEvent(new RoutedEventArgs(DeleteBtnPressedEvent, this));
         }
     }
 }

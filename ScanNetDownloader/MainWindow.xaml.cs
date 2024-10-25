@@ -59,8 +59,9 @@ namespace ScanNetDownloader
             _scanListItems = new ObservableCollection<ScanItem>();
 
             // Events
-            Program.DlInfoWriteLine += new EventHandler<string>(WriteDlStatusLine);
-            Program.UpdatDlProgressBar += new EventHandler<float>(UpdateDlProgressBar);
+            Program.DlInfoWriteLineEvent += new EventHandler<string>(WriteDlStatusLine);
+            Program.UpdateDlProgressBarEvent += new EventHandler<float>(UpdateDlProgressBar);
+            Program.ScanUnselectedForDownloadEvent += new EventHandler<ScanWebsiteUrl>(ScanUnselectedForDownload);
 
             // Load Settings
             Program.InitializeAppSettings();
@@ -72,7 +73,7 @@ namespace ScanNetDownloader
             //scanListView.Items.Clear();
 
             // Load ScanWebsiteUrl saved on system
-            ScanWebsiteUrls = Program.LoadSavedScanWebsiteUrl();
+            ScanWebsiteUrls = Settings.instance.ScanUrlList; // TODO: Separate Scan Data from the settings
 
             // Populate listView based on the saved data
             RefreshScanListView();
@@ -83,7 +84,7 @@ namespace ScanNetDownloader
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
 
-        #region Buttons
+        #region Buttons and Routed Events
         private void btnStart_Click(object sender, RoutedEventArgs e)
         {
             MainTabs.SelectedIndex = 1; // Switch to download tab
@@ -113,20 +114,12 @@ namespace ScanNetDownloader
 
                 if (newScansToAdd.Any())
                 {
-                    ScanWebsiteUrls.AddRange(newScansToAdd); // TODO: Also update variable on Program --> keep only one of the two variable
-
-                    // Save the settings
-                    Settings.instance.ScanUrlList = ScanWebsiteUrls;
-                    Settings.instance.ScansUrlAndCorrespondingChapters.Add(urlInput, chapterInput);
-                    Program.SaveSettings(Settings.instance);
+                    AddScanItems(newScansToAdd);
                 }
                 else
                 {
                     MessageBox.Show($"{urlInput} not added, it was not a valid url", "Invalid URL", MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
-                
-                // Refresh list on Ui
-                RefreshScanListView();
+                }             
             }
         }
 
@@ -135,8 +128,50 @@ namespace ScanNetDownloader
             bool sameRef = ReferenceEquals(ScanWebsiteUrls, Settings.instance.ScanUrlList);
             Debug.WriteLine($"Is Settings.instance.ScanUrlList same as MainWindow.ScanWebsiteUrls ? => {sameRef}");
             Settings.instance.ScanUrlList = ScanWebsiteUrls;
-            //Settings.instance.ScansUrlAndCorrespondingChapters.Add(urlInput, chapterInput);
             Program.SaveSettings(Settings.instance);
+        }
+
+        private void btnOpenJSon_Click(object sender, RoutedEventArgs e)
+        {
+            Program.OpenSettingsJsonFile();
+        }
+
+        private void ScanItem_DeleteBtnPressed(object sender, RoutedEventArgs e)
+        {
+            ScanItem item = sender as ScanItem;
+            if (item != null)
+            {
+                DeleteScanItem(item);
+            }
+        }
+
+        private void ScanItem_CreateCbzBtnPressed(object sender, RoutedEventArgs e)
+        {
+            ScanItem item = sender as ScanItem;
+            if (item != null)
+            {
+                Debug.WriteLine($"CBZ CREATION BUTTON: Item={item.BookName}-{item.ChapterId}");
+            }
+        }
+
+        private void ScanItem_StatusBtnPressed(object sender, RoutedEventArgs e)
+        {
+            ScanItem item = sender as ScanItem;
+            if (item != null)
+            {
+                bool fileDownloaded = Program.AreScanFilesDownloaded(item.linkedScanWebsiteUrl);
+                Debug.WriteLine($"SCAN STATUS, Downloaded ={fileDownloaded}");
+                if (fileDownloaded)
+                {
+                    item.statusBtn.Content = "ok";
+                    item.statusBtn.Background = Brushes.Green;
+                }
+                else
+                {
+                    item.statusBtn.Content = "∅";
+                    item.statusBtn.Background = Brushes.Red;
+                }
+            }
         }
 
         #endregion
@@ -152,6 +187,14 @@ namespace ScanNetDownloader
             // TODO: Add bindings ?
             dlProgressBar.Value = percentageDone;
         }
+
+        public void ScanUnselectedForDownload(object sender, ScanWebsiteUrl unselectedScan)
+        {
+            // TODO: improve this, is first the best way ?
+            ScanItem item = ScanListItems.First(x => x.linkedScanWebsiteUrl == unselectedScan);
+            item.IsSelectedForDownload = false;
+            Debug.WriteLine($"Debug Update isSelected = {unselectedScan}");
+        }
         #endregion
 
         private void RefreshScanListView()
@@ -160,12 +203,44 @@ namespace ScanNetDownloader
 
             foreach (var scanWebsiteUrl in ScanWebsiteUrls)
             {
-                int itemId = ScanWebsiteUrls.IndexOf(scanWebsiteUrl);
-                ScanItem item = new ScanItem(itemId, scanWebsiteUrl);
+                ScanItem item = new ScanItem(scanWebsiteUrl);
+                item.DeleteBtnPressed += ScanItem_DeleteBtnPressed;
+                item.CreateCbzBtnPressed += ScanItem_CreateCbzBtnPressed;
+                item.StatusBtnPressed += ScanItem_StatusBtnPressed;
                 ScanListItems.Add(item);
             }
         }
 
-        
+        private void AddScanItems(List<ScanWebsiteUrl> newScansToAdd) // TODO: Replace the refresh by a add function to prevent recreating the whole view everytime
+        {
+            // Add in saved data
+            ScanWebsiteUrls.AddRange(newScansToAdd);
+
+            // Save the settings // TODO: create a function for this
+            Settings.instance.ScanUrlList = ScanWebsiteUrls; // TODO: Is it necessary ScanWebsiteUrls should be a reference of Settings.instance.ScanUrlList = ScanWebsiteUrls
+            Program.SaveSettings(Settings.instance); // Seperate scanlist data from settings Data
+
+            // Add item in list view
+            foreach (ScanWebsiteUrl scanUrl in newScansToAdd)
+            {
+                ScanItem item = new ScanItem(scanUrl);
+                item.DeleteBtnPressed += ScanItem_DeleteBtnPressed;
+                item.CreateCbzBtnPressed += ScanItem_CreateCbzBtnPressed;
+                ScanListItems.Add(item);
+            }
+        }
+
+        private void DeleteScanItem(ScanItem itemToDelete)
+        {
+            // Remove from saved data
+            ScanWebsiteUrls.Remove(itemToDelete.linkedScanWebsiteUrl);
+
+            // Save the settings // TODO: create a function for this
+            Settings.instance.ScanUrlList = ScanWebsiteUrls; // TODO: Is it necessary ScanWebsiteUrls should be a reference of Settings.instance.ScanUrlList = ScanWebsiteUrls
+            Program.SaveSettings(Settings.instance); // TODO: Seperate scanlist data from settings Data
+
+            // Remove item from list view
+            ScanListItems.Remove(itemToDelete); 
+        }
     }
 }

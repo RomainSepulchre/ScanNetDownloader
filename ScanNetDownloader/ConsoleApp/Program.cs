@@ -56,32 +56,43 @@ namespace ScanNetDownloader.ConsoleApp
 
         private static Window mainWindow = new Window();
 
-        public static event EventHandler<string> DlInfoWriteLine;
+        public static event EventHandler<string> DlInfoWriteLineEvent;
 
-        public static event EventHandler<float> UpdatDlProgressBar;
+        public static event EventHandler<float> UpdateDlProgressBarEvent;
+
+        public static event EventHandler<ScanWebsiteUrl> ScanUnselectedForDownloadEvent;
 
         #region Events
         // TODO: Check if work correctly before Cleaning
         public static void WriteDlInfoLine(string lineToAdd)
         {
             Debug.WriteLine(lineToAdd);
-            if (DlInfoWriteLine != null)
+            if (DlInfoWriteLineEvent != null)
             {
-                DlInfoWriteLine(null, lineToAdd); 
+                DlInfoWriteLineEvent(null, lineToAdd); 
             }
         }
 
         public static void UpdateDownloadProgress(float percentageDone)
         {
-            if (UpdatDlProgressBar != null)
+            if (UpdateDlProgressBarEvent != null)
             {
-                UpdatDlProgressBar(null, percentageDone);
+                UpdateDlProgressBarEvent(null, percentageDone);
+            }
+        }
+
+        public static void ScanUnselectedForDownload(ScanWebsiteUrl unselectedScan)
+        {
+            if (ScanUnselectedForDownloadEvent != null)
+            {
+                ScanUnselectedForDownloadEvent(null, unselectedScan);
             }
         }
         #endregion
 
 
-        #region Main
+        // TODO: Turn this in a Downloader class
+        #region Downloader
 
         public static async void StartDownloader(List<ScanWebsiteUrl> scansToDownload, Window _mainWindow)
         {
@@ -120,106 +131,88 @@ namespace ScanNetDownloader.ConsoleApp
             {
                 OpenRelevantFolder(scansToDownload);                
             }
+        }
 
-            QuitApp();
+        static async Task DownloadScans(List<ScanWebsiteUrl> scansToDownload)
+        {
+            float progress = 0;
+            float minProgress = 0;
+            float maxProgress = 0;
+
+            foreach (ScanWebsiteUrl scanUrl in scansToDownload)
+            {
+                minProgress = maxProgress;
+                int scanIndex = scansToDownload.IndexOf(scanUrl);
+                maxProgress = (((float)scanIndex + 1) / (scansToDownload.Count)) * 100;
+
+
+                string url = scanUrl.Url;
+                string bookName = scanUrl.BookName;
+                string chapterNumber = scanUrl.ChapterId.ToString();
+
+                string header = $"Download {bookName} - chapter {chapterNumber} from {url}";
+                WriteDlInfoLine($"\n{AdaptativeLineOfCharForHeader(header, '*')}");
+                WriteDlInfoLine(header);
+                WriteDlInfoLine($"{AdaptativeLineOfCharForHeader(header, '*')}");
+
+                WriteDlInfoLine($"\nLook for images url for {bookName}-{chapterNumber} at {url}...");
+                List<string> imgsToDownload = scanUrl.GetScanImagesUrl();
+                if (imgsToDownload.Count == 0) { continue; } // if list is empty (in case of error while getting html content) skip directly to the next url
+
+                // Create output folder if necessary
+                string downloadPath = CreateChapterDirectory(bookName, chapterNumber);
+
+                int pageId = 1;
+                foreach (string imgUrl in imgsToDownload)
+                {
+                    int pageIndex = imgsToDownload.IndexOf(imgUrl);
+                    float chapterCompletion = (float)pageIndex / (imgsToDownload.Count - 1);
+                    progress = float.Lerp(minProgress, maxProgress, chapterCompletion);
+                    UpdateDownloadProgress(progress);
+
+                    string fileExtension = scanUrl.GetFileExtensionFromUrl(imgUrl);
+                    string imgName = $"{bookName}_{chapterNumber}-{pageId.ToString("D3")}{fileExtension}";
+                    string downloadFile = Path.Combine(downloadPath, imgName);
+
+
+                    using (WebClient client = new WebClient())
+                    {
+                        try
+                        {
+                            WriteDlInfoLine($"\nDownloading {imgName} from {imgUrl}");
+                            WriteDlInfoLine($"...");
+
+                            if (File.Exists(downloadFile) == true && File.ReadAllBytes(downloadFile).Length > 0 == true)
+                            {
+                                WriteDlInfoLine($"File already downloaded!\n");
+                            }
+                            else
+                            {
+                                await client.DownloadFileTaskAsync(new Uri(imgUrl), downloadFile);
+                                WriteDlInfoLine($"Sucessfully downloaded!\n");
+                            }
+                        }
+                        catch (WebException ex)
+                        {
+                            Error.FailedImageDownload(ex, imgUrl);
+                        }
+                    }
+                    pageId++;
+                }
+
+                if (CurrentSettings.CreateCbzArchive)
+                {
+                    BuildCbzArchive(scanUrl, downloadPath);
+                }
+
+                // Deselect since we just downloaded it
+                ScanUnselectedForDownload(scanUrl);
+            }
         }
         #endregion
 
-        #region Scan Website Url
-
-        public static List<ScanWebsiteUrl> LoadSavedScanWebsiteUrl()
-        {
-            // Create Url obj from settings
-            //List<string> scansUrlToDownload = Settings.instance.ScansUrlAndCorrespondingChapters.Keys.ToList(); // TODO: Save ScanWebsiteUrl separetely from the Settings
-
-            // TODO: Not needed anymore, kept for now but clean later
-            //if (scansUrlToDownload.Count <= 0)
-            //{
-            //    Error.NoScansUrl(nameof(Settings.instance.ScansUrlAndCorrespondingChapters));
-            //    OpenSettingsJsonFile();
-            //    QuitApp();
-            //}
-
-            Debug.WriteLine($"\nCreation of the list of scan to download...\n");
-            //ScanWebsiteUrls = CreateListOfScanWebsiteUrlFromJson(scansUrlToDownload);
-            return Settings.instance.ScanUrlList;
-        }
-
-        [Obsolete("Now we should load a List<ScanWebsiteUrl> directly and not create it from the dictionnary")]
-        public static List<ScanWebsiteUrl> CreateListOfScanWebsiteUrlFromJson(List<string> urls)
-        {
-            bool errorOccured = false;
-            List<ScanWebsiteUrl> newScanWebsiteUrls = new List<ScanWebsiteUrl>();
-            List<int> selectedChaptersId;
-
-            foreach (string url in urls)
-            {
-                Debug.WriteLine($"\nURL ==> {url}\n");
-                switch (url)
-                {
-                    case string s when s.Contains(Constants.SCANVF_DOMAIN_NAME):
-                        //https://www.scan-vf.net/jujutsu-kaisen/chapitre-164/1 = url with chapter -> at least 5 split
-                        //https://www.scan-vf.net/jujutsu-kaisen = url without chapter -> less than 5 split
-                        bool chapterIsInUrl = url.Split(Constants.SLASH_CHAR).Count() > 4 ; // Check if the url has a chapter name (the number of split let us know if url stop at book name or not)
-                        if (chapterIsInUrl)
-                        {
-                            ScanWebsiteUrl scanVfNetUrl = new ScanVfNetUrl(url);
-                            newScanWebsiteUrls.Add(scanVfNetUrl);
-                            Debug.WriteLine($"{scanVfNetUrl.BookName} - Chapter {scanVfNetUrl.ChapterId} added ({scanVfNetUrl.WebsiteDomain}).\n");
-                        }
-                        else
-                        {
-                            // Chapters to download
-                            ScanWebsiteUrl temporaryScanVfNetUrl = new ScanVfNetUrl(url, false);
-                            selectedChaptersId = ChapterSelection(temporaryScanVfNetUrl, ref errorOccured);
-                            // Create link
-                            foreach (int chapterId in selectedChaptersId)
-                            {
-                                string urlWithChapter = $"{url}{Constants.SCANVF_CHAPTER_IN_URL}{chapterId}"; // No need to specify "/1" after chapter number redirection is done by website
-                                ScanWebsiteUrl scanVfNetUrl = new ScanVfNetUrl(urlWithChapter);
-                                newScanWebsiteUrls.Add(scanVfNetUrl);
-                                // TODO: we neveer check if chapter exist with ScanVf ?
-                                Debug.WriteLine($" -> {scanVfNetUrl.BookName} - Chapter {scanVfNetUrl.ChapterId} added ({scanVfNetUrl.WebsiteDomain}).");
-                            }
-                            Debug.WriteLine("");
-                        }                        
-                        break;
-
-                    case string s when s.Contains(Constants.ANIMESAMA_DOMAIN_NAME):
-                        ScanWebsiteUrl temporaryAnimeSamaUrl = new AnimeSamaFrUrl(url); // Temporary obj to get book name
-
-                        // TODO: If possible manage Book URL instead of chapter url
-                        // -> check if chapter url is stable or if it changes too much
-
-                        // Get chapters to download
-                        selectedChaptersId = ChapterSelection(temporaryAnimeSamaUrl, ref errorOccured);                       
-
-                        // Create link
-                        foreach (int chapterId in selectedChaptersId)
-                        {
-                            ScanWebsiteUrl animeSamaUrl = new AnimeSamaFrUrl(url, chapterId);
-                            newScanWebsiteUrls.Add(animeSamaUrl);
-                            Debug.WriteLine($" -> {animeSamaUrl.BookName} - Chapter {animeSamaUrl.ChapterId} added ({animeSamaUrl.WebsiteDomain}).");
-                        }
-                        Debug.WriteLine("");
-                        break;
-
-                    default: // Default, unknown domain name
-                        errorOccured = true;
-                        Error.UnknownScanWebDomain(url);
-                        break;
-                }
-            }
-
-            if (errorOccured)
-            {
-                Debug.WriteLine($"Make sure to check the errors and press any key to continue...");
-                MessageBox.Show("Make sure to check the errors and press any key to continue...", "Check errrors", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-
-            return newScanWebsiteUrls;
-        }
-
+        // TODO: Turn this into a Scan Managament Class
+        #region Scan Website Url Management
         public static List<ScanWebsiteUrl> CreateNewScanWebsiteUrls(string urlEntered, string chaptersEntered)
         {
             bool errorOccured = false;
@@ -289,30 +282,6 @@ namespace ScanNetDownloader.ConsoleApp
             }
 
             return newScanWebsiteUrls;
-        }
-
-        static List<int> ChapterSelection(ScanWebsiteUrl scanUrl, ref bool errorOccured)
-        {
-            List<int> selectedChaptersId = new List<int>();
-            string chaptersSelectedInSettings = CurrentSettings.ScansUrlAndCorrespondingChapters[scanUrl.Url];
-            if (string.IsNullOrEmpty(chaptersSelectedInSettings) == false)
-            {
-                selectedChaptersId = ParseToFindChapters(scanUrl, chaptersSelectedInSettings, ref errorOccured);
-                if (selectedChaptersId.Count <= 0)
-                {
-                    selectedChaptersId = AskUserToProvideChapters(scanUrl, ref errorOccured);
-                }
-                else
-                {
-                    selectedChaptersId.Log();
-                }
-            }
-            else
-            {
-                selectedChaptersId = AskUserToProvideChapters(scanUrl, ref errorOccured);
-            }
-            selectedChaptersId.Sort();
-            return selectedChaptersId;
         }
 
         static List<int> ChapterSelection(ScanWebsiteUrl scanUrl, string enteredChapters, ref bool errorOccured)
@@ -404,82 +373,9 @@ namespace ScanNetDownloader.ConsoleApp
             return validChapters;
         }
 
-        static async Task DownloadScans(List<ScanWebsiteUrl> scansToDownload)
-        {
-            float progress = 0;
-            float minProgress = 0;
-            float maxProgress = 0;
-
-            foreach (ScanWebsiteUrl scanUrl in scansToDownload)
-            {
-                minProgress = maxProgress;
-                int scanIndex = scansToDownload.IndexOf(scanUrl);
-                maxProgress = (((float)scanIndex + 1) / (scansToDownload.Count)) * 100;
-                
-
-                string url = scanUrl.Url;
-                string bookName = scanUrl.BookName;
-                string chapterNumber = scanUrl.ChapterId.ToString();
-
-                string header = $"Download {bookName} - chapter {chapterNumber} from {url}";
-                WriteDlInfoLine($"\n{AdaptativeLineOfCharForHeader(header, '*')}");
-                WriteDlInfoLine(header);
-                WriteDlInfoLine($"{AdaptativeLineOfCharForHeader(header, '*')}");
-
-                WriteDlInfoLine($"\nLook for images url for {bookName}-{chapterNumber} at {url}...");
-                List<string> imgsToDownload = scanUrl.GetScanImagesUrl();
-                if (imgsToDownload.Count == 0) { continue; } // if list is empty (in case of error while getting html content) skip directly to the next url
-
-                // Create output folder if necessary
-                string downloadPath = CreateChapterDirectory(bookName, chapterNumber);
-
-                int pageId = 1;
-                foreach (string imgUrl in imgsToDownload)
-                {
-                    int pageIndex = imgsToDownload.IndexOf(imgUrl);
-                    float chapterCompletion = (float)pageIndex / (imgsToDownload.Count - 1);
-                    progress = float.Lerp(minProgress, maxProgress, chapterCompletion);
-                    UpdateDownloadProgress(progress);
-
-                    string fileExtension = scanUrl.GetFileExtensionFromUrl(imgUrl);
-                    string imgName = $"{bookName}_{chapterNumber}-{pageId.ToString("D3")}{fileExtension}";  
-                    string downloadFile = Path.Combine(downloadPath, imgName);
-
-
-                    using (WebClient client = new WebClient())
-                    {
-                        try
-                        {
-                            WriteDlInfoLine($"\nDownloading {imgName} from {imgUrl}");
-                            WriteDlInfoLine($"...");
-
-                            if (File.Exists(downloadFile) == true && File.ReadAllBytes(downloadFile).Length > 0 == true)
-                            {
-                                WriteDlInfoLine($"File already downloaded!\n");
-                            }
-                            else
-                            {
-                                await client.DownloadFileTaskAsync(new Uri(imgUrl), downloadFile);
-                                WriteDlInfoLine($"Sucessfully downloaded!\n");
-                            }
-                        }
-                        catch (WebException ex)
-                        {
-                            Error.FailedImageDownload(ex, imgUrl);
-                        }
-                    }
-                    pageId++;
-                }
-
-                if (CurrentSettings.CreateCbzArchive)
-                {
-                    BuildCbzArchive(scanUrl, downloadPath);
-                }
-            }
-        }
-
         #endregion
 
+        // TODO: Move to Downloader or create a class for File Management
         #region Folder Management
         static void CheckOutputDirectory()
         {
@@ -568,6 +464,26 @@ namespace ScanNetDownloader.ConsoleApp
             }
         }
 
+        public static bool AreScanFilesDownloaded(ScanWebsiteUrl scanUrl)
+        {
+            string chapterDirPath = GetChapterDirectoryPath(scanUrl);
+            if (Directory.Exists(chapterDirPath))
+            {
+                if(Directory.GetFiles(chapterDirPath).Any()) // TODO: Improve this to know if we have the correct amount of page
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         static string GetBookDirectoryPath(ScanWebsiteUrl scanUrl)
         {
             string bookName = scanUrl.BookName;
@@ -603,6 +519,7 @@ namespace ScanNetDownloader.ConsoleApp
         }
         #endregion
 
+        // TODO: Move this in Settings Class
         #region Settings
 
         public static void InitializeAppSettings()
@@ -669,11 +586,7 @@ namespace ScanNetDownloader.ConsoleApp
 
         static Settings ResetToDefaultSettings()
         {
-            Settings defaultSettings = new Settings() // Use default Settings
-            {
-                //ScansUrlAndCorrespondingChapters = DEFAULT_SCANS_LIST
-                // Other settings already have default value asssigned
-            };
+            Settings defaultSettings = new Settings();
             SaveSettings(defaultSettings);
             return defaultSettings;
         }
@@ -707,6 +620,7 @@ namespace ScanNetDownloader.ConsoleApp
         }
         #endregion
 
+        // TODO: Move this in a CbzCreator Class
         #region Cbz Archive
         static void BuildCbzArchive(ScanWebsiteUrl scanUrl, string downloadPath)
         {

@@ -18,12 +18,6 @@ namespace ScanNetDownloader.ConsoleApp
         public List<ScanWebsiteUrl> ScanUrlList { get; set; } = new List<ScanWebsiteUrl>();
 
         /// <summary>
-        /// Dictionnary containing the scan url as a key and the chapter to download as value
-        /// </summary>
-        [Obsolete("Replaced by ScanUrlList, now we save directly the scanUrl list instead oof creating them from the dictionnary")]
-        public Dictionary<string, string> ScansUrlAndCorrespondingChapters { get; set; } = new Dictionary<string, string>();
-
-        /// <summary>
         /// Set a custom output folder (if null or empty, we use the default user download folder) (Default=string.Empty)
         /// </summary>
         public string CustomFolderPath { get; set; } = "";
