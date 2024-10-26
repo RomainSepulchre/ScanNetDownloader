@@ -120,7 +120,7 @@ namespace ScanNetDownloader.ConsoleApp
 
             await DownloadScans(scansToDownload);
 
-            if (CurrentSettings.ErrorsPauseApp)
+            if (CurrentSettings.ErrorPauseApp)
             {
                 WriteDlInfoLine("Finished, press any key to close...");
                 MessageBox.Show("Finished, press any key to close...", "Finished", MessageBoxButton.OK, MessageBoxImage.None);
@@ -132,7 +132,7 @@ namespace ScanNetDownloader.ConsoleApp
                 MessageBox.Show("Finished with error, press any key to close...", "Finished", MessageBoxButton.OK, MessageBoxImage.None);
             }           
 
-            if (CurrentSettings.OpenOutputDirectoryWhenClosing)
+            if (CurrentSettings.OpenOutputDirectoryAfterDownload)
             {
                 OpenRelevantFolder(scansToDownload);                
             }
@@ -670,7 +670,7 @@ namespace ScanNetDownloader.ConsoleApp
             }
             Debug.WriteLine($"Html file saved, press to open folder location...");
             MessageBox.Show($"Html file saved, press ok to open folder location...", "Hmtl saved", MessageBoxButton.OK, MessageBoxImage.Information);
-            CurrentSettings.OpenOutputDirectoryWhenClosing = false;
+            CurrentSettings.OpenOutputDirectoryAfterDownload = false;
             OpenFolder(OutputDirectory);
         }
         #endregion

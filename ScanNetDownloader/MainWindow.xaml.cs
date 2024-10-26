@@ -20,9 +20,21 @@ namespace ScanNetDownloader
 
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
+
+        private TabItem previousTabSelected = null;
+
         private List<ScanWebsiteUrl> ScanWebsiteUrls => ScansLocalData.Instance.ScanUrlList;
 
-        private bool OptionsChanged => OptionsModifiedButNotSaved(); // TODO: Bind btnSave.IsEnable to this but hoe to do it with settings anything ?
+        private ObservableCollection<ScanItem> _scanListItems;
+
+        public ObservableCollection<ScanItem> ScanListItems
+        {
+            get { return _scanListItems; }
+            set
+            {
+                _scanListItems = value;
+            }
+        }
 
         private string _dlInfo;
 
@@ -34,17 +46,6 @@ namespace ScanNetDownloader
                 _dlInfo = value;
                 scrollVwDownloadInfo?.ScrollToBottom();
                 OnPropertyChanged();
-            }
-        }
-
-        private ObservableCollection<ScanItem> _scanListItems;
-
-        public ObservableCollection<ScanItem> ScanListItems
-        {
-            get { return _scanListItems; }
-            set
-            {
-                _scanListItems = value;
             }
         }
 
@@ -67,14 +68,11 @@ namespace ScanNetDownloader
             ScansLocalData.InitializeScansData();
 
             // Initialize Window
-            InitializeComponent();         
+            InitializeComponent();
 
-            // Clear scan list and load list from Settings
-            //scanListView.Items.Clear();
-
-            // Populate listView based on the local data
-            RefreshScanListView();
-            RefreshSettings();
+            // Setup Ui
+            RefreshScanListView(); // Populate listView based on the local data
+            // Note: Settings are refreshed at OptionsView Initialization
         }
 
         private void OnPropertyChanged([CallerMemberName]string property=null)
@@ -82,33 +80,38 @@ namespace ScanNetDownloader
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
 
-        #region Ui Routed Events
-        
-        // TODO: Is there a way to know when we leave options tab
-        //private void tabOptions_LostFocus(object sender, RoutedEventArgs e)
-        //{
-        //    if (OptionsChanged)
-        //    {
-        //        MessageBoxResult result = MessageBox.Show("Do you want to save your options changes ?", "Save Options", MessageBoxButton.YesNo, MessageBoxImage.Question);
-        //        if (result == MessageBoxResult.Yes) SaveSettings();
-        //    }
-        //}
+        #region Ui Routed Events    
 
         private void tabCtrlNavigation_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (ReferenceEquals(e.OriginalSource, tabCtrlNavigation))
+            if (ReferenceEquals(e.OriginalSource, tabCtrlNavigation)) // Only if event come from the TabControl and not an element inside
             {
+                if (previousTabSelected != null)
+                {
+                    if (previousTabSelected == tabOptions && optionsVw.OptionsChangesNotSaved)
+                    {
+                        MessageBoxResult result = MessageBox.Show("Do you want to save your options changes ?", "Save Options", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                        if (result == MessageBoxResult.Yes) optionsVw.SaveSettings();
+                    }
+                }
+
                 if (tabCtrlNavigation.SelectedItem == tabMain)
                 {
-                    RefreshScanListView();
+                    previousTabSelected = tabMain;
+                    RefreshScanListView(); 
                 }
                 else if (tabCtrlNavigation.SelectedItem == tabDownload)
                 {
-
+                    previousTabSelected = tabDownload;
                 }
                 else if (tabCtrlNavigation.SelectedItem == tabOptions)
                 {
-                    RefreshSettings();
+                    previousTabSelected = tabOptions;
+                    optionsVw.RefreshSettings();
+                }
+                else if (tabCtrlNavigation.SelectedItem == tabDebug)
+                {
+                    previousTabSelected = tabDebug;
                 }
             }
         }
@@ -160,31 +163,6 @@ namespace ScanNetDownloader
         private void btnDbgOpenDataJson_Click(object sender, RoutedEventArgs e)
         {
             ScansLocalData.OpenJsonFile();
-        }
-
-        private void btnChooseOutputDir_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFolderDialog fileDialog = new OpenFolderDialog();
-            fileDialog.Title = "Select download directory";
-            fileDialog.Multiselect = false;
-
-            bool? success = fileDialog.ShowDialog();
-
-            if (success == true)
-            {
-                txtBoxOutputDir.Text = fileDialog.FolderName;
-                SaveSettings();
-            }
-        }
-
-        private void btnSaveOptions_Click(object sender, RoutedEventArgs e)
-        {
-            SaveSettings();
-        }
-
-        private void btnDbgOpenSettingsJson_Click(object sender, RoutedEventArgs e)
-        {
-            Settings.OpenJsonFile();
         }
 
         private void btnOpenStatusBar_Click(object sender, RoutedEventArgs e)
@@ -318,44 +296,6 @@ namespace ScanNetDownloader
 
             // Remove item from list view
             ScanListItems.Remove(itemToDelete);
-        }
-
-        private void RefreshSettings()
-        {
-            Debug.WriteLine("REFRESH SETTINGS");
-
-            Settings settings = Settings.Instance;
-            // TODO: Create bindings for ui elements
-            txtBoxOutputDir.Text = settings.OutputDirectory;
-            chBoxCreateCbz.IsChecked = settings.CreateCbzArchive;
-            chBoxDeleteImageAfterCbz.IsChecked = settings.DeleteImagesAfterCbzCreation;
-            chBoxOpenOutputDir.IsChecked = settings.OpenOutputDirectoryWhenClosing;
-            chBoxErrorPauseApp.IsChecked = settings.ErrorsPauseApp;
-        }
-
-        private void SaveSettings()
-        {
-            // TODO: check if output directory is a valid directory before saving
-
-            Settings.Instance.OutputDirectory = txtBoxOutputDir.Text;
-            Settings.Instance.CreateCbzArchive = chBoxCreateCbz.IsChecked ?? Settings.Instance.CreateCbzArchive;
-            Settings.Instance.DeleteImagesAfterCbzCreation = chBoxDeleteImageAfterCbz.IsChecked ?? Settings.Instance.DeleteImagesAfterCbzCreation;
-            Settings.Instance.OpenOutputDirectoryWhenClosing = chBoxOpenOutputDir.IsChecked ?? Settings.Instance.OpenOutputDirectoryWhenClosing;
-            Settings.Instance.ErrorsPauseApp = chBoxErrorPauseApp.IsChecked ?? Settings.Instance.ErrorsPauseApp;
-
-            Settings.Update(Settings.Instance);
-        }
-
-        private bool OptionsModifiedButNotSaved()
-        {
-            Settings settings = Settings.Instance;
-            if (txtBoxOutputDir.Text != settings.OutputDirectory) return true;
-            if (chBoxCreateCbz.IsChecked != settings.CreateCbzArchive) return true;
-            if (chBoxDeleteImageAfterCbz.IsChecked != settings.DeleteImagesAfterCbzCreation) return true;
-            if (chBoxOpenOutputDir.IsChecked != settings.OpenOutputDirectoryWhenClosing) return true;
-            if (chBoxErrorPauseApp.IsChecked != settings.ErrorsPauseApp) return true;
-
-            return false;
         }
     }
 }

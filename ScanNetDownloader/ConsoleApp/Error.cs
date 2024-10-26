@@ -123,7 +123,7 @@ namespace ScanNetDownloader.ConsoleApp
 
             Debug.WriteLine($"Exception: {ex}\n");
 
-            if (Settings.Instance.ErrorsPauseApp)
+            if (Settings.Instance.ErrorPauseApp)
             {
                 Debug.WriteLine($"Press any key to continue...\n");
                 MessageBox.Show($"\nError while loading {htmlUrl} content, this scan won't be downloaded.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -139,7 +139,7 @@ namespace ScanNetDownloader.ConsoleApp
 
             Debug.WriteLine($"Exception: {ex}\n");
 
-            if (Settings.Instance.ErrorsPauseApp)
+            if (Settings.Instance.ErrorPauseApp)
             {  
                 Debug.WriteLine($"Press any key to continue...\n");
                 MessageBox.Show($"\nDownload failed for {imgUrl}!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -162,7 +162,7 @@ namespace ScanNetDownloader.ConsoleApp
 
             Debug.WriteLine($"=> Exception: {ex}\n");
 
-            if (Settings.Instance.ErrorsPauseApp)
+            if (Settings.Instance.ErrorPauseApp)
             {
                 Debug.WriteLine($"=> Press any key to continue...\n");
                 MessageBox.Show($"=> An error occured while creating the CBZ archive for {scanUrl.BookName}-{scanUrl.ChapterId}!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -185,7 +185,7 @@ namespace ScanNetDownloader.ConsoleApp
 
             Debug.WriteLine($"=> Exception: {ex}\n");
 
-            if (Settings.Instance.ErrorsPauseApp)
+            if (Settings.Instance.ErrorPauseApp)
             {
                 Debug.WriteLine($"=> Press any key to continue...\n");
                 MessageBox.Show($"=> An error occured while replacing an empty CBZ archive for {scanUrl.BookName}-{scanUrl.ChapterId}!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -208,7 +208,7 @@ namespace ScanNetDownloader.ConsoleApp
 
             Debug.WriteLine($"\n{scanUrl.BookName} chapter {scanUrl.ChapterId} doesn't exist on the website ({chapterUrl}). Make sure this chapter really exist.\n");
 
-            if (Settings.Instance.ErrorsPauseApp)
+            if (Settings.Instance.ErrorPauseApp)
             {
                 Debug.WriteLine($"Press any key to continue...\n");
                 MessageBox.Show($"\n{scanUrl.BookName} chapter {scanUrl.ChapterId} doesn't exist on the website ({chapterUrl}). Make sure this chapter really exist.\n", "Error", MessageBoxButton.OK, MessageBoxImage.Error);

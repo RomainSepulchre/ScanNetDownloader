@@ -38,6 +38,17 @@ namespace ScanNetDownloader.ConsoleApp
         }
 
         /// <summary>
+        /// Should the program automatically open the output directory when closing (Default=True)
+        /// </summary>
+        public bool OpenOutputDirectoryAfterDownload { get; set; } = true;
+
+        /// <summary>
+        /// Should the program pause the app and wait for an user input when an error is triggered (Default=True)
+        /// A major error requiring user input bypass this and pause the app anyway
+        /// </summary>
+        public bool ErrorPauseApp { get; set; } = true;
+
+        /// <summary>
         /// Do you want to create a .cbz archive of every chapter downloaded (Default=True)
         /// </summary>
         public bool CreateCbzArchive { get; set; } = true;
@@ -45,23 +56,12 @@ namespace ScanNetDownloader.ConsoleApp
         /// <summary>
         /// Do you want to keep the images downloaded once the cbz has been created (Default=False)
         /// </summary>
-        public bool DeleteImagesAfterCbzCreation { get; set; } = false;
-
-        /// <summary>
-        /// Should the program automatically open the output directory when closing (Default=True)
-        /// </summary>
-        public bool OpenOutputDirectoryWhenClosing { get; set; } = true;
-
-        /// <summary>
-        /// Should the program pause the app and wait for an user input when an error is triggered (Default=True)
-        /// A major error requiring user input bypass this and pause the app anyway
-        /// </summary>
-        public bool ErrorsPauseApp { get; set; } = true;
+        public bool DeleteImagesAfterCbzCreation { get; set; } = false;       
 
         /// <summary>
         /// Should the program automatically open Settings.json when you need to check something in it (Default=True)
         /// </summary>
-        public bool AutoOpenJsonWhenNecessary { get; set; } = true;
+        public bool AutoOpenJsonWhenNecessary { get; set; } = true; // TODO: Do we still really need this
 
         public static void InitializeAppSettings()
         {

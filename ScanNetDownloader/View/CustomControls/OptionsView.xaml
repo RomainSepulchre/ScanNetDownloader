@@ -1,0 +1,42 @@
+﻿<UserControl x:Class="ScanNetDownloader.View.CustomControls.OptionsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ScanNetDownloader.View.CustomControls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.9*"/>
+            <RowDefinition Height="0.1*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Vertical" Margin="20">
+
+            <Label Content="General" FontWeight="Bold" Margin="0 0 0 0"/>
+
+            <StackPanel Orientation="Vertical" Margin="5 -5 0 0">
+                <Label Content="Download location" Margin=" -5 0 0 0" />
+                <StackPanel Orientation="Horizontal" Margin="0 0 0 7">
+                    <TextBox Name="txtBoxOutputDir" Text="{Binding OutputDirectoryPath, UpdateSourceTrigger=PropertyChanged}"  Width="400" Height="30" VerticalContentAlignment="Center"/>
+                    <Button Name="btnChooseOutputDir" Content="Choose..." Click="btnChooseOutputDir_Click"  Width="80" Height="30" Margin="5 0 0 0"/>
+                </StackPanel>
+                <CheckBox Name="chBoxOpenOutputDir" Content="Open output directory after download" IsChecked="{Binding OpenOutputDirAfterDownload, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5"/>
+                <CheckBox Name="chBoxErrorPauseApp" Content="Error pause the download (Pop-up to acknowledge)" IsChecked="{Binding ErrorPauseApp, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5"/>
+            </StackPanel>
+
+
+            <Label Content="Cbz Creation" FontWeight="Bold" Margin="0 8 0 5"/>
+            <StackPanel Orientation="Vertical" Margin="5 0 0 0">
+                <CheckBox Name="chBoxCreateCbz" Content="Create .Cbz archive after download" IsChecked="{Binding CreateCbzAfterDownload, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5"/>
+                <CheckBox Name="chBoxDeleteImageAfterCbz" Content="Delete scan image after .Cbz creation" IsChecked="{Binding DeleteImagesAfterCbzCreation, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5"/>
+            </StackPanel>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0 0 70 0">
+            <Button Name="btnSaveOptions" Content="Save" Click="btnSaveOptions_Click" Width="80" Height="35" HorizontalAlignment="Right" Margin="0 0 10 0"/>
+            <Button Name="btnDbgOpenSettingsJson" Content="Debug_OpenJson" Click="btnDbgOpenSettingsJson_Click"  Background="Orchid" Height="35" Width="100" Margin="0 0 10 0"/>
+
+        </StackPanel>
+    </Grid>
+</UserControl>
