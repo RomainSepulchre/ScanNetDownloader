@@ -62,7 +62,7 @@ namespace ScanNetDownloader.ConsoleApp
         public static event EventHandler<ScanWebsiteUrl> ScanDownloadedEvent;
 
         #region Download Events
-        public static void WriteDlInfoLine(string lineToAdd)
+        public static void WriteDlInfoLine(string lineToAdd) // TODO: Do better than this ? Class decicated to eventsHandler that anyone can call ? Status/DlInfo class ?
         {
             Debug.WriteLine(lineToAdd);
             if (DlInfoWriteLineEvent != null)
@@ -203,7 +203,7 @@ namespace ScanNetDownloader.ConsoleApp
 
                 if (CurrentSettings.CreateCbzArchive)
                 {
-                    BuildCbzArchive(scanUrl, downloadPath);
+                    CbzCreator.BuildCbzArchive(scanUrl, downloadPath);
                 }
 
                 // Deselect since we just downloaded it
@@ -372,66 +372,6 @@ namespace ScanNetDownloader.ConsoleApp
         }
         #endregion
 
-        // TODO: Move this in a CbzCreator Class
-        #region Cbz Archive
-        public static void BuildCbzArchive(ScanWebsiteUrl scanUrl, string downloadPath)
-        {
-            WriteDlInfoLine($"=> Create .CBZ for {scanUrl.BookName}-{scanUrl.ChapterId}...");
-
-            string bookName = scanUrl.BookName;
-            string chapterNumber = scanUrl.ChapterId.ToString();
-
-            string folderToArchive = downloadPath;
-            string cbzFilePath = Path.Combine(Directory.GetParent(downloadPath).FullName, $"{bookName}{Constants.CBZ_CHAPTER_PREFIX}{chapterNumber}{Constants.CBZ_EXTENSION}"); // TODO: Add const for { - chapter } and .cbz
-
-            if (Directory.EnumerateFileSystemEntries(folderToArchive).Any() == false)
-            {
-                WriteDlInfoLine($"=> No images downloaded for {bookName}-{chapterNumber}, CBZ creation will be skipped!\n");
-                return;
-            }
-
-            if (File.Exists(cbzFilePath) == false)
-            {
-                try
-                {
-                    ZipFile.CreateFromDirectory(folderToArchive, cbzFilePath);
-                    WriteDlInfoLine($"=> {bookName}-{chapterNumber} .CBZ successfully created!\n");
-                }
-                catch (IOException ex)
-                {
-                    Error.FailedCbzCreation(ex, scanUrl, CurrentSettings.DeleteImagesAfterCbzCreation);
-                    return;
-                }
-            }
-            else // a cbz file already exist
-            {
-                if (File.ReadAllBytes(cbzFilePath).Length > 0)
-                {
-                    WriteDlInfoLine($"=> .CBZ already created!\n");
-                }
-                else // Replace empty Cbz
-                {
-                    try
-                    {
-                        File.Delete(cbzFilePath);
-                        ZipFile.CreateFromDirectory(folderToArchive, cbzFilePath);
-                        WriteDlInfoLine($"=> {bookName}-{chapterNumber} .CBZ successfully created!\n");
-                    }
-                    catch (IOException ex)
-                    {
-                        Error.FailedToReplaceEmptyCbz(ex, scanUrl, CurrentSettings.DeleteImagesAfterCbzCreation);
-                        return;
-                    }
-                }
-            }
-
-            if (CurrentSettings.DeleteImagesAfterCbzCreation)
-            {
-                if (Directory.Exists(downloadPath)) Directory.Delete(downloadPath, true);
-            }
-        }
-        #endregion
-
         #region UserInputs
         public static MessageBoxResult WaitForYesOrNoMsgBox(string textDisplayed)
         {
@@ -463,14 +403,6 @@ namespace ScanNetDownloader.ConsoleApp
         #endregion
 
         #region Visual and Ui
-        static void WriteAppTitle()
-        {
-            string appTitle = $"$$$--- SCAN.NET DOWNLOADER ---$$$";
-            WriteDlInfoLine($"\n{AdaptativeLineOfCharForHeader(appTitle, '$')}");
-            WriteDlInfoLine(appTitle);
-            WriteDlInfoLine($"{AdaptativeLineOfCharForHeader(appTitle, '$')}\n");
-        }
-
         static string AdaptativeLineOfCharForHeader(string header, char charToUseForLine)
         {
             return new string(charToUseForLine, header.Length);
@@ -480,7 +412,7 @@ namespace ScanNetDownloader.ConsoleApp
         #region Quit Console
         public static void QuitApp()
         {
-            Environment.Exit(0); // TODO: Weird things happening with Application.Current.Shutdown && Window.Close, the app continue to run anyway even with window closed
+            Environment.Exit(0); // TODO: Weird things happening with Application.Current.Shutdown && Window.Close, the app continue to run anyway even with window closed -> Retest with App.xaml.ShutdownMode="OnMainWindowClose"
         }
         #endregion
 

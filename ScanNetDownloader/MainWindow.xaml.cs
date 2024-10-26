@@ -196,7 +196,7 @@ namespace ScanNetDownloader
                     if (result == MessageBoxResult.Yes)
                     {
                         string chapterPath = Program.GetChapterDirectoryPath(item.linkedScanWebsiteUrl);
-                        Program.BuildCbzArchive(item.linkedScanWebsiteUrl, chapterPath);
+                        CbzCreator.BuildCbzArchive(item.linkedScanWebsiteUrl, chapterPath);
 
                         bool cbzSuccessfullyCreated = Program.IsCbzArchiveCreated(item.linkedScanWebsiteUrl);
                         item.CbzArchiveCreated = cbzSuccessfullyCreated;
@@ -303,6 +303,7 @@ namespace ScanNetDownloader
         {
             
         }
+
         #endregion
     }
 }
