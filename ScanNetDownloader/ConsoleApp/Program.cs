@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using ScanNetDownloader.View;
+﻿using ScanNetDownloader.View;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -50,9 +49,9 @@ namespace ScanNetDownloader.ConsoleApp
             {"https://anime-sama.fr/catalogue/berserk/scan/vf/","1-3;4;5"}
         };
 
-        private static Settings CurrentSettings => Settings.instance;
+        private static Settings CurrentSettings => Settings.Instance;
 
-        private static string OutputDirectory => string.IsNullOrEmpty(CurrentSettings.CustomFolderPath) ? Constants.USER_DOWNLOAD_FOLDER_PATH : CurrentSettings.CustomFolderPath;
+        private static string OutputDirectory => Settings.Instance.OutputDirectory;
 
         private static Window mainWindow = new Window();
 
@@ -385,10 +384,11 @@ namespace ScanNetDownloader.ConsoleApp
         #region Folder Management
         static void CheckOutputDirectory()
         {
+            // TODO: Redo Error Manamgement to fit with WPF
             // TODO: If no custom directory set ask if the user want to select a new one or if he's ok with the one selected
 
             if (Directory.Exists(OutputDirectory) == false)
-            {
+            { 
                 Error.NoOutputDirectory();
 
                 WriteDlInfoLine($"Do you want to create the directory \"{OutputDirectory}\" ? ");
@@ -400,6 +400,7 @@ namespace ScanNetDownloader.ConsoleApp
                 }
                 else
                 {
+                    // TODO: Select output dir here instead of opening Json
                     WriteDlInfoLine("Please modify the output directory in Settings.json, it must be a valid directory.");
                     if (CurrentSettings.AutoOpenJsonWhenNecessary) // TODO: this is done several time, this could be a single function
                     {
@@ -412,8 +413,7 @@ namespace ScanNetDownloader.ConsoleApp
                         MessageBox.Show("The app will be closed...", "Quit app", MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
                     
-
-                    OpenSettingsJsonFile();
+                    Settings.OpenJsonFile();
                     QuitApp();
                 }
             }
@@ -540,107 +540,6 @@ namespace ScanNetDownloader.ConsoleApp
         }
         #endregion
 
-        // TODO: Move this in Settings Class
-        #region Settings
-
-        public static void InitializeAppSettings()
-        {
-            Settings.instance = LoadSettings(Constants.SETTINGS_JSON_PATH);
-            Settings.instance.Log();
-        }
-
-        public static Settings LoadSettings(string jsonPath)
-        {
-            Settings loadedSettings;
-
-            JsonSerializerSettings serializerSettings = new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.All
-            };
-
-            if (File.Exists(jsonPath))
-            {
-                try
-                {
-                    loadedSettings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(Constants.SETTINGS_JSON_PATH), serializerSettings);
-                    return loadedSettings;
-                }
-                catch (Exception ex)
-                {
-                    Error.FailedToLoadSettingsJson(jsonPath, ex);
-
-                    Debug.WriteLine($"Do you want to reset settings.json to it's default values ?");
-                    if (WaitForYesOrNoMsgBox($"Do you want to reset settings.json to it's default values ?") == MessageBoxResult.Yes)
-                    {
-                        loadedSettings = ResetToDefaultSettings();
-                        return loadedSettings;
-                    }
-                    else
-                    {
-                        Debug.WriteLine("Please make sure nothing is wrong with the value in Settings.json, if the problem persist backup your settings and reset the json to it's default values.");
-
-                        if (CurrentSettings != null && CurrentSettings.AutoOpenJsonWhenNecessary)
-                        {
-                            Debug.WriteLine("Press any key to open Settings.json and close the app...");
-                            MessageBox.Show("Press ok to open Settings.json and close the app...", "Quit app", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        }
-                        else
-                        {
-                            Debug.WriteLine("Press any key close the app...");
-                            MessageBox.Show("The app will be closed...", "Quit app", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        }
-                        
-
-                        OpenSettingsJsonFile();
-                        QuitApp();
-                        return null;
-                    }
-                }
-            }
-            else // Missing Settings.json
-            {
-                Error.MissingSettingsJson(jsonPath);
-                loadedSettings = ResetToDefaultSettings();
-                return loadedSettings;
-            }
-        }
-
-        static Settings ResetToDefaultSettings()
-        {
-            Settings defaultSettings = new Settings();
-            SaveSettings(defaultSettings);
-            return defaultSettings;
-        }
-
-        public static void SaveSettings(Settings newSettings)
-        {
-            JsonSerializerSettings serializerSettings = new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.All,
-                Formatting = Formatting.Indented
-            };
-
-            Settings.instance = newSettings;
-            try
-            {
-                File.WriteAllText(Constants.SETTINGS_JSON_PATH, JsonConvert.SerializeObject(newSettings, serializerSettings));
-            }
-            catch (Exception ex)
-            {
-                Error.FailedToSaveSettingsJson(Constants.SETTINGS_JSON_PATH, ex);
-            }  
-        }
-
-        public static void OpenSettingsJsonFile()
-        {
-            if (CurrentSettings != null && CurrentSettings.AutoOpenJsonWhenNecessary)
-            {
-                new Process { StartInfo = new ProcessStartInfo(Constants.SETTINGS_JSON_PATH) { UseShellExecute = true } }.Start();
-                //Process.Start(Constants.SETTINGS_JSON_PATH);
-            }    
-        }
-        #endregion
-
         // TODO: Move this in a CbzCreator Class
         #region Cbz Archive
         public static void BuildCbzArchive(ScanWebsiteUrl scanUrl, string downloadPath)
@@ -702,7 +601,7 @@ namespace ScanNetDownloader.ConsoleApp
         #endregion
 
         #region UserInputs
-        static MessageBoxResult WaitForYesOrNoMsgBox(string textDisplayed)
+        public static MessageBoxResult WaitForYesOrNoMsgBox(string textDisplayed)
         {
             WriteDlInfoLine(textDisplayed);
             MessageBoxResult result = MessageBox.Show(textDisplayed, "Continue ?", MessageBoxButton.YesNo, MessageBoxImage.Question);
@@ -711,6 +610,9 @@ namespace ScanNetDownloader.ConsoleApp
             return result;
         }
 
+        //
+        // TODO : Probably won't be needed but make sure before cleaning
+        //
         static bool IsEnteredKeyValid(ConsoleKey key, ConsoleKey[] expectedKeys)
         {
             bool isValid = false;

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 
 namespace ScanNetDownloader.ConsoleApp
 {
@@ -11,8 +6,10 @@ namespace ScanNetDownloader.ConsoleApp
     {
         #region Paths
         public static readonly string BASE_DIRECTORY_PATH = AppDomain.CurrentDomain.BaseDirectory;
-        public const string SETTINGS_JSON_FILENAME = "Settings.json";
+        private const string SETTINGS_JSON_FILENAME = "Settings.json";
         public static readonly string SETTINGS_JSON_PATH = BASE_DIRECTORY_PATH + SETTINGS_JSON_FILENAME;
+        private const string SCANSLOCALDATA_JSON_FILENAME = "ScansLocalData.json";
+        public static readonly string SCANSLOCALDATA_JSON_PATH = BASE_DIRECTORY_PATH + SCANSLOCALDATA_JSON_FILENAME;
         public static readonly string USER_FOLDER_PATH = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile); // User directory path
         public static readonly string USER_DOWNLOAD_FOLDER_PATH = Path.Combine(USER_FOLDER_PATH, "Downloads"); // Default download directory path
         #endregion

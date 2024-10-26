@@ -15,10 +15,10 @@
             <RowDefinition Height="20"/>
         </Grid.RowDefinitions>
         
-        <TabControl Name="MainTabs">
+        <TabControl Name="tabCtrlNavigation" SelectionChanged="tabCtrlNavigation_SelectionChanged">
             
             <!--Scan Management-->
-            <TabItem Header="Main">
+            <TabItem Name="tabMain" Header="Main">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition/>
@@ -36,14 +36,14 @@
                         <Button Name="btnAdd" Content="Add" Click="btnAdd_Click" Height="40" Width="100" Margin="5"/>
                         <Button Name="btnStart" Content="Start" Click="btnStart_Click" Height="40" Width="100" Margin="5"/>
                         <Button Name="btnDbgSave" Content="Debug_Save" Click="btnDbgSave_Click" Background="Orchid" Height="40" Width="100" Margin="5"/>
-                        <Button Name="btnOpenJSon" Content="Debug_OpenJson" Click="btnOpenJSon_Click"  Background="Orchid" Height="40" Width="100" Margin="5"/>
+                        <Button Name="btnDbgOpenDataJson" Content="Debug_OpenJson" Click="btnDbgOpenDataJson_Click"  Background="Orchid" Height="40" Width="100" Margin="5"/>
 
                     </StackPanel>
                 </Grid>
             </TabItem>
             
             <!--Scan Download-->
-            <TabItem Header="Download">
+            <TabItem Name="tabDownload" Header="Download">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="0.9*"/>
@@ -67,7 +67,7 @@
             </TabItem>
             
             <!--Options-->
-            <TabItem Header="Options">
+            <TabItem Name="tabOptions" Header="Options">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="0.9*"/>
@@ -82,7 +82,7 @@
                             <Label Content="Download location" Margin=" -5 0 0 0" />
                             <StackPanel Orientation="Horizontal" Margin="0 0 0 7">
                                 <TextBox Name="txtBoxOutputDir" Text="X:/Files"  Width="400" Height="30" VerticalContentAlignment="Center"/>
-                                <Button Name="btnChooseOutputDir"  Content="Choose..." Width="80" Height="30" Margin="5 0 0 0"/>
+                                <Button Name="btnChooseOutputDir" Content="Choose..." Click="btnChooseOutputDir_Click"  Width="80" Height="30" Margin="5 0 0 0"/>
                             </StackPanel>
                             <CheckBox Name="chBoxOpenOutputDir" Content="Open output directory after download" Margin="0 0 0 5"/>
                             <CheckBox Name="chBoxErrorPauseApp" Content="Error pause the download (Pop-up to acknowledge)" Margin="0 0 0 5"/>
@@ -95,8 +95,11 @@
                             <CheckBox Name="chBoxDeleteImageAfterCbz" Content="Delete scan image after .Cbz creation" Margin="0 0 0 5"/>
                         </StackPanel>
                     </StackPanel>
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0 0 70 0">
+                        <Button Name="btnSaveOptions" Content="Save" Click="btnSaveOptions_Click" Width="80" Height="35" HorizontalAlignment="Right" Margin="0 0 10 0"/>
+                        <Button Name="btnDbgOpenSettingsJson" Content="Debug_OpenJson" Click="btnDbgOpenSettingsJson_Click"  Background="Orchid" Height="35" Width="100" Margin="0 0 10 0"/>
 
-                    <Button Grid.Row="1" Name="btnSaveOptions" Content="Save" Click="btnSaveOptions_Click" Width="80" Height="35" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0 0 80 0"/>
+                    </StackPanel>
                 </Grid>
                 
             </TabItem>

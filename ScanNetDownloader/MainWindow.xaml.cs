@@ -1,20 +1,13 @@
-﻿using ScanNetDownloader.ConsoleApp;
+﻿using Microsoft.Win32;
+using ScanNetDownloader.ConsoleApp;
 using ScanNetDownloader.View;
+using ScanNetDownloader.View.CustomControls;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using ScanNetDownloader.View.CustomControls;
 
 namespace ScanNetDownloader
 {
@@ -27,7 +20,9 @@ namespace ScanNetDownloader
 
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        public List<ScanWebsiteUrl> ScanWebsiteUrls { get; set; }
+        private List<ScanWebsiteUrl> ScanWebsiteUrls => ScansLocalData.Instance.ScanUrlList;
+
+        private bool OptionsChanged => OptionsModifiedButNotSaved(); // TODO: Bind btnSave.IsEnable to this but hoe to do it with settings anything ?
 
         private string _dlInfo;
 
@@ -66,7 +61,10 @@ namespace ScanNetDownloader
             Program.ScanDownloadedEvent += new EventHandler<ScanWebsiteUrl>(ScanDownloaded);
 
             // Load Settings
-            Program.InitializeAppSettings();
+            Settings.InitializeAppSettings();
+
+            // Load ScansLocalData
+            ScansLocalData.InitializeScansData();
 
             // Initialize Window
             InitializeComponent();         
@@ -74,11 +72,9 @@ namespace ScanNetDownloader
             // Clear scan list and load list from Settings
             //scanListView.Items.Clear();
 
-            // Load ScanWebsiteUrl saved on system
-            ScanWebsiteUrls = Settings.instance.ScanUrlList; // TODO: Separate Scan Data from the settings
-
-            // Populate listView based on the saved data
+            // Populate listView based on the local data
             RefreshScanListView();
+            RefreshSettings();
         }
 
         private void OnPropertyChanged([CallerMemberName]string property=null)
@@ -86,10 +82,40 @@ namespace ScanNetDownloader
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
 
-        #region Buttons and Routed Events
+        #region Ui Routed Events
+        
+        // TODO: Is there a way to know when we leave options tab
+        //private void tabOptions_LostFocus(object sender, RoutedEventArgs e)
+        //{
+        //    if (OptionsChanged)
+        //    {
+        //        MessageBoxResult result = MessageBox.Show("Do you want to save your options changes ?", "Save Options", MessageBoxButton.YesNo, MessageBoxImage.Question);
+        //        if (result == MessageBoxResult.Yes) SaveSettings();
+        //    }
+        //}
+
+        private void tabCtrlNavigation_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ReferenceEquals(e.OriginalSource, tabCtrlNavigation))
+            {
+                if (tabCtrlNavigation.SelectedItem == tabMain)
+                {
+                    RefreshScanListView();
+                }
+                else if (tabCtrlNavigation.SelectedItem == tabDownload)
+                {
+
+                }
+                else if (tabCtrlNavigation.SelectedItem == tabOptions)
+                {
+                    RefreshSettings();
+                }
+            }
+        }
+
         private void btnStart_Click(object sender, RoutedEventArgs e)
         {
-            MainTabs.SelectedIndex = 1; // Switch to download tab
+            tabCtrlNavigation.SelectedItem = tabDownload; // Switch to download tab
 
             List<ScanWebsiteUrl> scansToDownload = new List<ScanWebsiteUrl>();
             foreach (ScanItem item in _scanListItems)
@@ -127,20 +153,38 @@ namespace ScanNetDownloader
 
         private void btnDbgSave_Click(object sender, RoutedEventArgs e)
         {
-            bool sameRef = ReferenceEquals(ScanWebsiteUrls, Settings.instance.ScanUrlList);
-            Debug.WriteLine($"Is Settings.instance.ScanUrlList same as MainWindow.ScanWebsiteUrls ? => {sameRef}");
-            Settings.instance.ScanUrlList = ScanWebsiteUrls;
-            Program.SaveSettings(Settings.instance);
+            // Save the scans local data
+            ScansLocalData.Update(ScanWebsiteUrls);
         }
 
-        private void btnOpenJSon_Click(object sender, RoutedEventArgs e)
+        private void btnDbgOpenDataJson_Click(object sender, RoutedEventArgs e)
         {
-            Program.OpenSettingsJsonFile();
+            ScansLocalData.OpenJsonFile();
+        }
+
+        private void btnChooseOutputDir_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFolderDialog fileDialog = new OpenFolderDialog();
+            fileDialog.Title = "Select download directory";
+            fileDialog.Multiselect = false;
+
+            bool? success = fileDialog.ShowDialog();
+
+            if (success == true)
+            {
+                txtBoxOutputDir.Text = fileDialog.FolderName;
+                SaveSettings();
+            }
         }
 
         private void btnSaveOptions_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: Save options
+            SaveSettings();
+        }
+
+        private void btnDbgOpenSettingsJson_Click(object sender, RoutedEventArgs e)
+        {
+            Settings.OpenJsonFile();
         }
 
         private void btnOpenStatusBar_Click(object sender, RoutedEventArgs e)
@@ -150,7 +194,7 @@ namespace ScanNetDownloader
 
         private void ScanItem_DeleteBtnPressed(object sender, RoutedEventArgs e)
         {
-            ScanItem item = sender as ScanItem;
+            ScanItem item = e.Source as ScanItem;
             if (item != null)
             {
                 DeleteScanItem(item);
@@ -159,7 +203,7 @@ namespace ScanNetDownloader
 
         private void ScanItem_CreateCbzBtnPressed(object sender, RoutedEventArgs e)
         {
-            ScanItem item = sender as ScanItem;
+            ScanItem item = e.Source as ScanItem;
             if (item != null)
             {
                 // Verify if cbz is created
@@ -185,7 +229,7 @@ namespace ScanNetDownloader
 
         private void ScanItem_StatusBtnPressed(object sender, RoutedEventArgs e)
         {
-            ScanItem item = sender as ScanItem;
+            ScanItem item = e.Source as ScanItem;
             if (item != null)
             {
                 bool fileDownloaded = Program.AreScanFilesDownloaded(item.linkedScanWebsiteUrl);
@@ -226,6 +270,7 @@ namespace ScanNetDownloader
 
         private void RefreshScanListView()
         {
+            Debug.WriteLine("REFRESH SCAN LIST");
             ScanListItems.Clear();
 
             foreach (var scanUrl in ScanWebsiteUrls)
@@ -246,9 +291,8 @@ namespace ScanNetDownloader
             // Add in saved data
             ScanWebsiteUrls.AddRange(newScansToAdd);
 
-            // Save the settings // TODO: create a function for this
-            Settings.instance.ScanUrlList = ScanWebsiteUrls; // TODO: Is it necessary ScanWebsiteUrls should be a reference of Settings.instance.ScanUrlList = ScanWebsiteUrls
-            Program.SaveSettings(Settings.instance); // Seperate scanlist data from settings Data
+            // Save the scans local data
+            ScansLocalData.Update(ScanWebsiteUrls);
 
             // Add item in list view
             foreach (ScanWebsiteUrl scanUrl in newScansToAdd)
@@ -269,12 +313,49 @@ namespace ScanNetDownloader
             // Remove from saved data
             ScanWebsiteUrls.Remove(itemToDelete.linkedScanWebsiteUrl);
 
-            // Save the settings // TODO: create a function for this
-            Settings.instance.ScanUrlList = ScanWebsiteUrls; // TODO: Is it necessary ScanWebsiteUrls should be a reference of Settings.instance.ScanUrlList = ScanWebsiteUrls
-            Program.SaveSettings(Settings.instance); // TODO: Seperate scanlist data from settings Data
+            // Save the scans local data
+            ScansLocalData.Update(ScanWebsiteUrls);
 
             // Remove item from list view
-            ScanListItems.Remove(itemToDelete); 
+            ScanListItems.Remove(itemToDelete);
+        }
+
+        private void RefreshSettings()
+        {
+            Debug.WriteLine("REFRESH SETTINGS");
+
+            Settings settings = Settings.Instance;
+            // TODO: Create bindings for ui elements
+            txtBoxOutputDir.Text = settings.OutputDirectory;
+            chBoxCreateCbz.IsChecked = settings.CreateCbzArchive;
+            chBoxDeleteImageAfterCbz.IsChecked = settings.DeleteImagesAfterCbzCreation;
+            chBoxOpenOutputDir.IsChecked = settings.OpenOutputDirectoryWhenClosing;
+            chBoxErrorPauseApp.IsChecked = settings.ErrorsPauseApp;
+        }
+
+        private void SaveSettings()
+        {
+            // TODO: check if output directory is a valid directory before saving
+
+            Settings.Instance.OutputDirectory = txtBoxOutputDir.Text;
+            Settings.Instance.CreateCbzArchive = chBoxCreateCbz.IsChecked ?? Settings.Instance.CreateCbzArchive;
+            Settings.Instance.DeleteImagesAfterCbzCreation = chBoxDeleteImageAfterCbz.IsChecked ?? Settings.Instance.DeleteImagesAfterCbzCreation;
+            Settings.Instance.OpenOutputDirectoryWhenClosing = chBoxOpenOutputDir.IsChecked ?? Settings.Instance.OpenOutputDirectoryWhenClosing;
+            Settings.Instance.ErrorsPauseApp = chBoxErrorPauseApp.IsChecked ?? Settings.Instance.ErrorsPauseApp;
+
+            Settings.Update(Settings.Instance);
+        }
+
+        private bool OptionsModifiedButNotSaved()
+        {
+            Settings settings = Settings.Instance;
+            if (txtBoxOutputDir.Text != settings.OutputDirectory) return true;
+            if (chBoxCreateCbz.IsChecked != settings.CreateCbzArchive) return true;
+            if (chBoxDeleteImageAfterCbz.IsChecked != settings.DeleteImagesAfterCbzCreation) return true;
+            if (chBoxOpenOutputDir.IsChecked != settings.OpenOutputDirectoryWhenClosing) return true;
+            if (chBoxErrorPauseApp.IsChecked != settings.ErrorsPauseApp) return true;
+
+            return false;
         }
     }
 }

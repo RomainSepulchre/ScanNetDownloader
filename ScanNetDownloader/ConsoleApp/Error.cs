@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using System.Windows;
 
 namespace ScanNetDownloader.ConsoleApp
@@ -92,7 +86,7 @@ namespace ScanNetDownloader.ConsoleApp
             Debug.WriteLine($"Open Settings.json (located next to the .exe) and add the URL of the scans you want to download in the Dictionnary \"{nameOfEmptyList}\".");
             Debug.WriteLine($"Check the README file for more info on how to add url and select chapters.\n");
 
-            if (Settings.instance.AutoOpenJsonWhenNecessary)
+            if (Settings.Instance.AutoOpenJsonWhenNecessary)
             {
                 Debug.WriteLine($"No scans URL have been provided. Press any key to close the app and open json settings...");
                 MessageBox.Show("Press ok to open Settings.json and close the app...", "Quit app", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -129,7 +123,7 @@ namespace ScanNetDownloader.ConsoleApp
 
             Debug.WriteLine($"Exception: {ex}\n");
 
-            if (Settings.instance.ErrorsPauseApp)
+            if (Settings.Instance.ErrorsPauseApp)
             {
                 Debug.WriteLine($"Press any key to continue...\n");
                 MessageBox.Show($"\nError while loading {htmlUrl} content, this scan won't be downloaded.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -145,7 +139,7 @@ namespace ScanNetDownloader.ConsoleApp
 
             Debug.WriteLine($"Exception: {ex}\n");
 
-            if (Settings.instance.ErrorsPauseApp)
+            if (Settings.Instance.ErrorsPauseApp)
             {  
                 Debug.WriteLine($"Press any key to continue...\n");
                 MessageBox.Show($"\nDownload failed for {imgUrl}!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -168,7 +162,7 @@ namespace ScanNetDownloader.ConsoleApp
 
             Debug.WriteLine($"=> Exception: {ex}\n");
 
-            if (Settings.instance.ErrorsPauseApp)
+            if (Settings.Instance.ErrorsPauseApp)
             {
                 Debug.WriteLine($"=> Press any key to continue...\n");
                 MessageBox.Show($"=> An error occured while creating the CBZ archive for {scanUrl.BookName}-{scanUrl.ChapterId}!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -191,7 +185,7 @@ namespace ScanNetDownloader.ConsoleApp
 
             Debug.WriteLine($"=> Exception: {ex}\n");
 
-            if (Settings.instance.ErrorsPauseApp)
+            if (Settings.Instance.ErrorsPauseApp)
             {
                 Debug.WriteLine($"=> Press any key to continue...\n");
                 MessageBox.Show($"=> An error occured while replacing an empty CBZ archive for {scanUrl.BookName}-{scanUrl.ChapterId}!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -214,7 +208,7 @@ namespace ScanNetDownloader.ConsoleApp
 
             Debug.WriteLine($"\n{scanUrl.BookName} chapter {scanUrl.ChapterId} doesn't exist on the website ({chapterUrl}). Make sure this chapter really exist.\n");
 
-            if (Settings.instance.ErrorsPauseApp)
+            if (Settings.Instance.ErrorsPauseApp)
             {
                 Debug.WriteLine($"Press any key to continue...\n");
                 MessageBox.Show($"\n{scanUrl.BookName} chapter {scanUrl.ChapterId} doesn't exist on the website ({chapterUrl}). Make sure this chapter really exist.\n", "Error", MessageBoxButton.OK, MessageBoxImage.Error);

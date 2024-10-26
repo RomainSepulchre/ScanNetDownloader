@@ -1,21 +1,9 @@
 ﻿using ScanNetDownloader.ConsoleApp;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ScanNetDownloader.View.CustomControls
 {
@@ -32,7 +20,6 @@ namespace ScanNetDownloader.View.CustomControls
             set {
                 _isSelectedForDownload = value;
                 OnPropertyChanged();
-                Debug.WriteLine($"IS SELECTED FOR DOWNLOAD CHANGED FOR {BookName}-{ChapterId}, new value = {value}");
                 if (linkedScanWebsiteUrl != null) linkedScanWebsiteUrl.IsSelectedForDownload = value; // TODO: when to save the value in the settings json ? Only when closing app or save everytime value is changed ?
             }
         }
@@ -143,7 +130,6 @@ namespace ScanNetDownloader.View.CustomControls
 
         private void SetDownloadStatus(bool fileDownloaded)
         {
-            Debug.WriteLine($"SCAN STATUS, Downloaded ={fileDownloaded}");
             if (fileDownloaded)
             {
                 btnStatus.Content = "ok";
@@ -160,8 +146,6 @@ namespace ScanNetDownloader.View.CustomControls
 
         private void SetCbzCreatedStatus(bool cbzCreated)
         {
-            Debug.WriteLine($"CBZ STATUS, created ={cbzCreated}");
-
             if (cbzCreated)
             {
                 btnCbzCreation.Background = Brushes.Green;

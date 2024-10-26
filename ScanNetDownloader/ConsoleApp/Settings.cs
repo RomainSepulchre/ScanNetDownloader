@@ -1,26 +1,41 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
+using System.Windows;
 
 namespace ScanNetDownloader.ConsoleApp
 {
     public class Settings
     {
-        public static Settings instance = null;
+
+        private static Settings _instance;
+
+        public static Settings Instance
+        {
+            get { return _instance; }
+            set { _instance = value; }
+        }
 
         /// <summary>
-        /// A list containing saved ScanWebsiteUrl
+        /// Store a custom output folder (if null or empty, we use the default user download folder)
         /// </summary>
-        public List<ScanWebsiteUrl> ScanUrlList { get; set; } = new List<ScanWebsiteUrl>();
+        private string customOutputDir { get; set; } = "";
 
         /// <summary>
-        /// Set a custom output folder (if null or empty, we use the default user download folder) (Default=string.Empty)
+        /// Directory where the file should be downloaded.
         /// </summary>
-        public string CustomFolderPath { get; set; } = "";
+        public string OutputDirectory
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(customOutputDir)) return Constants.USER_DOWNLOAD_FOLDER_PATH;
+                else return customOutputDir;
+            }
+            set
+            {
+                customOutputDir = value;  
+            }
+        }
 
         /// <summary>
         /// Do you want to create a .cbz archive of every chapter downloaded (Default=True)
@@ -47,6 +62,115 @@ namespace ScanNetDownloader.ConsoleApp
         /// Should the program automatically open Settings.json when you need to check something in it (Default=True)
         /// </summary>
         public bool AutoOpenJsonWhenNecessary { get; set; } = true;
+
+        public static void InitializeAppSettings()
+        {
+            Instance = LoadSettings(Constants.SETTINGS_JSON_PATH);
+            Instance.Log();
+        }
+
+        private static Settings LoadSettings(string jsonPath)
+        {
+            Settings loadedSettings;
+
+            JsonSerializerSettings serializerSettings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All
+            };
+
+            if (File.Exists(jsonPath))
+            {
+                try
+                {
+                    loadedSettings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(Constants.SETTINGS_JSON_PATH), serializerSettings);
+                    return loadedSettings;
+                }
+                catch (Exception ex)
+                {
+                    Error.FailedToLoadSettingsJson(jsonPath, ex);
+
+                    // TODO: Redo error management to fit with WPF version
+                    Debug.WriteLine($"Do you want to reset settings.json to it's default values ?");
+                    if (Program.WaitForYesOrNoMsgBox($"Do you want to reset settings.json to it's default values ?") == MessageBoxResult.Yes)
+                    {
+                        loadedSettings = ResetToDefault();
+                        return loadedSettings;
+                    }
+                    else // What to do in this case with WPF app ?
+                    {
+                        Debug.WriteLine("Please make sure nothing is wrong with the value in Settings.json, if the problem persist backup your settings and reset the json to it's default values.");
+
+                        if (Instance != null && Instance.AutoOpenJsonWhenNecessary)
+                        {
+                            Debug.WriteLine("Press any key to open Settings.json and close the app...");
+                            MessageBox.Show("Press ok to open Settings.json and close the app...", "Quit app", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        }
+                        else
+                        {
+                            Debug.WriteLine("Press any key close the app...");
+                            MessageBox.Show("The app will be closed...", "Quit app", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        }
+
+                        OpenJsonFile();
+                        Program.QuitApp();
+                        return null;
+                    }
+                }
+            }
+            else // Missing Settings.json
+            {
+                Error.MissingSettingsJson(jsonPath);
+                loadedSettings = ResetToDefault();
+                return loadedSettings;
+            }
+        }
+
+        public static void Update(Settings newSettings)
+        {
+            Instance = newSettings;
+            Save(Instance);
+        }
+
+        private static void Save(Settings newSettings)
+        {
+            JsonSerializerSettings serializerSettings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All,
+                Formatting = Formatting.Indented
+            };
+
+            // TODO: Should I replace only if reference is different so I know when I replace the initial instance ?
+            //if(ReferenceEquals(Instance, newSettings) == false) 
+            //{
+            //    Instance = newSettings;
+            //}
+
+            Instance = newSettings;
+
+            try
+            {
+                File.WriteAllText(Constants.SETTINGS_JSON_PATH, JsonConvert.SerializeObject(Instance, serializerSettings));
+            }
+            catch (Exception ex)
+            {
+                Error.FailedToSaveSettingsJson(Constants.SETTINGS_JSON_PATH, ex);
+            }
+        }
+
+        private static Settings ResetToDefault()
+        {
+            Settings defaultSettings = new Settings();
+            Save(defaultSettings);
+            return defaultSettings;
+        }        
+
+        public static void OpenJsonFile()
+        {
+            if (Instance != null && Instance.AutoOpenJsonWhenNecessary)
+            {
+                new Process { StartInfo = new ProcessStartInfo(Constants.SETTINGS_JSON_PATH) { UseShellExecute = true } }.Start();
+            }
+        }
 
         public void Log()
         {
