@@ -51,10 +51,6 @@ namespace ScanNetDownloader.ConsoleApp
 
         private static Settings CurrentSettings => Settings.Instance;
 
-        private static string OutputDirectory => Settings.Instance.OutputDirectory;
-
-        private static Window mainWindow = new Window();
-
         public static event EventHandler<string> DlInfoWriteLineEvent;
 
         public static event EventHandler<float> UpdateDlProgressBarEvent;
@@ -92,10 +88,8 @@ namespace ScanNetDownloader.ConsoleApp
         // TODO: Turn this in a Downloader class
         #region Downloader
 
-        public static async void StartDownloader(List<ScanWebsiteUrl> scansToDownload, Window _mainWindow)
+        public static async void StartDownloader(List<ScanWebsiteUrl> scansToDownload)
         {
-            mainWindow = _mainWindow;
-
             if(scansToDownload.Count == 0)
             {
                 WriteDlInfoLine($"No scans have been selected, select at least a scan to start the download");
@@ -108,8 +102,8 @@ namespace ScanNetDownloader.ConsoleApp
                 WriteDlInfoLine($"-> {item.BookName} - {item.ChapterId} (source:{item.Url})");
             }
 
-            WriteDlInfoLine($"\nThe files will be downloaded in {OutputDirectory}, a folder will automatically be created for each title and chapters");
-            CheckOutputDirectory();
+            WriteDlInfoLine($"\nThe files will be downloaded in {Settings.Instance.OutputDirectory}, a folder will automatically be created for each title and chapters");
+            FileManagement.CheckOutputDirectory();
 
             bool isNo = WaitForYesOrNoMsgBox("\nDo you to start the download ?") == MessageBoxResult.No;
             if (isNo) return;
@@ -130,7 +124,7 @@ namespace ScanNetDownloader.ConsoleApp
 
             if (CurrentSettings.OpenOutputDirectoryAfterDownload)
             {
-                OpenRelevantFolder(scansToDownload);                
+                FileManagement.OpenRelevantFolder(scansToDownload);                
             }
         }
 
@@ -161,7 +155,7 @@ namespace ScanNetDownloader.ConsoleApp
                 if (imgsToDownload.Count == 0) { continue; } // if list is empty (in case of error while getting html content) skip directly to the next url
 
                 // Create output folder if necessary
-                string downloadPath = CreateChapterDirectory(bookName, chapterNumber);
+                string downloadPath = FileManagement.CreateChapterDirectory(bookName, chapterNumber);
 
                 int pageId = 1;
                 foreach (string imgUrl in imgsToDownload)
@@ -212,166 +206,6 @@ namespace ScanNetDownloader.ConsoleApp
         }
         #endregion
 
-        // TODO: Move to Downloader or create a class for File Management
-        #region Folder Management
-        static void CheckOutputDirectory()
-        {
-            // TODO: Redo Error Manamgement to fit with WPF
-            // TODO: If no custom directory set ask if the user want to select a new one or if he's ok with the one selected
-
-            if (Directory.Exists(OutputDirectory) == false)
-            { 
-                Error.NoOutputDirectory();
-
-                WriteDlInfoLine($"Do you want to create the directory \"{OutputDirectory}\" ? ");
-
-                if (WaitForYesOrNoMsgBox($"Do you want to create the directory \"{OutputDirectory}\" ? ") == MessageBoxResult.Yes)
-                {
-                    Directory.CreateDirectory(OutputDirectory);
-                    WriteDlInfoLine($"\"{OutputDirectory}\" sucessfully created. Ready to download!");
-                }
-                else
-                {
-                    // TODO: Select output dir here instead of opening Json
-                    WriteDlInfoLine("Please modify the output directory in Settings.json, it must be a valid directory.");
-                    if (CurrentSettings.AutoOpenJsonWhenNecessary) // TODO: this is done several time, this could be a single function
-                    {
-                        WriteDlInfoLine("Press any key to open Settings.json and close the app...");
-                        MessageBox.Show("Press ok to open Settings.json and close the app...", "Quit app", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    }
-                    else
-                    {
-                        WriteDlInfoLine("Press any key to close the app...");
-                        MessageBox.Show("The app will be closed...", "Quit app", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    }
-                    
-                    Settings.OpenJsonFile();
-                    QuitApp();
-                }
-            }
-        }
-
-        static string CreateChapterDirectory(string bookName, string chapterNumber)
-        {
-            
-            string chapterDirectory = Path.Combine(OutputDirectory, $"{bookName}{Constants.SCAN_CHAPTER_PATH}{chapterNumber}");
-
-            if (Directory.Exists(chapterDirectory) == false)
-            {
-                Directory.CreateDirectory(chapterDirectory);
-            }
-            return chapterDirectory;
-        }
-
-        static void OpenRelevantFolder(List<ScanWebsiteUrl> scansToDownload)
-        {
-            if (scansToDownload.Count == 1) 
-            {
-                // One chapter downloaded, open this chapter folder
-                string chapterDirectory = GetChapterDirectoryPath(scansToDownload[0]);
-                OpenFolder(chapterDirectory);
-            }
-            else
-            {
-                bool moreThanOneBook = MoreThanOneBookInUrlList(scansToDownload);
-                if (moreThanOneBook) 
-                {
-                    // Several books downloaded, open the output folder
-                    OpenFolder(OutputDirectory);
-                }
-                else 
-                {
-                    // Several chapters of the same book downloaded, open the book folder
-                    string bookDirectory = GetBookDirectoryPath(scansToDownload[0]);
-                    OpenFolder(bookDirectory);
-                }
-            }
-        }
-
-        static void OpenFolder(string folderPath)
-        {
-            if (Directory.Exists(folderPath))
-            {
-                ProcessStartInfo startInfo = new ProcessStartInfo
-                {
-                    Arguments = folderPath,
-                    FileName = "explorer.exe",
-                };
-
-                Process.Start(startInfo);
-            }
-        }
-
-        public static bool AreScanFilesDownloaded(ScanWebsiteUrl scanUrl)
-        {
-            string chapterDirPath = GetChapterDirectoryPath(scanUrl);
-            if (Directory.Exists(chapterDirPath))
-            {
-                if(Directory.GetFiles(chapterDirPath).Any()) // TODO: Improve this to know if we have the correct amount of page, need more info in ScanWebsiteUrl
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public static bool IsCbzArchiveCreated(ScanWebsiteUrl scanUrl)
-        {
-            string cbzPath = GetCbzFilePath(scanUrl);
-            return File.Exists(cbzPath) && File.ReadAllBytes(cbzPath).Length > 0;
-        }
-
-        static string GetBookDirectoryPath(ScanWebsiteUrl scanUrl)
-        {
-            string bookName = scanUrl.BookName;
-            string bookDirectoryPath = Path.Combine(OutputDirectory, $"{bookName}{Constants.SCAN_SUFFIX}");
-
-            return bookDirectoryPath;
-        }
-
-        public static string GetChapterDirectoryPath(ScanWebsiteUrl scanUrl)
-        {
-            string bookName = scanUrl.BookName;
-            string chapterNumber = scanUrl.ChapterId.ToString();
-            string chapterDirectoryPath = Path.Combine(OutputDirectory, $"{bookName}{Constants.SCAN_CHAPTER_PATH}{chapterNumber}");
-
-            return chapterDirectoryPath;
-        }
-
-        static string GetCbzFilePath(ScanWebsiteUrl scanUrl)
-        {
-            string bookName = scanUrl.BookName;
-            string chapterNumber = scanUrl.ChapterId.ToString();
-            string cbzFilePath = Path.Combine(GetBookDirectoryPath(scanUrl), $"{bookName}{Constants.CBZ_CHAPTER_PREFIX}{chapterNumber}{Constants.CBZ_EXTENSION}");
-
-            return cbzFilePath;
-        }
-
-        static bool MoreThanOneBookInUrlList(List<ScanWebsiteUrl> urlList)
-        {
-            if (urlList.Count <= 1) return false;
-
-            string firstUrlBookName = urlList[0].BookName;
-            for (int i = 1; i < urlList.Count; i++) // Start at item 1 because we always compare with item 0
-            {
-                string currentUrlBookName = urlList[i].BookName;
-                if (string.Equals(firstUrlBookName, currentUrlBookName) == false)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-        #endregion
-
         #region UserInputs
         public static MessageBoxResult WaitForYesOrNoMsgBox(string textDisplayed)
         {
@@ -413,29 +247,6 @@ namespace ScanNetDownloader.ConsoleApp
         public static void QuitApp()
         {
             Environment.Exit(0); // TODO: Weird things happening with Application.Current.Shutdown && Window.Close, the app continue to run anyway even with window closed -> Retest with App.xaml.ShutdownMode="OnMainWindowClose"
-        }
-        #endregion
-
-        #region Debug
-        static void SaveHtmlFiles(List<string> urlList)
-        {
-            foreach (string urlToDl in urlList)
-            {
-                // Save htlm code in a file to test
-                using (WebClient client = new WebClient())
-                {
-                    string htmlFileName = urlToDl.Remove(0, 8); // Remove "https://"
-                    htmlFileName = htmlFileName.Replace('/', '_');
-                    htmlFileName = htmlFileName + ".html";
-                    client.DownloadFile(urlToDl, Path.Combine(OutputDirectory, htmlFileName));
-
-                    Debug.WriteLine($"\n {htmlFileName} downloaded...");
-                }
-            }
-            Debug.WriteLine($"Html file saved, press to open folder location...");
-            MessageBox.Show($"Html file saved, press ok to open folder location...", "Hmtl saved", MessageBoxButton.OK, MessageBoxImage.Information);
-            CurrentSettings.OpenOutputDirectoryAfterDownload = false;
-            OpenFolder(OutputDirectory);
         }
         #endregion
     }

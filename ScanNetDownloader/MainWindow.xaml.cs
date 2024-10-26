@@ -5,6 +5,8 @@ using ScanNetDownloader.View.CustomControls;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
+using System.Net;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -126,7 +128,7 @@ namespace ScanNetDownloader
                 if (item.IsSelectedForDownload) scansToDownload.Add(item.linkedScanWebsiteUrl);
             }
 
-            Program.StartDownloader(scansToDownload, this); // Run console App program
+            Program.StartDownloader(scansToDownload);
         }
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
@@ -185,7 +187,7 @@ namespace ScanNetDownloader
             if (item != null)
             {
                 // Verify if cbz is created
-                bool cbzCreated = Program.IsCbzArchiveCreated(item.linkedScanWebsiteUrl);
+                bool cbzCreated = FileManagement.IsCbzArchiveCreated(item.linkedScanWebsiteUrl);
                 item.CbzArchiveCreated = cbzCreated;
                 Debug.WriteLine($"CBZ CREATION BUTTON: Item={item.BookName}-{item.ChapterId}");
 
@@ -195,10 +197,10 @@ namespace ScanNetDownloader
                     MessageBoxResult result = MessageBox.Show($"Do you want to create a .cbz for {item.BookName} - Chapter {item.ChapterId} ?", "CBZ Archive creation", MessageBoxButton.YesNo, MessageBoxImage.Question);
                     if (result == MessageBoxResult.Yes)
                     {
-                        string chapterPath = Program.GetChapterDirectoryPath(item.linkedScanWebsiteUrl);
+                        string chapterPath = FileManagement.GetChapterDirectoryPath(item.linkedScanWebsiteUrl);
                         CbzCreator.BuildCbzArchive(item.linkedScanWebsiteUrl, chapterPath);
 
-                        bool cbzSuccessfullyCreated = Program.IsCbzArchiveCreated(item.linkedScanWebsiteUrl);
+                        bool cbzSuccessfullyCreated = FileManagement.IsCbzArchiveCreated(item.linkedScanWebsiteUrl);
                         item.CbzArchiveCreated = cbzSuccessfullyCreated;
                     }
                 }
@@ -210,7 +212,7 @@ namespace ScanNetDownloader
             ScanItem item = e.Source as ScanItem;
             if (item != null)
             {
-                bool fileDownloaded = Program.AreScanFilesDownloaded(item.linkedScanWebsiteUrl);
+                bool fileDownloaded = FileManagement.AreScanFilesDownloaded(item.linkedScanWebsiteUrl);
                 item.IsDownloaded = fileDownloaded;
             }
         }
@@ -237,7 +239,7 @@ namespace ScanNetDownloader
                        
             item.IsSelectedForDownload = false; // Disable download selection since we just downloaded
 
-            bool fileSuccessfullyDownloaded = Program.AreScanFilesDownloaded(downloadedScan);
+            bool fileSuccessfullyDownloaded = FileManagement.AreScanFilesDownloaded(downloadedScan);
             item.IsDownloaded = fileSuccessfullyDownloaded; 
 
             // TODO: Check if Cbz has been created
@@ -253,8 +255,8 @@ namespace ScanNetDownloader
 
             foreach (var scanUrl in ScanWebsiteUrls)
             {
-                bool filesAlreadyDownloaded = Program.AreScanFilesDownloaded(scanUrl);
-                bool cbzAlreadyCreated = Program.IsCbzArchiveCreated(scanUrl);
+                bool filesAlreadyDownloaded = FileManagement.AreScanFilesDownloaded(scanUrl);
+                bool cbzAlreadyCreated = FileManagement.IsCbzArchiveCreated(scanUrl);
 
                 ScanItem item = new ScanItem(scanUrl, filesAlreadyDownloaded, cbzAlreadyCreated);
                 item.DeleteBtnPressed += ScanItem_DeleteBtnPressed;
@@ -276,8 +278,8 @@ namespace ScanNetDownloader
             foreach (ScanWebsiteUrl scanUrl in newScansToAdd)
             {
                 // TODO: Add a check to prevent a double entry of the same chapter on the same website, maybe check before caliing AddScanItems ?
-                bool filesAlreadyDownloaded = Program.AreScanFilesDownloaded(scanUrl); 
-                bool cbzAlreadyCreated = Program.IsCbzArchiveCreated(scanUrl);
+                bool filesAlreadyDownloaded = FileManagement.AreScanFilesDownloaded(scanUrl); 
+                bool cbzAlreadyCreated = FileManagement.IsCbzArchiveCreated(scanUrl);
 
                 ScanItem item = new ScanItem(scanUrl, filesAlreadyDownloaded, cbzAlreadyCreated);
                 item.DeleteBtnPressed += ScanItem_DeleteBtnPressed;
@@ -301,9 +303,71 @@ namespace ScanNetDownloader
         #region Debug Tab 
         private void btnDbg1_Click(object sender, RoutedEventArgs e)
         {
+            SaveHtmlFiles();
+        }
+
+        private void btnDbg2_Click(object sender, RoutedEventArgs e)
+        {
             
         }
 
+        private void btnDbg3_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btnDbg4_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btnDbg5_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btnDbg6_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        void SaveHtmlFiles(List<string> urlList=null)
+        {
+            List<string> urlToDownload;
+
+            if (urlList == null)
+            {
+                InputPopUp inputPopUp = new InputPopUp(this, $"Enter the url to download HTML from:");
+                Opacity = 0.4;
+                inputPopUp.ShowDialog();
+                Opacity = 1;
+
+                urlToDownload = new List<string>();
+                urlToDownload.Add(inputPopUp.Input);
+            }
+            else
+            {
+                urlToDownload = urlList;
+            }
+
+            foreach (string urlToDl in urlToDownload)
+            {
+                // Save htlm code in a file to test
+                using (WebClient client = new WebClient())
+                {
+                    string htmlFileName = urlToDl.Remove(0, 8); // Remove "https://"
+                    htmlFileName = htmlFileName.Replace('/', '_');
+                    htmlFileName = htmlFileName + ".html";
+                    client.DownloadFile(urlToDl, Path.Combine(Settings.Instance.OutputDirectory, htmlFileName));
+
+                    Debug.WriteLine($"\n {htmlFileName} downloaded...");
+                }
+            }
+            Debug.WriteLine($"Html file saved, press to open folder location...");
+            MessageBox.Show($"Html file saved, press ok to open folder location...", "Hmtl saved", MessageBoxButton.OK, MessageBoxImage.Information);
+            Settings.Instance.OpenOutputDirectoryAfterDownload = false;
+            FileManagement.OpenFolder(Settings.Instance.OutputDirectory);
+        }
         #endregion
     }
 }
