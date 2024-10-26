@@ -141,7 +141,7 @@ namespace ScanNetDownloader
                 string urlInput = addWindow.UrlInput;
                 string chapterInput = addWindow.ChapterInput;
 
-                List<ScanWebsiteUrl> newScansToAdd = Program.CreateNewScanWebsiteUrls(urlInput, chapterInput);                
+                List<ScanWebsiteUrl> newScansToAdd = ScanManagement.CreateNewScanWebsiteUrls(urlInput, chapterInput);                
 
                 if (newScansToAdd.Any())
                 {
@@ -297,5 +297,12 @@ namespace ScanNetDownloader
             // Remove item from list view
             ScanListItems.Remove(itemToDelete);
         }
+
+        #region Debug Tab 
+        private void btnDbg1_Click(object sender, RoutedEventArgs e)
+        {
+            
+        }
+        #endregion
     }
 }
