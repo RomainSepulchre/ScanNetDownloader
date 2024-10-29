@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ScanNetDownloader.ConsoleApp
+namespace ScanNetDownloader.Logic
 {
     /// <summary>
     /// Handle the creation of the CbzArchive

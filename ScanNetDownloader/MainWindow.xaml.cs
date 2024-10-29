@@ -1,5 +1,5 @@
 ﻿using Microsoft.Win32;
-using ScanNetDownloader.ConsoleApp;
+using ScanNetDownloader.Logic;
 using ScanNetDownloader.View;
 using ScanNetDownloader.View.CustomControls;
 using System.Collections.ObjectModel;

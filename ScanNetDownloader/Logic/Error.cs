@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Windows;
 
-namespace ScanNetDownloader.ConsoleApp
+namespace ScanNetDownloader.Logic
 {
     // TODO : Build WPF error system
     public class Error

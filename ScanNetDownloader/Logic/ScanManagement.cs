@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace ScanNetDownloader.ConsoleApp
+namespace ScanNetDownloader.Logic
 {
     /// <summary>
     /// Handle the creation of ScanWebsiteUrl and their management

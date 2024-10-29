@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 
-namespace ScanNetDownloader.ConsoleApp
+namespace ScanNetDownloader.Logic
 {
     public class Settings
     {

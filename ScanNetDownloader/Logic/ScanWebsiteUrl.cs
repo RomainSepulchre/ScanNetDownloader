@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Net;
 
-namespace ScanNetDownloader.ConsoleApp
+namespace ScanNetDownloader.Logic
 {
     public abstract class ScanWebsiteUrl
     {

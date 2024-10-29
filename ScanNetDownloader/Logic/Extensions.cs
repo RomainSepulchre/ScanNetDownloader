@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Globalization;
 
-namespace ScanNetDownloader.ConsoleApp
+namespace ScanNetDownloader.Logic
 {
     public static class Extensions
     {

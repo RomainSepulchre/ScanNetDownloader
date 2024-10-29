@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using static System.Net.WebRequestMethods;
 
-namespace ScanNetDownloader.ConsoleApp
+namespace ScanNetDownloader.Logic
 {
     /// <summary>
     /// Constant or read-only variable that need to be accessible from anywhere

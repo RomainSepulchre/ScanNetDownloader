@@ -1,5 +1,5 @@
 ﻿using Microsoft.Win32;
-using ScanNetDownloader.ConsoleApp;
+using ScanNetDownloader.Logic;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

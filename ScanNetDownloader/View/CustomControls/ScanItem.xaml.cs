@@ -1,4 +1,4 @@
-﻿using ScanNetDownloader.ConsoleApp;
+﻿using ScanNetDownloader.Logic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
