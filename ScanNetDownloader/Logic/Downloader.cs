@@ -28,6 +28,7 @@ namespace ScanNetDownloader.Logic
         {
             if (scansToDownload.Count == 0)
             {
+                // TODO: Prevent to click on start button if no scan are selected even before clicking calling this
                 WriteDlInfoLine($"No scans have been selected, select at least a scan to start the download");
                 return;
             }
@@ -45,8 +46,10 @@ namespace ScanNetDownloader.Logic
                 return;
             }
 
-            WriteDlInfoLine("\nDo you to start the download ?");
-            MessageBoxResult result = MessageBox.Show("Do you to start the download ?", "Continue ?", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            string mBoxMessage = "Do you to start the download ?";
+            string mBoxCaption = "Continue ?";
+            WriteDlInfoLine($"\n{mBoxMessage}");
+            MessageBoxResult result = MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.YesNo, MessageBoxImage.Question);
 
             WriteDlInfoLine($" YESNO RESULT = {result}");
 
@@ -60,14 +63,18 @@ namespace ScanNetDownloader.Logic
 
             if (CurrentSettings.ErrorPauseApp)
             {
-                WriteDlInfoLine("Finished, press any key to close...");
-                MessageBox.Show("Finished, press any key to close...", "Finished", MessageBoxButton.OK, MessageBoxImage.None);
+                mBoxMessage = "Finished, press any key to close...";
+                mBoxCaption = "Finished";
+                WriteDlInfoLine($"\n{mBoxMessage}");
+                MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.None);
             }
             else
             {
                 Error.ShowDownloadErrors();
-                WriteDlInfoLine("\nPress any key to close...");
-                MessageBox.Show("Finished with error, press any key to close...", "Finished", MessageBoxButton.OK, MessageBoxImage.None);
+                mBoxMessage = "Finished with error, press any key to close...";
+                mBoxCaption = "Finished";
+                WriteDlInfoLine($"\n{mBoxMessage}");
+                MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.None);
             }
 
             if (CurrentSettings.OpenOutputDirectoryAfterDownload)

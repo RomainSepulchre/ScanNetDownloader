@@ -96,7 +96,9 @@ namespace ScanNetDownloader
                 {
                     if (previousTabSelected == tabOptions && optionsVw.OptionsChangesNotSaved)
                     {
-                        MessageBoxResult result = MessageBox.Show("Do you want to save your options changes ?", "Save Options", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                        string mBoxMessage = "Do you want to save your options changes ?";
+                        string mBoxCaption = "Save Options";
+                        MessageBoxResult result = MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.YesNo, MessageBoxImage.Question);
                         if (result == MessageBoxResult.Yes) optionsVw.SaveSettings();
                     }
                 }
@@ -156,7 +158,9 @@ namespace ScanNetDownloader
                 }
                 else
                 {
-                    MessageBox.Show($"{urlInput} not added, it was not a valid url", "Invalid URL", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    string mBoxMessage = $"{urlInput} not added, it was not a valid url";
+                    string mBoxCaption = "Invalid URL";
+                    MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Warning);
                 }             
             }
         }
@@ -199,7 +203,9 @@ namespace ScanNetDownloader
                 if (cbzCreated == false)
                 {
                     // TODO: Propose to build cbz
-                    MessageBoxResult result = MessageBox.Show($"Do you want to create a .cbz for {item.BookName} - Chapter {item.ChapterId} ?", "CBZ Archive creation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    string mBoxMessage = $"Do you want to create a .cbz for {item.BookName} - Chapter {item.ChapterId} ?";
+                    string mBoxCaption = "CBZ Archive creation";
+                    MessageBoxResult result = MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.YesNo, MessageBoxImage.Question);
                     if (result == MessageBoxResult.Yes)
                     {
                         string chapterPath = FileManagement.GetChapterDirectoryPath(item.linkedScanWebsiteUrl);
@@ -368,8 +374,11 @@ namespace ScanNetDownloader
                     Debug.WriteLine($"\n {htmlFileName} downloaded...");
                 }
             }
-            Debug.WriteLine($"Html file saved, press to open folder location...");
-            MessageBox.Show($"Html file saved, press ok to open folder location...", "Hmtl saved", MessageBoxButton.OK, MessageBoxImage.Information);
+
+            string mBoxCaption = "Hmtl saved";
+            string mBoxMessage = $"Html file saved, press ok to open folder location...";
+            Debug.WriteLine(mBoxMessage);
+            MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Information);
             Settings.Instance.OpenOutputDirectoryAfterDownload = false;
             FileManagement.OpenFolder(Settings.Instance.OutputDirectory);
         }

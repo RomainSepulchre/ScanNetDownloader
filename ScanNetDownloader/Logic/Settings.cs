@@ -61,7 +61,7 @@ namespace ScanNetDownloader.Logic
         /// <summary>
         /// Should the program automatically open Settings.json when you need to check something in it (Default=True)
         /// </summary>
-        public bool AutoOpenJsonWhenNecessary { get; set; } = true; // TODO: Do we still really need this
+        public bool AutoOpenJsonWhenNecessary { get; set; } = true; // TODO: Do we still really need this, if yes add to optionsView
 
         public static void InitializeAppSettings()
         {
@@ -90,9 +90,10 @@ namespace ScanNetDownloader.Logic
                     Error.FailedToLoadSettingsJson(jsonPath, ex);
 
                     // TODO: Redo error management to fit with WPF version
-                    Debug.WriteLine($"Do you want to reset settings.json to it's default values ?");
-
-                    MessageBoxResult result = MessageBox.Show($"Do you want to reset settings.json to it's default values ?", "Continue ?", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    string mBoxMessage = $"Do you want to reset settings.json to it's default values ?";
+                    string mBoxCaption = "Continue ?";
+                    Debug.WriteLine(mBoxMessage);
+                    MessageBoxResult result = MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.YesNo, MessageBoxImage.Question);
 
                     if (result == MessageBoxResult.Yes)
                     {
@@ -101,8 +102,10 @@ namespace ScanNetDownloader.Logic
                     }
                     else //TODO: What to do in this case with WPF app ?
                     {
-                        Debug.WriteLine("Please make sure nothing is wrong with the value in Settings.json, if the problem persist backup your settings and reset the json to it's default values.");
-                        MessageBox.Show("Please make sure nothing is wrong with the data in Settings.json, if the problem persist backup your settings and reset the json to it's default values.", "Settings data error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        mBoxMessage = "Please make sure nothing is wrong with the data in Settings.json, if the problem persist backup your settings and reset the json to it's default values.";
+                        mBoxCaption = "Settings data error";
+                        Debug.WriteLine(mBoxMessage);
+                        MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Warning);
 
                         OpenJsonFile();
                         App.Quit();

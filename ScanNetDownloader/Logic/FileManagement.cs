@@ -27,10 +27,11 @@ namespace ScanNetDownloader.Logic
             {
                 Error.NoOutputDirectory();
 
-                Downloader.WriteDlInfoLine($"\"{OutputDirectory}\" does not exist, do you want to create the directory?");
-
+                string mBoxMessage = $"\"{OutputDirectory}\" does not exist, do you want to create the directory?";
+                string mBoxCaption = "Continue ?";
+                Downloader.WriteDlInfoLine(mBoxMessage);
                 // TODO: Create a window with CreateDirectory, Choose another directory, Cancel
-                MessageBoxResult resultCreateDir = MessageBox.Show($"\"{OutputDirectory}\" does not exist, do you want to create the directory?", "Continue ?", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                MessageBoxResult resultCreateDir = MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.YesNo, MessageBoxImage.Question);
 
                 if (resultCreateDir == MessageBoxResult.Yes)
                 {
@@ -40,7 +41,9 @@ namespace ScanNetDownloader.Logic
                 }
                 else
                 {
-                    MessageBoxResult resultSelectDir = MessageBox.Show($"Do you want to select another download directory ?", "Select Directory ?", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    mBoxMessage = $"Do you want to select another download directory ?";
+                    mBoxCaption = "Select Directory ?";
+                    MessageBoxResult resultSelectDir = MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.YesNo, MessageBoxImage.Question);
 
                     if(resultSelectDir == MessageBoxResult.Yes)
                     {
@@ -59,21 +62,25 @@ namespace ScanNetDownloader.Logic
                         }
                         else
                         {
-                            Downloader.WriteDlInfoLine("Please modify the output directory in the Settings, it must be a valid directory.");
-                            MessageBox.Show("Please modify the download directory in the Settings, it must be a valid directory.", "Invalid download directory", MessageBoxButton.OK, MessageBoxImage.Warning);
-                            // TODO: Open options tab
-                            MainWindow mw = Application.Current.MainWindow as MainWindow;
-                            mw.tabCtrlNavigation.SelectedItem = mw.tabOptions;
+                            mBoxMessage = "Please modify the download directory in the Settings, it must be a valid directory.";
+                            mBoxCaption = "Invalid download directory";
+                            Downloader.WriteDlInfoLine(mBoxMessage);
+                            MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Warning);
+                            // TODO: Find a cleaner way to do that
+                            MainWindow mainWindow = Application.Current.MainWindow as MainWindow;
+                            mainWindow.tabCtrlNavigation.SelectedItem = mainWindow.tabOptions;
                             return false;
                         }   
                     }
                     else
-                    {                 
-                        Downloader.WriteDlInfoLine("Please modify the output directory in the Settings, it must be a valid directory.");
-                        MessageBox.Show("Please modify the download directory in the Settings, it must be a valid directory.", "Invalid download directory", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        // TODO: Open options tab
-                        MainWindow mw = Application.Current.MainWindow as MainWindow;
-                        mw.tabCtrlNavigation.SelectedItem = mw.tabOptions;
+                    {
+                        mBoxMessage = "Please modify the download directory in the Settings, it must be a valid directory.";
+                        mBoxCaption = "Invalid download directory";
+                        Downloader.WriteDlInfoLine(mBoxMessage);
+                        MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Warning);
+                        // TODO: Find a cleaner way to do that
+                        MainWindow mainWindow = Application.Current.MainWindow as MainWindow;
+                        mainWindow.tabCtrlNavigation.SelectedItem = mainWindow.tabOptions;
                         return false;
                     }                   
                 }

@@ -78,8 +78,10 @@ namespace ScanNetDownloader.Logic
 
             if (errorOccured)
             {
-                Debug.WriteLine($"Make sure to check the errors and press any key to continue...");
-                MessageBox.Show("Make sure to check the errors and press any key to continue...", "Check errrors", MessageBoxButton.OK, MessageBoxImage.Warning);
+                string mBoxMessage = "Make sure to check the errors and press any key to continue...";
+                string mBoxCaption = "Check errrors";
+                Debug.WriteLine(mBoxMessage);
+                MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Warning);
             }
 
             return newScanWebsiteUrls;

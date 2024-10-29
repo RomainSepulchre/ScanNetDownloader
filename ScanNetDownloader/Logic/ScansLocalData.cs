@@ -48,9 +48,11 @@ namespace ScanNetDownloader.Logic
                     //Error.FailedToLoadScansLocalData(jsonPath, ex);
 
                     // TODO: Redo error management to fit with WPF version
-                    Debug.WriteLine($"Error while loading scan local data, do you want to clear the data ?\n {ex}");
-
-                    MessageBoxResult result = MessageBox.Show($"Error while loading scan local data, do you want to clear the data ?", "Continue ?", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                    string mBoxMessage = $"Error while loading scan local data, do you want to clear the data ?";
+                    string mBoxCaption = "Continue ?";
+                    Debug.WriteLine($"{mBoxMessage}\n {ex}");
+                    
+                    MessageBoxResult result = MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
                     if (result == MessageBoxResult.Yes)
                     {
@@ -59,8 +61,10 @@ namespace ScanNetDownloader.Logic
                     }
                     else // TODO: What to do in this case with WPF app ?
                     {
-                        Debug.WriteLine("Please make sure nothing is wrong with the data in ScansLocalData.json, if the problem persist backup your data and reset the json to it's default values.");
-                        MessageBox.Show("Please make sure nothing is wrong with the data in ScansLocalData.json, if the problem persist backup your data and reset the json to it's default values.", "Scan data error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        mBoxMessage = "Please make sure nothing is wrong with the data in ScansLocalData.json, if the problem persist backup your data and reset the json to it's default values.";
+                        mBoxCaption = "Scan data error";
+                        Debug.WriteLine(mBoxMessage);
+                        MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Warning);
 
                         OpenJsonFile();
                         App.Quit();
