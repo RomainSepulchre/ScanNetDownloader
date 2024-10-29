@@ -10,14 +10,14 @@ using System.Windows;
 namespace ScanNetDownloader.Logic
 {
     /// <summary>
-    /// Handle the creation of ScanWebsiteUrl and their management
+    /// Handle the creation of ScanData and their management
     /// </summary>
     class ScanManagement
     {
-        public static List<ScanWebsiteUrl> CreateNewScanWebsiteUrls(string urlEntered, string chaptersEntered)
+        public static List<ScanData> CreateNewScanData(string urlEntered, string chaptersEntered)
         {
             bool errorOccured = false;
-            List<ScanWebsiteUrl> newScanWebsiteUrls = new List<ScanWebsiteUrl>();
+            List<ScanData> newScanDatas = new List<ScanData>();
             List<int> selectedChaptersId;
 
             Debug.WriteLine($"\nURL ==> {urlEntered}\n");
@@ -29,43 +29,43 @@ namespace ScanNetDownloader.Logic
                     bool chapterIsInUrl = urlEntered.Split(Constants.SLASH_CHAR).Count() > 4; // Check if the url has a chapter name (the number of split let us know if url stop at book name or not)
                     if (chapterIsInUrl)
                     {
-                        ScanWebsiteUrl scanVfNetUrl = new ScanVfNetUrl(urlEntered);
-                        newScanWebsiteUrls.Add(scanVfNetUrl);
-                        Debug.WriteLine($"{scanVfNetUrl.BookName} - Chapter {scanVfNetUrl.ChapterId} added ({scanVfNetUrl.WebsiteDomain}).\n");
+                        ScanData scanVfNetData = new ScanVfNetScanData(urlEntered);
+                        newScanDatas.Add(scanVfNetData);
+                        Debug.WriteLine($"{scanVfNetData.BookName} - Chapter {scanVfNetData.ChapterId} added ({scanVfNetData.WebsiteDomain}).\n");
                     }
                     else
                     {
                         // Chapters to download
-                        ScanWebsiteUrl temporaryScanVfNetUrl = new ScanVfNetUrl(urlEntered, false);
-                        selectedChaptersId = ChapterSelection(temporaryScanVfNetUrl, chaptersEntered, ref errorOccured);
+                        ScanData temporaryScanVfNetData = new ScanVfNetScanData(urlEntered, false);
+                        selectedChaptersId = ChapterSelection(temporaryScanVfNetData, chaptersEntered, ref errorOccured);
                         // Create link
                         foreach (int chapterId in selectedChaptersId)
                         {
                             string urlWithChapter = $"{urlEntered}{Constants.SCANVF_CHAPTER_IN_URL}{chapterId}"; // No need to specify "/1" after chapter number redirection is done by website
-                            ScanWebsiteUrl scanVfNetUrl = new ScanVfNetUrl(urlWithChapter);
-                            newScanWebsiteUrls.Add(scanVfNetUrl);
-                            // TODO: we never check if chapter exist with ScanVf ? Check this before creating ScanWebsiteUrl
-                            Debug.WriteLine($" -> {scanVfNetUrl.BookName} - Chapter {scanVfNetUrl.ChapterId} added ({scanVfNetUrl.WebsiteDomain}).");
+                            ScanData scanVfNetData = new ScanVfNetScanData(urlWithChapter);
+                            newScanDatas.Add(scanVfNetData);
+                            // TODO: we never check if chapter exist with ScanVf ? Check this before creating ScanData
+                            Debug.WriteLine($" -> {scanVfNetData.BookName} - Chapter {scanVfNetData.ChapterId} added ({scanVfNetData.WebsiteDomain}).");
                         }
                         Debug.WriteLine("");
                     }
                     break;
 
                 case string s when s.Contains(Constants.ANIMESAMA_DOMAIN_NAME):
-                    ScanWebsiteUrl temporaryAnimeSamaUrl = new AnimeSamaFrUrl(urlEntered); // Temporary obj to get book name
+                    ScanData temporaryAnimeSamaData = new AnimeSamaFrScanData(urlEntered); // Temporary obj to get book name
 
                     // TODO: If possible manage Book URL instead of chapter url
                     // -> check if chapter url is stable or if it changes too much
 
                     // Get chapters to download
-                    selectedChaptersId = ChapterSelection(temporaryAnimeSamaUrl, chaptersEntered, ref errorOccured);
+                    selectedChaptersId = ChapterSelection(temporaryAnimeSamaData, chaptersEntered, ref errorOccured);
 
                     // Create link
                     foreach (int chapterId in selectedChaptersId)
                     {
-                        ScanWebsiteUrl animeSamaUrl = new AnimeSamaFrUrl(urlEntered, chapterId);
-                        newScanWebsiteUrls.Add(animeSamaUrl);
-                        Debug.WriteLine($" -> {animeSamaUrl.BookName} - Chapter {animeSamaUrl.ChapterId} added ({animeSamaUrl.WebsiteDomain}).");
+                        ScanData animeSamaData = new AnimeSamaFrScanData(urlEntered, chapterId);
+                        newScanDatas.Add(animeSamaData);
+                        Debug.WriteLine($" -> {animeSamaData.BookName} - Chapter {animeSamaData.ChapterId} added ({animeSamaData.WebsiteDomain}).");
                     }
                     Debug.WriteLine("");
                     break;
@@ -84,19 +84,19 @@ namespace ScanNetDownloader.Logic
                 MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Warning);
             }
 
-            return newScanWebsiteUrls;
+            return newScanDatas;
         }
 
-        private static List<int> ChapterSelection(ScanWebsiteUrl scanUrl, string enteredChapters, ref bool errorOccured)
+        private static List<int> ChapterSelection(ScanData scanData, string enteredChapters, ref bool errorOccured)
         {
             List<int> selectedChaptersId = new List<int>();
 
             if (string.IsNullOrEmpty(enteredChapters) == false)
             {
-                selectedChaptersId = ParseToFindChapters(scanUrl, enteredChapters, ref errorOccured);
+                selectedChaptersId = ParseToFindChapters(scanData, enteredChapters, ref errorOccured);
                 if (selectedChaptersId.Count <= 0)
                 {
-                    selectedChaptersId = AskUserToProvideChapters(scanUrl, ref errorOccured);
+                    selectedChaptersId = AskUserToProvideChapters(scanData, ref errorOccured);
                 }
                 else
                 {
@@ -105,33 +105,33 @@ namespace ScanNetDownloader.Logic
             }
             else
             {
-                selectedChaptersId = AskUserToProvideChapters(scanUrl, ref errorOccured);
+                selectedChaptersId = AskUserToProvideChapters(scanData, ref errorOccured);
             }
             selectedChaptersId.Sort();
             return selectedChaptersId;
         }
 
         // TODO : Should not be useful anymore after finishing the addScan Pop-Up
-        private static List<int> AskUserToProvideChapters(ScanWebsiteUrl scanUrl, ref bool errorOccured) // TODO: maybe this could be in a class dedicated to pop up ?
+        private static List<int> AskUserToProvideChapters(ScanData scanData, ref bool errorOccured) // TODO: maybe this could be in a class dedicated to pop up ?
         {
             MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
 
-            Debug.WriteLine($"Select chapters for \"{scanUrl.BookName}\" ({scanUrl.Url}):");
+            Debug.WriteLine($"Select chapters for \"{scanData.BookName}\" ({scanData.Url}):");
             Debug.WriteLine($"Write a range of chapter (ex: 1-10) or the number of the chapters you want to download separated by ; (ex:4;6;8) and press enter.");
 
-            InputPopUp inputPopUp = new InputPopUp(mainWindow, $"Select chapters for \"{scanUrl.BookName}\" ({scanUrl.Url}):");
+            InputPopUp inputPopUp = new InputPopUp(mainWindow, $"Select chapters for \"{scanData.BookName}\" ({scanData.Url}):");
             mainWindow.Opacity = 0.4;
             inputPopUp.ShowDialog();
             mainWindow.Opacity = 1;
 
             string userTxtInput = inputPopUp.Input;
 
-            List<int> chaptersFound = ParseToFindChapters(scanUrl, userTxtInput, ref errorOccured);
+            List<int> chaptersFound = ParseToFindChapters(scanData, userTxtInput, ref errorOccured);
             return chaptersFound;
 
         }
 
-        private static List<int> ParseToFindChapters(ScanWebsiteUrl scanUrl, string stringToParse, ref bool errorOccured)
+        private static List<int> ParseToFindChapters(ScanData scanData, string stringToParse, ref bool errorOccured)
         {
             List<int> validChapters = new List<int>();
             List<string> chaptersEnteredByUser = stringToParse.Split(Constants.SEMICOLON_CHAR).ToList();
@@ -149,7 +149,7 @@ namespace ScanNetDownloader.Logic
                     if (startParsed == false || endParsed == false)
                     {
                         errorOccured = true;
-                        Error.FailedToParseChapterEnteredByUser(scanUrl, chaptersEnteredByUser[i]);
+                        Error.FailedToParseChapterEnteredByUser(scanData, chaptersEnteredByUser[i]);
                         continue;
                     }
                     else
@@ -171,7 +171,7 @@ namespace ScanNetDownloader.Logic
                     else
                     {
                         errorOccured = true;
-                        Error.FailedToParseChapterEnteredByUser(scanUrl, chaptersEnteredByUser[i]);
+                        Error.FailedToParseChapterEnteredByUser(scanData, chaptersEnteredByUser[i]);
                     }
                 }
             }

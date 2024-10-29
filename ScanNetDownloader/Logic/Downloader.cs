@@ -22,9 +22,9 @@ namespace ScanNetDownloader.Logic
 
         public static event EventHandler<float> UpdateDlProgressBarEvent;
 
-        public static event EventHandler<ScanWebsiteUrl> ScanDownloadedEvent;
+        public static event EventHandler<ScanData> ScanDownloadedEvent;
 
-        public static async void StartDownloader(List<ScanWebsiteUrl> scansToDownload)
+        public static async void StartDownloader(List<ScanData> scansToDownload)
         {
             if (scansToDownload.Count == 0)
             {
@@ -34,7 +34,7 @@ namespace ScanNetDownloader.Logic
             }
 
             WriteDlInfoLine($"\nHere is the list of scans you are going to download:");
-            foreach (ScanWebsiteUrl item in scansToDownload)
+            foreach (ScanData item in scansToDownload)
             {
                 WriteDlInfoLine($"-> {item.BookName} - {item.ChapterId} (source:{item.Url})");
             }
@@ -83,27 +83,27 @@ namespace ScanNetDownloader.Logic
             }
         }
 
-        static async Task DownloadScans(List<ScanWebsiteUrl> scansToDownload)
+        static async Task DownloadScans(List<ScanData> scansToDownload)
         {
             float progress = 0;
             float minProgress = 0;
             float maxProgress = 0;
 
-            foreach (ScanWebsiteUrl scanUrl in scansToDownload)
+            foreach (ScanData scanData in scansToDownload)
             {
                 minProgress = maxProgress;
-                int scanIndex = scansToDownload.IndexOf(scanUrl);
+                int scanIndex = scansToDownload.IndexOf(scanData);
                 maxProgress = (((float)scanIndex + 1) / (scansToDownload.Count)) * 100;
 
 
-                string url = scanUrl.Url;
-                string bookName = scanUrl.BookName;
-                string chapterNumber = scanUrl.ChapterId.ToString();
+                string url = scanData.Url;
+                string bookName = scanData.BookName;
+                string chapterNumber = scanData.ChapterId.ToString();
 
                 string header = $"Download {bookName} - chapter {chapterNumber} from {url}";
 
                 WriteDlInfoLine($"\nLook for images url for {bookName}-{chapterNumber} at {url}...");
-                List<string> imgsToDownload = await scanUrl.GetScanImagesUrl();
+                List<string> imgsToDownload = await scanData.GetScanImagesUrl();
                 if (imgsToDownload.Count == 0) { continue; } // if list is empty (in case of error while getting html content) skip directly to the next url
 
                 // Create output folder if necessary
@@ -117,7 +117,7 @@ namespace ScanNetDownloader.Logic
                     progress = float.Lerp(minProgress, maxProgress, chapterCompletion);
                     UpdateDownloadProgress(progress);
 
-                    string fileExtension = scanUrl.GetFileExtensionFromUrl(imgUrl);
+                    string fileExtension = scanData.GetFileExtensionFromUrl(imgUrl);
                     string imgName = $"{bookName}_{chapterNumber}-{pageId.ToString("D3")}{fileExtension}";
                     string downloadFile = Path.Combine(downloadPath, imgName);
 
@@ -149,11 +149,11 @@ namespace ScanNetDownloader.Logic
 
                 if (CurrentSettings.CreateCbzArchive)
                 {
-                    CbzCreator.BuildCbzArchive(scanUrl, downloadPath);
+                    CbzCreator.BuildCbzArchive(scanData, downloadPath);
                 }
 
                 // Deselect since we just downloaded it
-                OnScanDownloaded(scanUrl);
+                OnScanDownloaded(scanData);
             }
         }
 
@@ -175,7 +175,7 @@ namespace ScanNetDownloader.Logic
             }
         }
 
-        public static void OnScanDownloaded(ScanWebsiteUrl unselectedScan)
+        public static void OnScanDownloaded(ScanData unselectedScan)
         {
             if (ScanDownloadedEvent != null)
             {

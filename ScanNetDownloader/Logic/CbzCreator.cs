@@ -13,12 +13,12 @@ namespace ScanNetDownloader.Logic
     /// </summary>
     class CbzCreator
     {
-        public static void BuildCbzArchive(ScanWebsiteUrl scanUrl, string downloadPath)
+        public static void BuildCbzArchive(ScanData scanData, string downloadPath)
         {
-            Downloader.WriteDlInfoLine($"=> Create .CBZ for {scanUrl.BookName}-{scanUrl.ChapterId}...");
+            Downloader.WriteDlInfoLine($"=> Create .CBZ for {scanData.BookName}-{scanData.ChapterId}...");
 
-            string bookName = scanUrl.BookName;
-            string chapterNumber = scanUrl.ChapterId.ToString();
+            string bookName = scanData.BookName;
+            string chapterNumber = scanData.ChapterId.ToString();
 
             string folderToArchive = downloadPath;
             string cbzFilePath = Path.Combine(Directory.GetParent(downloadPath).FullName, $"{bookName}{Constants.CBZ_CHAPTER_PREFIX}{chapterNumber}{Constants.CBZ_EXTENSION}");
@@ -38,7 +38,7 @@ namespace ScanNetDownloader.Logic
                 }
                 catch (IOException ex)
                 {
-                    Error.FailedCbzCreation(ex, scanUrl, Settings.Instance.DeleteImagesAfterCbzCreation);
+                    Error.FailedCbzCreation(ex, scanData, Settings.Instance.DeleteImagesAfterCbzCreation);
                     return;
                 }
             }
@@ -58,7 +58,7 @@ namespace ScanNetDownloader.Logic
                     }
                     catch (IOException ex)
                     {
-                        Error.FailedToReplaceEmptyCbz(ex, scanUrl, Settings.Instance.DeleteImagesAfterCbzCreation);
+                        Error.FailedToReplaceEmptyCbz(ex, scanData, Settings.Instance.DeleteImagesAfterCbzCreation);
                         return;
                     }
                 }

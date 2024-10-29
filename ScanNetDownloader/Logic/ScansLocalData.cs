@@ -16,9 +16,9 @@ namespace ScanNetDownloader.Logic
         }
 
         /// <summary>
-        /// A list containing saved ScanWebsiteUrl
+        /// A list containing saved ScanData
         /// </summary>
-        public List<ScanWebsiteUrl> ScanUrlList { get; set; } = new List<ScanWebsiteUrl>();
+        public List<ScanData> ScanDataList { get; set; } = new List<ScanData>();
 
         public static void InitializeScansData()
         {
@@ -81,14 +81,16 @@ namespace ScanNetDownloader.Logic
             }
         }
 
-        public static void Update(List<ScanWebsiteUrl> newScansUrlList)
+        public static void Update(List<ScanData> newScansDataList)
         {
-            Instance.ScanUrlList = newScansUrlList; // TODO: Create a function for this ? Check reference Equals -> no need to assign if ref equals + help to know when instance is replaced  ?
+            // TODO: Delete Update and do the same change done with Settings on Save()
+            Instance.ScanDataList = newScansDataList; // TODO: Create a function for this ? Check reference Equals -> no need to assign if ref equals + help to know when instance is replaced  ?
             Save(Instance); // Save the scans local data 
         }
 
         private static void Save(ScansLocalData newScanLocalData)
         {
+            // TODO: Delete Update and do the same change done with Settings on Save()
             JsonSerializerSettings serializerSettings = new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.All,

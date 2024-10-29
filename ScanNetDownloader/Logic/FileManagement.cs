@@ -102,7 +102,7 @@ namespace ScanNetDownloader.Logic
             return chapterDirectory;
         }
 
-        public static void OpenRelevantFolder(List<ScanWebsiteUrl> scansToDownload)
+        public static void OpenRelevantFolder(List<ScanData> scansToDownload)
         {
             if (scansToDownload.Count == 1)
             {
@@ -141,12 +141,12 @@ namespace ScanNetDownloader.Logic
             }
         }
 
-        public static bool AreScanFilesDownloaded(ScanWebsiteUrl scanUrl)
+        public static bool AreScanFilesDownloaded(ScanData scanData)
         {
-            string chapterDirPath = GetChapterDirectoryPath(scanUrl);
+            string chapterDirPath = GetChapterDirectoryPath(scanData);
             if (Directory.Exists(chapterDirPath))
             {
-                if (Directory.GetFiles(chapterDirPath).Any()) // TODO: Improve this to know if we have the correct amount of page, need more info in ScanWebsiteUrl
+                if (Directory.GetFiles(chapterDirPath).Any()) // TODO: Improve this to know if we have the correct amount of page, need more info in ScanData
                 {
                     return true;
                 }
@@ -161,34 +161,34 @@ namespace ScanNetDownloader.Logic
             }
         }
 
-        public static bool IsCbzArchiveCreated(ScanWebsiteUrl scanUrl)
+        public static bool IsCbzArchiveCreated(ScanData scanData)
         {
-            string cbzPath = GetCbzFilePath(scanUrl);
+            string cbzPath = GetCbzFilePath(scanData);
             return File.Exists(cbzPath) && File.ReadAllBytes(cbzPath).Length > 0;
         }
 
-        static string GetBookDirectoryPath(ScanWebsiteUrl scanUrl)
+        static string GetBookDirectoryPath(ScanData scanData)
         {
-            string bookName = scanUrl.BookName;
+            string bookName = scanData.BookName;
             string bookDirectoryPath = Path.Combine(OutputDirectory, $"{bookName}{Constants.SCAN_SUFFIX}");
 
             return bookDirectoryPath;
         }
 
-        public static string GetChapterDirectoryPath(ScanWebsiteUrl scanUrl)
+        public static string GetChapterDirectoryPath(ScanData scanData)
         {
-            string bookName = scanUrl.BookName;
-            string chapterNumber = scanUrl.ChapterId.ToString();
+            string bookName = scanData.BookName;
+            string chapterNumber = scanData.ChapterId.ToString();
             string chapterDirectoryPath = Path.Combine(OutputDirectory, $"{bookName}{Constants.SCAN_CHAPTER_PATH}{chapterNumber}");
 
             return chapterDirectoryPath;
         }
 
-        static string GetCbzFilePath(ScanWebsiteUrl scanUrl)
+        static string GetCbzFilePath(ScanData scanData)
         {
-            string bookName = scanUrl.BookName;
-            string chapterNumber = scanUrl.ChapterId.ToString();
-            string cbzFilePath = Path.Combine(GetBookDirectoryPath(scanUrl), $"{bookName}{Constants.CBZ_CHAPTER_PREFIX}{chapterNumber}{Constants.CBZ_EXTENSION}");
+            string bookName = scanData.BookName;
+            string chapterNumber = scanData.ChapterId.ToString();
+            string cbzFilePath = Path.Combine(GetBookDirectoryPath(scanData), $"{bookName}{Constants.CBZ_CHAPTER_PREFIX}{chapterNumber}{Constants.CBZ_EXTENSION}");
 
             return cbzFilePath;
         }

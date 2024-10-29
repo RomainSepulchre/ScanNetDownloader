@@ -3,10 +3,10 @@ using System.Diagnostics;
 
 namespace ScanNetDownloader.Logic
 {
-    public class ScanVfNetUrl : ScanWebsiteUrl
+    public class ScanVfNetScanData : ScanData
     {
         [JsonConstructor] // Only for Json deserialization, apparently passed variable name ABSOLUTELY must the same as its destination value name  (ex: url-> Url, websiteDomain -> WebsiteDomain)
-        public ScanVfNetUrl(string url, string websiteDomain, string bookName, int chapterId, bool isSelectedForDownload) : base(url, websiteDomain, bookName, chapterId, isSelectedForDownload)
+        public ScanVfNetScanData(string url, string websiteDomain, string bookName, int chapterId, bool isSelectedForDownload) : base(url, websiteDomain, bookName, chapterId, isSelectedForDownload)
         {
             Url = url;
             WebsiteDomain = websiteDomain;
@@ -15,7 +15,7 @@ namespace ScanNetDownloader.Logic
             IsSelectedForDownload = isSelectedForDownload;
         }
 
-        public ScanVfNetUrl(string url, bool chapterIsInUrl = true) : base(url)
+        public ScanVfNetScanData(string url, bool chapterIsInUrl = true) : base(url)
         {
             Url = url;
             WebsiteDomain = "https://www.scan-vf.net/";

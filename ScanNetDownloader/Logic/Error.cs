@@ -133,11 +133,11 @@ namespace ScanNetDownloader.Logic
             }
         }
 
-        public static void FailedCbzCreation(Exception ex, ScanWebsiteUrl scanUrl, bool deleteImagesAfterCbzCreation)
+        public static void FailedCbzCreation(Exception ex, ScanData scanData, bool deleteImagesAfterCbzCreation)
         {
-            errorList.Add(new Error($"{scanUrl.BookName}-{scanUrl.ChapterId} | Failed to create cbz archive", ErrorType.FailedCbzCreation, ex));
+            errorList.Add(new Error($"{scanData.BookName}-{scanData.ChapterId} | Failed to create cbz archive", ErrorType.FailedCbzCreation, ex));
 
-            string mBoxMessage = $"=> An error occured while creating the CBZ archive for {scanUrl.BookName}-{scanUrl.ChapterId}!";
+            string mBoxMessage = $"=> An error occured while creating the CBZ archive for {scanData.BookName}-{scanData.ChapterId}!";
             string mBoxCaption = "Error";
 
             Debug.WriteLine(mBoxMessage);
@@ -158,11 +158,11 @@ namespace ScanNetDownloader.Logic
             }
         }
 
-        public static void FailedToReplaceEmptyCbz(Exception ex, ScanWebsiteUrl scanUrl, bool deleteImagesAfterCbzCreation)
+        public static void FailedToReplaceEmptyCbz(Exception ex, ScanData scanData, bool deleteImagesAfterCbzCreation)
         {
-            errorList.Add(new Error($"{scanUrl.BookName}-{scanUrl.ChapterId} | Failed to replace empty cbz archive", ErrorType.FailedToReplaceEmptyCbz, ex));
+            errorList.Add(new Error($"{scanData.BookName}-{scanData.ChapterId} | Failed to replace empty cbz archive", ErrorType.FailedToReplaceEmptyCbz, ex));
 
-            string mBoxMessage = $"=> An error occured while replacing an empty CBZ archive for {scanUrl.BookName}-{scanUrl.ChapterId}!";
+            string mBoxMessage = $"=> An error occured while replacing an empty CBZ archive for {scanData.BookName}-{scanData.ChapterId}!";
             string mBoxCaption = "Error";
 
             Debug.WriteLine(mBoxMessage);
@@ -183,22 +183,22 @@ namespace ScanNetDownloader.Logic
             }
         }
 
-        public static void FailedToParseChapterEnteredByUser(ScanWebsiteUrl scanUrl, string chapterEnteredByUser)
+        public static void FailedToParseChapterEnteredByUser(ScanData scanData, string chapterEnteredByUser)
         {
-            errorList.Add(new Error($"{scanUrl.BookName} | Error when parsing chapter {chapterEnteredByUser}", ErrorType.FailedToParseChapterEnteredByUser));
+            errorList.Add(new Error($"{scanData.BookName} | Error when parsing chapter {chapterEnteredByUser}", ErrorType.FailedToParseChapterEnteredByUser));
 
-            Debug.WriteLine($" -> Failed to parse \"{chapterEnteredByUser}\" to int, this is not a valid number. \"{chapterEnteredByUser}\" will not be added to the chapter list for {scanUrl.BookName}!");
+            Debug.WriteLine($" -> Failed to parse \"{chapterEnteredByUser}\" to int, this is not a valid number. \"{chapterEnteredByUser}\" will not be added to the chapter list for {scanData.BookName}!");
 
-            string mBoxMessage = $"Cannot parse \"{chapterEnteredByUser}\" to int => invalid chapter number. Entry will not be added to the chapter list for {scanUrl.BookName} ({scanUrl.Url})";
+            string mBoxMessage = $"Cannot parse \"{chapterEnteredByUser}\" to int => invalid chapter number. Entry will not be added to the chapter list for {scanData.BookName} ({scanData.Url})";
             string mBoxCaption = "Error";
             MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
-        public static void ChapterDoesntExist(ScanWebsiteUrl scanUrl, string chapterUrl)
+        public static void ChapterDoesntExist(ScanData scanData, string chapterUrl)
         {
-            errorList.Add(new Error($"{scanUrl.BookName}-{scanUrl.ChapterId} | {chapterUrl} doesn't exist on the website", ErrorType.ChapterDoesntExist));
+            errorList.Add(new Error($"{scanData.BookName}-{scanData.ChapterId} | {chapterUrl} doesn't exist on the website", ErrorType.ChapterDoesntExist));
 
-            string mBoxMessage = $"{scanUrl.BookName} chapter {scanUrl.ChapterId} doesn't exist on the website ({chapterUrl}). Make sure this chapter really exist.";
+            string mBoxMessage = $"{scanData.BookName} chapter {scanData.ChapterId} doesn't exist on the website ({chapterUrl}). Make sure this chapter really exist.";
             string mBoxCaption = "Error";
             Debug.WriteLine($"\n{mBoxMessage}\n");
 

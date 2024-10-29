@@ -20,11 +20,11 @@ namespace ScanNetDownloader.View.CustomControls
             set {
                 _isSelectedForDownload = value;
                 OnPropertyChanged();
-                if (linkedScanWebsiteUrl != null) linkedScanWebsiteUrl.IsSelectedForDownload = value; // TODO: when to save the value in the settings json ? Only when closing app or save everytime value is changed ?
+                if (linkedScanData != null) linkedScanData.IsSelectedForDownload = value; // TODO: when to save the value in the settings json ? Only when closing app or save everytime value is changed ?
             }
         }
 
-        public ScanWebsiteUrl linkedScanWebsiteUrl { get; private set; }
+        public ScanData linkedScanData { get; private set; }
 
         public string BookName { get; private set; }
 
@@ -88,20 +88,20 @@ namespace ScanNetDownloader.View.CustomControls
             InitializeComponent();
         }
 
-        public ScanItem(ScanWebsiteUrl _scanWebsiteUrl, bool fileAlreadyDownloaded=false, bool cbzAlreadyCreated=false)
+        public ScanItem(ScanData _scanData, bool fileAlreadyDownloaded=false, bool cbzAlreadyCreated=false)
         {
             DataContext = this;
             
             InitializeComponent();
 
-            linkedScanWebsiteUrl = _scanWebsiteUrl;
-            BookName = _scanWebsiteUrl.BookName;
-            ChapterId = _scanWebsiteUrl.ChapterId;
-            Url = _scanWebsiteUrl.Url;
-            Website = _scanWebsiteUrl.WebsiteDomain;
+            linkedScanData = _scanData;
+            BookName = _scanData.BookName;
+            ChapterId = _scanData.ChapterId;
+            Url = _scanData.Url;
+            Website = _scanData.WebsiteDomain;
             IsDownloaded = fileAlreadyDownloaded;
             CbzArchiveCreated = cbzAlreadyCreated;
-            IsSelectedForDownload = _scanWebsiteUrl.IsSelectedForDownload;           
+            IsSelectedForDownload = _scanData.IsSelectedForDownload;           
 
             lbBookName.Content = BookName;
             lbChapterNumber.Content = ChapterId;

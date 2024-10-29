@@ -3,10 +3,10 @@ using System.Diagnostics;
 
 namespace ScanNetDownloader.Logic
 {
-    public class AnimeSamaFrUrl: ScanWebsiteUrl
+    public class AnimeSamaFrScanData: ScanData
     {
         [JsonConstructor] // Only for Json deserialization, apparently passed variable name ABSOLUTELY must the same as its destination value name  (ex: url-> Url, websiteDomain -> WebsiteDomain)
-        public AnimeSamaFrUrl(string url, string websiteDomain, string bookName, int chapterId, bool isSelectedForDownload) : base(url, websiteDomain, bookName, chapterId, isSelectedForDownload)
+        public AnimeSamaFrScanData(string url, string websiteDomain, string bookName, int chapterId, bool isSelectedForDownload) : base(url, websiteDomain, bookName, chapterId, isSelectedForDownload)
         {
             Url = url;
             WebsiteDomain = websiteDomain;
@@ -15,7 +15,7 @@ namespace ScanNetDownloader.Logic
             IsSelectedForDownload = isSelectedForDownload;
         }
 
-        public AnimeSamaFrUrl(string url) : base(url)
+        public AnimeSamaFrScanData(string url) : base(url)
         {
             this.Url = url;
             WebsiteDomain = "https://anime-sama.fr/";
@@ -24,7 +24,7 @@ namespace ScanNetDownloader.Logic
             IsSelectedForDownload = true;
         }
 
-        public AnimeSamaFrUrl(string url, int chapterId) : base(url)
+        public AnimeSamaFrScanData(string url, int chapterId) : base(url)
         {
             this.Url = url;
             WebsiteDomain = "anime-sama.fr";

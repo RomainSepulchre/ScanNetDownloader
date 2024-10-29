@@ -18,14 +18,14 @@ namespace ScanNetDownloader.Logic
             }
         }
 
-        public static bool MoreThanOneBookInList(this List<ScanWebsiteUrl> urlList)
+        public static bool MoreThanOneBookInList(this List<ScanData> scanDataList)
         {
-            if (urlList.Count <= 1) return false;
+            if (scanDataList.Count <= 1) return false;
 
-            string firstUrlBookName = urlList[0].BookName;
-            for (int i = 1; i < urlList.Count; i++) // Start at item 1 because we always compare with item 0
+            string firstUrlBookName = scanDataList[0].BookName;
+            for (int i = 1; i < scanDataList.Count; i++) // Start at item 1 because we always compare with item 0
             {
-                string currentUrlBookName = urlList[i].BookName;
+                string currentUrlBookName = scanDataList[i].BookName;
                 if (string.Equals(firstUrlBookName, currentUrlBookName) == false)
                 {
                     return true;

@@ -20,7 +20,7 @@ namespace ScanNetDownloader
 
     // TODO: Delete unselected button
     // TODO: Improve chapter selection visual to give a better understanding of what happening
-    // TODO: Warn for invalid url as soon as possible (new function chck url validity in ScanWebsiteUrl-> url must contains at least a book name)
+    // TODO: Warn for invalid url as soon as possible (new function chck url validity in ScanData-> url must contains at least a book name)
     // TODO: Manage weird image format from anime-same by cropping image automatically
     // TODO: Scrap a list of all the books available and create a search engine
 
@@ -29,7 +29,7 @@ namespace ScanNetDownloader
 
         private TabItem previousTabSelected = null;
 
-        private List<ScanWebsiteUrl> ScanWebsiteUrls => ScansLocalData.Instance.ScanUrlList;
+        private List<ScanData> ScanDatas => ScansLocalData.Instance.ScanDataList;
 
         private ObservableCollection<ScanItem> _scanListItems;
 
@@ -65,7 +65,7 @@ namespace ScanNetDownloader
             // Download Events
             Downloader.DlInfoWriteLineEvent += new EventHandler<string>(WriteDlInfoLine);
             Downloader.UpdateDlProgressBarEvent += new EventHandler<float>(UpdateDownloadProgress);
-            Downloader.ScanDownloadedEvent += new EventHandler<ScanWebsiteUrl>(ScanDownloaded);
+            Downloader.ScanDownloadedEvent += new EventHandler<ScanData>(ScanDownloaded);
 
             // Load Settings
             Settings.InitializeAppSettings();
@@ -128,10 +128,10 @@ namespace ScanNetDownloader
         {
             tabCtrlNavigation.SelectedItem = tabDownload; // Switch to download tab
 
-            List<ScanWebsiteUrl> scansToDownload = new List<ScanWebsiteUrl>();
+            List<ScanData> scansToDownload = new List<ScanData>();
             foreach (ScanItem item in _scanListItems)
             {
-                if (item.IsSelectedForDownload) scansToDownload.Add(item.linkedScanWebsiteUrl);
+                if (item.IsSelectedForDownload) scansToDownload.Add(item.linkedScanData);
             }
 
             DlInfo = ""; // Clear download info
@@ -150,7 +150,7 @@ namespace ScanNetDownloader
                 string urlInput = addWindow.UrlInput;
                 string chapterInput = addWindow.ChapterInput;
 
-                List<ScanWebsiteUrl> newScansToAdd = ScanManagement.CreateNewScanWebsiteUrls(urlInput, chapterInput);                
+                List<ScanData> newScansToAdd = ScanManagement.CreateNewScanData(urlInput, chapterInput);                
 
                 if (newScansToAdd.Any())
                 {
@@ -168,7 +168,7 @@ namespace ScanNetDownloader
         private void btnDbgSave_Click(object sender, RoutedEventArgs e)
         {
             // Save the scans local data
-            ScansLocalData.Update(ScanWebsiteUrls);
+            ScansLocalData.Update(ScanDatas);
         }
 
         private void btnDbgOpenDataJson_Click(object sender, RoutedEventArgs e)
@@ -196,7 +196,7 @@ namespace ScanNetDownloader
             if (item != null)
             {
                 // Verify if cbz is created
-                bool cbzCreated = FileManagement.IsCbzArchiveCreated(item.linkedScanWebsiteUrl);
+                bool cbzCreated = FileManagement.IsCbzArchiveCreated(item.linkedScanData);
                 item.CbzArchiveCreated = cbzCreated;
                 Debug.WriteLine($"CBZ CREATION BUTTON: Item={item.BookName}-{item.ChapterId}");
 
@@ -208,10 +208,10 @@ namespace ScanNetDownloader
                     MessageBoxResult result = MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.YesNo, MessageBoxImage.Question);
                     if (result == MessageBoxResult.Yes)
                     {
-                        string chapterPath = FileManagement.GetChapterDirectoryPath(item.linkedScanWebsiteUrl);
-                        CbzCreator.BuildCbzArchive(item.linkedScanWebsiteUrl, chapterPath);
+                        string chapterPath = FileManagement.GetChapterDirectoryPath(item.linkedScanData);
+                        CbzCreator.BuildCbzArchive(item.linkedScanData, chapterPath);
 
-                        bool cbzSuccessfullyCreated = FileManagement.IsCbzArchiveCreated(item.linkedScanWebsiteUrl);
+                        bool cbzSuccessfullyCreated = FileManagement.IsCbzArchiveCreated(item.linkedScanData);
                         item.CbzArchiveCreated = cbzSuccessfullyCreated;
                     }
                 }
@@ -223,7 +223,7 @@ namespace ScanNetDownloader
             ScanItem item = e.Source as ScanItem;
             if (item != null)
             {
-                bool fileDownloaded = FileManagement.AreScanFilesDownloaded(item.linkedScanWebsiteUrl);
+                bool fileDownloaded = FileManagement.AreScanFilesDownloaded(item.linkedScanData);
                 item.IsDownloaded = fileDownloaded;
             }
         }
@@ -242,11 +242,11 @@ namespace ScanNetDownloader
             progrBarDownload.Value = percentageDone;
         }
 
-        public void ScanDownloaded(object sender, ScanWebsiteUrl downloadedScan) // This happens when the 
+        public void ScanDownloaded(object sender, ScanData downloadedScan) // This happens when the 
         {
-            // TODO: What's best way to retrieve item ? .First() ? using index in scanUrlList ?
-            //ScanItem item = ScanListItems.First(x => x.linkedScanWebsiteUrl == unselectedScan);
-            ScanItem item = ScanListItems[ScanWebsiteUrls.IndexOf(downloadedScan)];
+            // TODO: What's best way to retrieve item ? .First() ? using index in scanDataList ?
+            //ScanItem item = ScanListItems.First(x => x.linkedScanData == downloadedScan);
+            ScanItem item = ScanListItems[ScanDatas.IndexOf(downloadedScan)];
                        
             item.IsSelectedForDownload = false; // Disable download selection since we just downloaded
 
@@ -264,12 +264,12 @@ namespace ScanNetDownloader
             Debug.WriteLine("REFRESH SCAN LIST");
             ScanListItems.Clear();
 
-            foreach (var scanUrl in ScanWebsiteUrls)
+            foreach (ScanData scanData in ScanDatas)
             {
-                bool filesAlreadyDownloaded = FileManagement.AreScanFilesDownloaded(scanUrl);
-                bool cbzAlreadyCreated = FileManagement.IsCbzArchiveCreated(scanUrl);
+                bool filesAlreadyDownloaded = FileManagement.AreScanFilesDownloaded(scanData);
+                bool cbzAlreadyCreated = FileManagement.IsCbzArchiveCreated(scanData);
 
-                ScanItem item = new ScanItem(scanUrl, filesAlreadyDownloaded, cbzAlreadyCreated);
+                ScanItem item = new ScanItem(scanData, filesAlreadyDownloaded, cbzAlreadyCreated);
                 item.DeleteBtnPressed += ScanItem_DeleteBtnPressed;
                 item.CreateCbzBtnPressed += ScanItem_CreateCbzBtnPressed;
                 item.StatusBtnPressed += ScanItem_StatusBtnPressed;
@@ -277,22 +277,22 @@ namespace ScanNetDownloader
             }
         }
 
-        private void AddScanItems(List<ScanWebsiteUrl> newScansToAdd) // TODO: Replace the refresh by a add function to prevent recreating the whole view everytime
+        private void AddScanItems(List<ScanData> newScansToAdd) // TODO: Replace the refresh by a add function to prevent recreating the whole view everytime
         {
             // Add in saved data
-            ScanWebsiteUrls.AddRange(newScansToAdd);
+            ScanDatas.AddRange(newScansToAdd);
 
             // Save the scans local data
-            ScansLocalData.Update(ScanWebsiteUrls);
+            ScansLocalData.Update(ScanDatas);
 
             // Add item in list view
-            foreach (ScanWebsiteUrl scanUrl in newScansToAdd)
+            foreach (ScanData scanData in newScansToAdd)
             {
                 // TODO: Add a check to prevent a double entry of the same chapter on the same website, maybe check before caliing AddScanItems ?
-                bool filesAlreadyDownloaded = FileManagement.AreScanFilesDownloaded(scanUrl); 
-                bool cbzAlreadyCreated = FileManagement.IsCbzArchiveCreated(scanUrl);
+                bool filesAlreadyDownloaded = FileManagement.AreScanFilesDownloaded(scanData); 
+                bool cbzAlreadyCreated = FileManagement.IsCbzArchiveCreated(scanData);
 
-                ScanItem item = new ScanItem(scanUrl, filesAlreadyDownloaded, cbzAlreadyCreated);
+                ScanItem item = new ScanItem(scanData, filesAlreadyDownloaded, cbzAlreadyCreated);
                 item.DeleteBtnPressed += ScanItem_DeleteBtnPressed;
                 item.CreateCbzBtnPressed += ScanItem_CreateCbzBtnPressed;               
                 ScanListItems.Add(item);
@@ -302,10 +302,10 @@ namespace ScanNetDownloader
         private void DeleteScanItem(ScanItem itemToDelete)
         {
             // Remove from saved data
-            ScanWebsiteUrls.Remove(itemToDelete.linkedScanWebsiteUrl);
+            ScanDatas.Remove(itemToDelete.linkedScanData);
 
             // Save the scans local data
-            ScansLocalData.Update(ScanWebsiteUrls);
+            ScansLocalData.Update(ScanDatas);
 
             // Remove item from list view
             ScanListItems.Remove(itemToDelete);
