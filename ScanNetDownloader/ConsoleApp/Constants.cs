@@ -1,7 +1,11 @@
 ﻿using System.IO;
+using static System.Net.WebRequestMethods;
 
 namespace ScanNetDownloader.ConsoleApp
 {
+    /// <summary>
+    /// Constant or read-only variable that need to be accessible from anywhere
+    /// </summary>
     public class Constants
     {
         #region Paths
@@ -65,6 +69,23 @@ namespace ScanNetDownloader.ConsoleApp
         public const int HALF_SECOND_IN_MILLISECONDS = 500;
         #endregion
 
-
+        #region Debug
+        // List of Url that can be used for dev purpose
+        private static readonly List<string> DEV_SCANS_TO_DOWNLOAD_URL = new List<string>
+        {
+            "https://anime-sama.fr/catalogue/20th-century-boys/scan/vf/",
+            "https://www.scan-vf.net/one_piece/chapitre-1079/1",
+            "https://www.scan-vf.net/one_piece/chapitre-1120/5",
+            "https://www.scan-vf.net/one_piece/chapitre-140/1",
+            "https://www.scan-vf.net/one_piece/chapitre-1087/7",
+            "https://anime-sama.fr/catalogue/berserk/scan/vf/",
+            "https://anime-sama.fr/catalogue/alice-in-borderland/scan/vf/",
+            "https://www.scan-vf.net/jujutsu-kaisen/chapitre-268/1",
+            "https://www.scan-vf.net/dragon-Ball-Super/chapitre-73/4",
+            "https://anime-sama.fr/catalogue/fairy-tail/scan/vf/",
+            "https://www.scan-vf.net/my-hero-academia/chapitre-358/2",
+            "https://anime-sama.fr/catalogue/the-terminally-ill-young-master-of-the-baek-clan/scan/vf/"
+        };
+        #endregion
     }
 }

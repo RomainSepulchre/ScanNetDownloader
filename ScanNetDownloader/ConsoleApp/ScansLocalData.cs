@@ -49,28 +49,21 @@ namespace ScanNetDownloader.ConsoleApp
 
                     // TODO: Redo error management to fit with WPF version
                     Debug.WriteLine($"Error while loading scan local data, do you want to clear the data ?\n {ex}");
-                    if (Program.WaitForYesOrNoMsgBox($"Error while loading scan local data, do you want to clear the data ?") == MessageBoxResult.Yes)
+
+                    MessageBoxResult result = MessageBox.Show($"Error while loading scan local data, do you want to clear the data ?", "Continue ?", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+                    if (result == MessageBoxResult.Yes)
                     {
                         loadedData = ClearLocalData();
                         return loadedData;
                     }
-                    else // What to do in this case with WPF app ?
+                    else // TODO: What to do in this case with WPF app ?
                     {
                         Debug.WriteLine("Please make sure nothing is wrong with the data in ScansLocalData.json, if the problem persist backup your data and reset the json to it's default values.");
-
-                        if (Settings.Instance != null && Settings.Instance.AutoOpenJsonWhenNecessary)
-                        {
-                            Debug.WriteLine("Press any key to open ScansLocalData.json and close the app...");
-                            MessageBox.Show("Press ok to open ScansLocalData.json and close the app...", "Quit app", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        }
-                        else
-                        {
-                            Debug.WriteLine("Press any key close the app...");
-                            MessageBox.Show("The app will be closed...", "Quit app", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        }
+                        MessageBox.Show("Please make sure nothing is wrong with the data in ScansLocalData.json, if the problem persist backup your data and reset the json to it's default values.", "Scan data error", MessageBoxButton.OK, MessageBoxImage.Warning);
 
                         OpenJsonFile();
-                        Program.QuitApp();
+                        App.Quit();
                         return null;
                     }
                 }

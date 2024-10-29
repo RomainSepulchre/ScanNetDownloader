@@ -8,11 +8,14 @@ using System.Threading.Tasks;
 
 namespace ScanNetDownloader.ConsoleApp
 {
+    /// <summary>
+    /// Handle the creation of the CbzArchive
+    /// </summary>
     class CbzCreator
     {
         public static void BuildCbzArchive(ScanWebsiteUrl scanUrl, string downloadPath)
         {
-            Program.WriteDlInfoLine($"=> Create .CBZ for {scanUrl.BookName}-{scanUrl.ChapterId}...");
+            Downloader.WriteDlInfoLine($"=> Create .CBZ for {scanUrl.BookName}-{scanUrl.ChapterId}...");
 
             string bookName = scanUrl.BookName;
             string chapterNumber = scanUrl.ChapterId.ToString();
@@ -22,7 +25,7 @@ namespace ScanNetDownloader.ConsoleApp
 
             if (Directory.EnumerateFileSystemEntries(folderToArchive).Any() == false)
             {
-                Program.WriteDlInfoLine($"=> No images downloaded for {bookName}-{chapterNumber}, CBZ creation will be skipped!\n");
+                Downloader.WriteDlInfoLine($"=> No images downloaded for {bookName}-{chapterNumber}, CBZ creation will be skipped!\n");
                 return;
             }
 
@@ -31,7 +34,7 @@ namespace ScanNetDownloader.ConsoleApp
                 try
                 {
                     ZipFile.CreateFromDirectory(folderToArchive, cbzFilePath);
-                    Program.WriteDlInfoLine($"=> {bookName}-{chapterNumber} .CBZ successfully created!\n");
+                    Downloader.WriteDlInfoLine($"=> {bookName}-{chapterNumber} .CBZ successfully created!\n");
                 }
                 catch (IOException ex)
                 {
@@ -43,7 +46,7 @@ namespace ScanNetDownloader.ConsoleApp
             {
                 if (File.ReadAllBytes(cbzFilePath).Length > 0)
                 {
-                    Program.WriteDlInfoLine($"=> .CBZ already created!\n");
+                    Downloader.WriteDlInfoLine($"=> .CBZ already created!\n");
                 }
                 else // Replace empty Cbz
                 {
@@ -51,7 +54,7 @@ namespace ScanNetDownloader.ConsoleApp
                     {
                         File.Delete(cbzFilePath);
                         ZipFile.CreateFromDirectory(folderToArchive, cbzFilePath);
-                        Program.WriteDlInfoLine($"=> {bookName}-{chapterNumber} .CBZ successfully created!\n");
+                        Downloader.WriteDlInfoLine($"=> {bookName}-{chapterNumber} .CBZ successfully created!\n");
                     }
                     catch (IOException ex)
                     {

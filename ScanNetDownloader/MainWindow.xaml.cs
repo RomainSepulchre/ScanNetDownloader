@@ -19,6 +19,10 @@ namespace ScanNetDownloader
     ///
 
     // TODO: Delete unselected button
+    // TODO: Improve chapter selection visual to give a better understanding of what happening
+    // TODO: Warn for invalid url as soon as possible (new function chck url validity in ScanWebsiteUrl-> url must contains at least a book name)
+    // TODO: Manage weird image format from anime-same by cropping image automatically
+    // TODO: Scrap a list of all the books available and create a search engine
 
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
@@ -58,10 +62,10 @@ namespace ScanNetDownloader
             DataContext = this;
             _scanListItems = new ObservableCollection<ScanItem>();
 
-            // Events
-            Program.DlInfoWriteLineEvent += new EventHandler<string>(WriteDlInfoLine);
-            Program.UpdateDlProgressBarEvent += new EventHandler<float>(UpdateDownloadProgress);
-            Program.ScanDownloadedEvent += new EventHandler<ScanWebsiteUrl>(ScanDownloaded);
+            // Download Events
+            Downloader.DlInfoWriteLineEvent += new EventHandler<string>(WriteDlInfoLine);
+            Downloader.UpdateDlProgressBarEvent += new EventHandler<float>(UpdateDownloadProgress);
+            Downloader.ScanDownloadedEvent += new EventHandler<ScanWebsiteUrl>(ScanDownloaded);
 
             // Load Settings
             Settings.InitializeAppSettings();
@@ -128,7 +132,8 @@ namespace ScanNetDownloader
                 if (item.IsSelectedForDownload) scansToDownload.Add(item.linkedScanWebsiteUrl);
             }
 
-            Program.StartDownloader(scansToDownload);
+            DlInfo = ""; // Clear download info
+            Downloader.StartDownloader(scansToDownload);
         }
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)

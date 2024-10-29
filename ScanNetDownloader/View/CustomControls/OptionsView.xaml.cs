@@ -24,6 +24,9 @@ namespace ScanNetDownloader.View.CustomControls
     /// <summary>
     /// Logique d'interaction pour OptionsView.xaml
     /// </summary>
+    /// 
+
+    // TODO: prevent to change options while downloading
     public partial class OptionsView : UserControl, INotifyPropertyChanged
     {
         public bool OptionsChangesNotSaved { get; private set; } = false;
@@ -158,7 +161,7 @@ namespace ScanNetDownloader.View.CustomControls
             Settings.Instance.CreateCbzArchive = CreateCbzAfterDownload;
             Settings.Instance.DeleteImagesAfterCbzCreation = DeleteImagesAfterCbzCreation;          
 
-            Settings.Update(Settings.Instance);
+            Settings.Save();
 
             CheckForChangedSettings(false);
         }

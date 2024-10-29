@@ -17,5 +17,22 @@ namespace ScanNetDownloader.ConsoleApp
                 Debug.WriteLine($"- {item}");
             }
         }
+
+        public static bool MoreThanOneBookInList(this List<ScanWebsiteUrl> urlList)
+        {
+            if (urlList.Count <= 1) return false;
+
+            string firstUrlBookName = urlList[0].BookName;
+            for (int i = 1; i < urlList.Count; i++) // Start at item 1 because we always compare with item 0
+            {
+                string currentUrlBookName = urlList[i].BookName;
+                if (string.Equals(firstUrlBookName, currentUrlBookName) == false)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }

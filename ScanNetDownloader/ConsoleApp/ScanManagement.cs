@@ -9,6 +9,9 @@ using System.Windows;
 
 namespace ScanNetDownloader.ConsoleApp
 {
+    /// <summary>
+    /// Handle the creation of ScanWebsiteUrl and their management
+    /// </summary>
     class ScanManagement
     {
         public static List<ScanWebsiteUrl> CreateNewScanWebsiteUrls(string urlEntered, string chaptersEntered)
@@ -106,7 +109,7 @@ namespace ScanNetDownloader.ConsoleApp
             return selectedChaptersId;
         }
 
-        // TODO : Should not be useful anymore after finishing the addScan Pop Up
+        // TODO : Should not be useful anymore after finishing the addScan Pop-Up
         private static List<int> AskUserToProvideChapters(ScanWebsiteUrl scanUrl, ref bool errorOccured) // TODO: maybe this could be in a class dedicated to pop up ?
         {
             MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
@@ -172,23 +175,6 @@ namespace ScanNetDownloader.ConsoleApp
             }
 
             return validChapters;
-        }
-
-        public static bool MoreThanOneBookInUrlList(List<ScanWebsiteUrl> urlList)
-        {
-            if (urlList.Count <= 1) return false;
-
-            string firstUrlBookName = urlList[0].BookName;
-            for (int i = 1; i < urlList.Count; i++) // Start at item 1 because we always compare with item 0
-            {
-                string currentUrlBookName = urlList[i].BookName;
-                if (string.Equals(firstUrlBookName, currentUrlBookName) == false)
-                {
-                    return true;
-                }
-            }
-
-            return false;
         }
     }
 }

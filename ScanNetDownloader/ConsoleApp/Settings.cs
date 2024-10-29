@@ -91,28 +91,21 @@ namespace ScanNetDownloader.ConsoleApp
 
                     // TODO: Redo error management to fit with WPF version
                     Debug.WriteLine($"Do you want to reset settings.json to it's default values ?");
-                    if (Program.WaitForYesOrNoMsgBox($"Do you want to reset settings.json to it's default values ?") == MessageBoxResult.Yes)
+
+                    MessageBoxResult result = MessageBox.Show($"Do you want to reset settings.json to it's default values ?", "Continue ?", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                    if (result == MessageBoxResult.Yes)
                     {
                         loadedSettings = ResetToDefault();
                         return loadedSettings;
                     }
-                    else // What to do in this case with WPF app ?
+                    else //TODO: What to do in this case with WPF app ?
                     {
                         Debug.WriteLine("Please make sure nothing is wrong with the value in Settings.json, if the problem persist backup your settings and reset the json to it's default values.");
-
-                        if (Instance != null && Instance.AutoOpenJsonWhenNecessary)
-                        {
-                            Debug.WriteLine("Press any key to open Settings.json and close the app...");
-                            MessageBox.Show("Press ok to open Settings.json and close the app...", "Quit app", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        }
-                        else
-                        {
-                            Debug.WriteLine("Press any key close the app...");
-                            MessageBox.Show("The app will be closed...", "Quit app", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        }
+                        MessageBox.Show("Please make sure nothing is wrong with the data in Settings.json, if the problem persist backup your settings and reset the json to it's default values.", "Settings data error", MessageBoxButton.OK, MessageBoxImage.Warning);
 
                         OpenJsonFile();
-                        Program.QuitApp();
+                        App.Quit();
                         return null;
                     }
                 }
@@ -125,27 +118,22 @@ namespace ScanNetDownloader.ConsoleApp
             }
         }
 
-        public static void Update(Settings newSettings)
+        public static void Save(Settings newSettings=null)
         {
-            Instance = newSettings;
-            Save(Instance);
-        }
+            // If we specify newSettings, they replace the instance otherwise we save our Settings instance
+            if (newSettings != null)
+            {
+                if (ReferenceEquals(Instance, newSettings) == false) // Make sure we didn't provide a reference of instance as argument
+                {
+                    Instance = newSettings;
+                }
+            }            
 
-        private static void Save(Settings newSettings)
-        {
             JsonSerializerSettings serializerSettings = new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.All,
                 Formatting = Formatting.Indented
             };
-
-            // TODO: Should I replace only if reference is different so I know when I replace the initial instance ?
-            //if(ReferenceEquals(Instance, newSettings) == false) 
-            //{
-            //    Instance = newSettings;
-            //}
-
-            Instance = newSettings;
 
             try
             {
@@ -166,10 +154,17 @@ namespace ScanNetDownloader.ConsoleApp
 
         public static void OpenJsonFile()
         {
-            if (Instance != null && Instance.AutoOpenJsonWhenNecessary)
+            if (Instance != null)
+            {
+                if (Instance.AutoOpenJsonWhenNecessary)
+                {
+                    new Process { StartInfo = new ProcessStartInfo(Constants.SETTINGS_JSON_PATH) { UseShellExecute = true } }.Start();
+                }
+            }
+            else
             {
                 new Process { StartInfo = new ProcessStartInfo(Constants.SETTINGS_JSON_PATH) { UseShellExecute = true } }.Start();
-            }
+            }  
         }
 
         public void Log()

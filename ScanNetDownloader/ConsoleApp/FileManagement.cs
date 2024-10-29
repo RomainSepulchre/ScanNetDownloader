@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -9,12 +10,15 @@ using System.Windows;
 
 namespace ScanNetDownloader.ConsoleApp
 {
+    /// <summary>
+    /// Manage everything related to local files and folders
+    /// </summary>
     class FileManagement
     {
 
         private static string OutputDirectory => Settings.Instance.OutputDirectory;
 
-        public static void CheckOutputDirectory()
+        public static bool OutputDirectoryIsValid()
         {
             // TODO: Redo Error Manamgement to fit with WPF
             // TODO: If no custom directory set ask if the user want to select a new one or if he's ok with the one selected
@@ -23,32 +27,61 @@ namespace ScanNetDownloader.ConsoleApp
             {
                 Error.NoOutputDirectory();
 
-                Program.WriteDlInfoLine($"Do you want to create the directory \"{OutputDirectory}\" ? ");
+                Downloader.WriteDlInfoLine($"\"{OutputDirectory}\" does not exist, do you want to create the directory?");
 
-                if (Program.WaitForYesOrNoMsgBox($"Do you want to create the directory \"{OutputDirectory}\" ? ") == MessageBoxResult.Yes)
+                // TODO: Create a window with CreateDirectory, Choose another directory, Cancel
+                MessageBoxResult resultCreateDir = MessageBox.Show($"\"{OutputDirectory}\" does not exist, do you want to create the directory?", "Continue ?", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                if (resultCreateDir == MessageBoxResult.Yes)
                 {
                     Directory.CreateDirectory(OutputDirectory);
-                    Program.WriteDlInfoLine($"\"{OutputDirectory}\" sucessfully created. Ready to download!");
+                    Downloader.WriteDlInfoLine($"\"{OutputDirectory}\" sucessfully created. Ready to download!");
+                    return true;
                 }
                 else
                 {
-                    // TODO: Select output dir here instead of opening Json
-                    Program.WriteDlInfoLine("Please modify the output directory in Settings.json, it must be a valid directory.");
-                    if (Settings.Instance.AutoOpenJsonWhenNecessary) // TODO: this is done several time, this could be a single function
+                    MessageBoxResult resultSelectDir = MessageBox.Show($"Do you want to select another download directory ?", "Select Directory ?", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                    if(resultSelectDir == MessageBoxResult.Yes)
                     {
-                        Program.WriteDlInfoLine("Press any key to open Settings.json and close the app...");
-                        MessageBox.Show("Press ok to open Settings.json and close the app...", "Quit app", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        OpenFolderDialog fileDialog = new OpenFolderDialog();
+                        fileDialog.Title = "Select download directory";
+                        fileDialog.Multiselect = false;
+
+                        bool? success = fileDialog.ShowDialog();
+
+                        if (success == true)
+                        {
+                            Settings.Instance.OutputDirectory = fileDialog.FolderName;
+                            Settings.Save();
+
+                            return true;
+                        }
+                        else
+                        {
+                            Downloader.WriteDlInfoLine("Please modify the output directory in the Settings, it must be a valid directory.");
+                            MessageBox.Show("Please modify the download directory in the Settings, it must be a valid directory.", "Invalid download directory", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            // TODO: Open options tab
+                            MainWindow mw = Application.Current.MainWindow as MainWindow;
+                            mw.tabCtrlNavigation.SelectedItem = mw.tabOptions;
+                            return false;
+                        }   
                     }
                     else
-                    {
-                        Program.WriteDlInfoLine("Press any key to close the app...");
-                        MessageBox.Show("The app will be closed...", "Quit app", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    }
-
-                    Settings.OpenJsonFile();
-                    Program.QuitApp();
+                    {                 
+                        Downloader.WriteDlInfoLine("Please modify the output directory in the Settings, it must be a valid directory.");
+                        MessageBox.Show("Please modify the download directory in the Settings, it must be a valid directory.", "Invalid download directory", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        // TODO: Open options tab
+                        MainWindow mw = Application.Current.MainWindow as MainWindow;
+                        mw.tabCtrlNavigation.SelectedItem = mw.tabOptions;
+                        return false;
+                    }                   
                 }
             }
+            else
+            {
+                return true;
+            }     
         }
 
         public static string CreateChapterDirectory(string bookName, string chapterNumber)
@@ -72,7 +105,7 @@ namespace ScanNetDownloader.ConsoleApp
             }
             else
             {
-                bool moreThanOneBook = ScanManagement.MoreThanOneBookInUrlList(scansToDownload);
+                bool moreThanOneBook = scansToDownload.MoreThanOneBookInList();
                 if (moreThanOneBook)
                 {
                     // Several books downloaded, open the output folder
