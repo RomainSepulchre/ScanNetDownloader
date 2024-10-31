@@ -33,7 +33,7 @@ namespace ScanNetDownloader.Logic
             IsSelectedForDownload = true;
         }
 
-        public override string GetBookNameFromUrl(string url, bool removeSpace = false)
+        protected override string GetBookNameFromUrl(string url, bool removeSpace = false)
         {
             #region Chapter and img url examples
             // Example of chapter url
@@ -65,7 +65,7 @@ namespace ScanNetDownloader.Logic
             return bookName;
         }
 
-        public override string GetChapterNumberFromUrl(string url, bool keepNumberOnly = true)
+        protected override string GetChapterNumberFromUrl(string url, bool keepNumberOnly = true)
         {
             #region Chapter and img url examples
             // Example of chapter url
@@ -124,6 +124,11 @@ namespace ScanNetDownloader.Logic
             //return Constants.JPG_EXTENSION;
         }
 
+        public override bool UrlContainsChapter()
+        {
+            return false; // Anime Sama scan url never contains chapter number
+        }
+
         protected override List<string> ParseHtmlToGetImgLinks(string htmlContent)
         {
             Debug.WriteLine($"\nPARSE HTML - {BookName}_{ChapterId} ({Url}), imgs found:");
@@ -143,11 +148,12 @@ namespace ScanNetDownloader.Logic
             bookNameForUrl = splitContent[0]; // Keep the split before our separator (trim the end)
 
             // Test if chapter is valid by looking for first image
+            // TODO: Manage Scan in english-> VF (normal url)/VA (add: " Anglais" after image name) <- check if reliable
             int firstImgId = 1;
             string chapterUrl = $"{Constants.ANIMESAMA_IMG_URL_START}{bookNameForUrl}/{ChapterId}/";
             string firstImgUrl = $"{chapterUrl}{firstImgId}{Constants.JPG_EXTENSION}";
 
-            if (IsUrlValid(firstImgUrl) == false)
+            if (UrlLoadCorrectly(firstImgUrl) == false)
             {
                 Error.ChapterDoesntExist(this, firstImgUrl);
                 return new List<string>();
@@ -157,7 +163,7 @@ namespace ScanNetDownloader.Logic
 
             int pageId = 1;
             string imgUrl = $"{chapterUrl}{pageId}{Constants.JPG_EXTENSION}";
-            while (IsUrlValid(imgUrl))
+            while (UrlLoadCorrectly(imgUrl))
             {
                 imgUrls.Add(imgUrl);
                 pageId++;
@@ -170,22 +176,42 @@ namespace ScanNetDownloader.Logic
             return imgUrls;
         }
 
-        public static bool IsUrlValid(string url)
+        public static UrlValidityResult IsUrlValid(string url)
         {
             // What are the caracteristics of a valid anime sama url ?
             // https://anime-sama.fr/catalogue/20th-century-boys/scan/vf/ ==> 8 splits 
+            // https://anime-sama.fr/catalogue/20th-century-boys ==> 5 splits and last split must not be empty
             // Check if url is long enough to have a book name
 
-            // Try to form a valid img url for chapter 1 page 1 ?
+            // TODO: Not sure about allowing short url for this website
 
-            if (UrlLoadCorrectly(url) == false) // Test if we can load url
+            UrlValidityResult result = new UrlValidityResult(url);
+
+            string[] urlSplitAtSlash = url.Split(Constants.SLASH_CHAR);
+            if (urlSplitAtSlash.Length < 5 || (urlSplitAtSlash.Length == 5 && string.IsNullOrEmpty(urlSplitAtSlash[4]))) // Check if there is enough or too much / in the url to be a valid url
             {
-                return false;
+                result.InvalidityReason = "Url is too short, book name is probably missing in the url";
+                result.IsValid = false;
+            }
+            else if (urlSplitAtSlash.Length > 8)
+            {
+                result.InvalidityReason = "Url seems too long, url should stop with \"vf/\" or \"va/\"";
+                result.IsValid = false;
             }
             else
             {
-                return true;
-            }          
+                if (UrlLoadCorrectly(url) == false) // Test if we can load url
+                {
+                    result.InvalidityReason = "Impossible to load url, make sure the url load in a web browser";
+                    result.IsValid = false;
+                }
+                else
+                {
+                    result.IsValid = true;
+                }
+            }            
+            
+            return result;
         }
     }
 }

@@ -15,6 +15,8 @@ namespace ScanNetDownloader.View
     {
         public string UrlInput { get; set; }
 
+        public ScanData TempScanData { get; set; }
+
         public string ChapterInput { get; set; }
 
         public List<int> ChapterSelected { get; set; }
@@ -62,9 +64,12 @@ namespace ScanNetDownloader.View
         private void urlSelectionVw_UrlConfirmed(object sender, RoutedEventArgs e)
         {
             UrlInput = urlSelectionVw.UrlInput;
+            TempScanData = urlSelectionVw.TempScanData;
 
-            chapterSelectionVw.SetUrlInfo(UrlInput);          
+            // Check if chapter is already specified
 
+            chapterSelectionVw.StartChapterSelection(TempScanData);
+                   
             urlSelectionVw.Visibility = Visibility.Collapsed;
             chapterSelectionVw.Visibility = Visibility.Visible;
 

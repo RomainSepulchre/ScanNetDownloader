@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ScanNetDownloader.Logic;
 
 namespace ScanNetDownloader.View.CustomControls
 {
@@ -20,6 +21,8 @@ namespace ScanNetDownloader.View.CustomControls
     /// </summary>
     public partial class ChaptersSelectionView : UserControl
     {
+        public ScanData TempScanData { get; set; }
+
         public string ChapterInput { get; set; }
 
         public List<string> ChaptersString { get; set; } = new List<string>();
@@ -47,19 +50,48 @@ namespace ScanNetDownloader.View.CustomControls
             InitializeComponent();
         }
 
-        public void SetUrlInfo(string url)
+        public void StartChapterSelection(ScanData tempScanData) // TODO: How to manage adding more chapters for Url with chapter number -> add url with chapter first remove chapter from list and then generate url for all the other added chapter
         {
-            txtBlockUrlInfo.Text = $"Choose chapters for {url}";
+            TempScanData = tempScanData;
+
+            SetUrlInfo();
+
+            if (TempScanData.UrlContainsChapter())
+            {
+                string chapterToAdd = TempScanData.ChapterId.ToString();
+
+                AddChapterSelected(chapterToAdd);
+                if (string.IsNullOrEmpty(ChapterInput))
+                {
+                    ChapterInput += chapterToAdd;
+                }
+                else
+                {
+                    ChapterInput += ";" + chapterToAdd;
+                }
+            }
         }
+
+        private void SetUrlInfo()
+        {
+            if (TempScanData.UrlContainsChapter())
+            {
+                txtBlockUrlInfo.Text = $"Chapter {TempScanData.ChapterId} is already specified in {TempScanData.Url} but you can add additionnal chapter";
+            }
+            else
+            {
+                txtBlockUrlInfo.Text = $"Choose chapters for {TempScanData.Url}";
+            }      
+        }
+   
 
         private void btnAddSingleChapter_Click(object sender, RoutedEventArgs e)
         {
-            int chapterToAdd;
-            bool validNumber = int.TryParse(txtBoxSingleChapter.Text, out chapterToAdd);
-            // Verify if valid chapter
+            bool validNumber = int.TryParse(txtBoxSingleChapter.Text, out int chapterToAdd);
             if (validNumber)
             {
-                // Check if chapter exist online
+                // TODO: Check if chapter exist online
+
                 // Add chapter
                 string singleChapter = txtBoxSingleChapter.Text;
                 ChaptersString.Add(singleChapter);
@@ -95,7 +127,7 @@ namespace ScanNetDownloader.View.CustomControls
             {
                 if (startChapter > endChapter) (startChapter, endChapter) = (endChapter, startChapter); // invert two value to make sure start is the lower value
 
-                // Check if chapters exist online
+                // TODO: Check if chapter exist online
                 // Add chapter
                 string chapterRange = $"{startChapter}-{endChapter}";
                 ChaptersString.Add(chapterRange);

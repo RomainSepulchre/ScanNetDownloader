@@ -5,15 +5,15 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ScanNetDownloader.View.CustomControls"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="270" d:DesignWidth="500">
     <Grid Name="chapterSelectionVw">
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition/>
             <RowDefinition/>
-            <RowDefinition/>
+            <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
-        <TextBlock Name="txtBlockUrlInfo" Text="Choose chapters for..." VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <TextBlock Name="txtBlockUrlInfo" Text="Choose chapters for..." VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap"/>
         <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
             <StackPanel Orientation="Horizontal">
                 <TextBox Name="txtBoxSingleChapter" Width="200"/>
@@ -29,8 +29,8 @@
         <WrapPanel Name="chapterSelectedPanel" Grid.Row="2" Orientation="Horizontal">
         </WrapPanel>
         <StackPanel Grid.Row="3" Orientation="Horizontal">
-            <Button Name="btnBackToUrlSelection" Content="Back" Click="btnBackToUrlSelection_Click" Width="100"/>
-            <Button Name="btnConfirmChapters" Content="Next" Click="btnConfirmChapters_Click" IsEnabled="False" Width="100"/>
+            <Button Name="btnBackToUrlSelection" Content="Back" Click="btnBackToUrlSelection_Click" Width="150"/>
+            <Button Name="btnConfirmChapters" Content="Next" Click="btnConfirmChapters_Click" IsEnabled="False" Width="350"/>
         </StackPanel>
     </Grid>
 </UserControl>

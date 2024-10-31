@@ -15,18 +15,18 @@ namespace ScanNetDownloader.Logic
             IsSelectedForDownload = isSelectedForDownload;
         }
 
-        public ScanVfNetScanData(string url, bool chapterIsInUrl = true) : base(url)
+        public ScanVfNetScanData(string url) : base(url)
         {
             Url = url;
             WebsiteDomain = "https://www.scan-vf.net/";
             BookName = GetBookNameFromUrl(url);
-            if (chapterIsInUrl) ChapterId = int.Parse(GetChapterNumberFromUrl(url));
+            if (UrlContainsChapter()) ChapterId = int.Parse(GetChapterNumberFromUrl(url));
             else ChapterId = -1;
             IsSelectedForDownload = true;
 
         }
 
-        public override string GetBookNameFromUrl(string url, bool removeSpace = false)
+        protected override string GetBookNameFromUrl(string url, bool removeSpace = false)
         {
             #region Chapter and img url examples
             // Example of chapter url
@@ -56,7 +56,7 @@ namespace ScanNetDownloader.Logic
             return bookName;
         }
 
-        public override string GetChapterNumberFromUrl(string url, bool keepNumberOnly = true)
+        protected override string GetChapterNumberFromUrl(string url, bool keepNumberOnly = true)
         {
             #region Chapter and img url examples
             // Example of chapter url
@@ -99,6 +99,12 @@ namespace ScanNetDownloader.Logic
             fileExtension = "." + fileExtension.Split(Constants.POINT_CHAR)[1];
 
             return fileExtension;
+        }
+
+        public override bool UrlContainsChapter()
+        {
+            bool chapterIsInUrl = Url.Split(Constants.SLASH_CHAR).Length > 4; // Check if the url has a chapter name (the number of split let us know if url stop at book name or not)
+            return chapterIsInUrl;
         }
 
         protected override List<string> ParseHtmlToGetImgLinks(string htmlContent)
@@ -144,23 +150,39 @@ namespace ScanNetDownloader.Logic
             return imgUrls;
         }
 
-        public static bool IsUrlValid(string url)
+        public static UrlValidityResult IsUrlValid(string url)
         {
             // What are the caracteristics of a valid scanVf url ?
-            //https://www.scan-vf.net/jujutsu-kaisen/chapitre-164/1 = url with chapter -> at least 5 split
-            //https://www.scan-vf.net/jujutsu-kaisen = url without chapter -> less than 5 split
-            // Check if url is long enough to have a book name
+            //https://www.scan-vf.net/jujutsu-kaisen = url without chapter -> at least 4 splits and last split must not be empty
+            //https://www.scan-vf.net/jujutsu-kaisen/chapitre-164/1 = url with chapter -> No more than 6 splits
 
-            // Try to form a valid img url for chapter ? page 1 ?
+            UrlValidityResult result = new UrlValidityResult(url);
 
-            if (UrlLoadCorrectly(url) == false) // Test if we can load url
+            string[] urlSplitAtSlash = url.Split(Constants.SLASH_CHAR);
+            if (urlSplitAtSlash.Length < 4 || (urlSplitAtSlash.Length == 4 && string.IsNullOrEmpty(urlSplitAtSlash[3]))) // Check if there is enough or too much / in the url to be a valid url
             {
-                return false;
+                result.InvalidityReason = "Url is too short, book name is probably missing in the url";
+                result.IsValid = false;
+            }
+            else if (urlSplitAtSlash.Length > 6)
+            {
+                result.InvalidityReason = "Url seems too long, url should stop with page id";
+                result.IsValid = false;
             }
             else
             {
-                return true;
+                if (UrlLoadCorrectly(url) == false)
+                {
+                    result.InvalidityReason = "Impossible to load url, make sure the url load in a web browser";
+                    result.IsValid = false;
+                }
+                else
+                {
+                    result.IsValid = true;
+                }
             }
+            
+            return result;
         }
     }
 }

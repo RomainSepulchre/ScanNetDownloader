@@ -64,15 +64,27 @@ namespace ScanNetDownloader.Logic
             }
 
             return ParseHtmlToGetImgLinks(htmlContent);
-        }
+        }       
+
+        protected abstract string GetBookNameFromUrl(string url, bool removeSpace = false);
+
+        protected abstract string GetChapterNumberFromUrl(string url, bool keepNumberOnly = true);
+
+        public abstract string GetFileExtensionFromUrl(string url); //TODO: Can probably be improved once img url will be saved in ScanData
+
+        public abstract bool UrlContainsChapter();
 
         protected abstract List<string> ParseHtmlToGetImgLinks(string htmlContent);
 
-        public abstract string GetBookNameFromUrl(string url, bool removeSpace = false);
+        public bool DoesThisChapterExist(int chapterId) // TODO: Complete this
+        {
+            // Get a chapter Url from ScanData using chapterId
 
-        public abstract string GetChapterNumberFromUrl(string url, bool keepNumberOnly = true);
+            // Web request to see if url exist
 
-        public abstract string GetFileExtensionFromUrl(string url);
+            // return web request result
+            return true;
+        }
 
         public static bool UrlLoadCorrectly(string url, int timeout = 1000)
         {
@@ -91,6 +103,27 @@ namespace ScanNetDownloader.Logic
                 Debug.WriteLine($"|---> Invalid url: {url}");
                 return false;
             }
+        }
+    }
+
+    public class UrlValidityResult
+    {
+        public string UrlTested;
+        public bool IsValid;
+        public string InvalidityReason;
+
+        public UrlValidityResult(string urlToTest)
+        {
+            UrlTested = urlToTest;
+            IsValid = false;
+            InvalidityReason = "";
+        }
+
+        public UrlValidityResult(string urlToTest, bool isValid, string invalidityReason)
+        {
+            UrlTested = urlToTest;
+            IsValid = isValid;
+            InvalidityReason = invalidityReason;
         }
     }
 }

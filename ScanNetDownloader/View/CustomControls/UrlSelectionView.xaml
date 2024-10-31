@@ -5,15 +5,19 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ScanNetDownloader.View.CustomControls"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="270" d:DesignWidth="500">
     <Grid Grid.Row="1" Name="urlSelectionVw" Visibility="Visible">
         <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
+            <RowDefinition Height="0.63*"/>
+            <RowDefinition Height="0.37*"/>
+            <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
-        <TextBlock Text="Enter scan url" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-        <TextBox Grid.Row="1" Name="txtBoxUrlInput" TextChanged="txtBoxUrlInput_TextChanged" VerticalContentAlignment="Center" Height="30" Background="Beige" Margin="10 0 10 0"/>
+        <TextBlock Name="txtBlockInfos"  Text="Enter scan url..." VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <StackPanel Grid.Row="1" Margin="10 0 10 0">
+            <Label Content="Enter the URL here"/>
+            <TextBox Name="txtBoxUrlInput" TextChanged="txtBoxUrlInput_TextChanged" VerticalContentAlignment="Center" Height="30" Background="Beige"/>
+            <Label Name="lbUrlError" Content="" Foreground="Red"/>
+        </StackPanel>
         <Button Grid.Row="2" Name="btnNext" Content="Next" Click="btnNext_Click" IsEnabled="False"/>
     </Grid>
 </UserControl>
