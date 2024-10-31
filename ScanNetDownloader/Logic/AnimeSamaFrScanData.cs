@@ -27,7 +27,7 @@ namespace ScanNetDownloader.Logic
         public AnimeSamaFrScanData(string url, int chapterId) : base(url)
         {
             this.Url = url;
-            WebsiteDomain = "anime-sama.fr";
+            WebsiteDomain = "https://anime-sama.fr/";
             ChapterId = chapterId;
             BookName = GetBookNameFromUrl(url);
             IsSelectedForDownload = true;
@@ -168,6 +168,24 @@ namespace ScanNetDownloader.Logic
             Debug.WriteLine("\n");
 
             return imgUrls;
+        }
+
+        public static bool IsUrlValid(string url)
+        {
+            // What are the caracteristics of a valid anime sama url ?
+            // https://anime-sama.fr/catalogue/20th-century-boys/scan/vf/ ==> 8 splits 
+            // Check if url is long enough to have a book name
+
+            // Try to form a valid img url for chapter 1 page 1 ?
+
+            if (UrlLoadCorrectly(url) == false) // Test if we can load url
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }          
         }
     }
 }

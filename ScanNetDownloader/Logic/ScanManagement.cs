@@ -14,6 +14,27 @@ namespace ScanNetDownloader.Logic
     /// </summary>
     class ScanManagement
     {
+
+        public static bool IsValidScanUrl(string url, out string invalidityReason)
+        {
+            // TODO: do a real web check
+            switch (url)
+            {
+                case string s when s.Contains(Constants.SCANVF_DOMAIN_NAME):
+                    invalidityReason = "Wrong scan vf url";
+                    return ScanVfNetScanData.IsUrlValid(url);
+
+                case string s when s.Contains(Constants.ANIMESAMA_DOMAIN_NAME):
+                    invalidityReason = "Wrong anime sama url";
+                    return AnimeSamaFrScanData.IsUrlValid(url);
+
+                default:
+                    Error.UnknownScanWebDomain(url);
+                    invalidityReason = "This website is not compatible with ScanNetDownloader";
+                    return false;
+            }            
+        }
+
         public static List<ScanData> CreateNewScanData(string urlEntered, string chaptersEntered)
         {
             bool errorOccured = false;

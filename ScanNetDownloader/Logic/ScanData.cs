@@ -74,7 +74,7 @@ namespace ScanNetDownloader.Logic
 
         public abstract string GetFileExtensionFromUrl(string url);
 
-        public static bool IsUrlValid(string url, int timeout = 1000)
+        public static bool UrlLoadCorrectly(string url, int timeout = 1000)
         {
             WebRequest webRequest = WebRequest.Create(url);
             webRequest.Method = "HEAD";

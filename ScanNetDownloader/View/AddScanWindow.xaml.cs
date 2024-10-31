@@ -1,5 +1,10 @@
-﻿using System.Windows;
+﻿using System.Diagnostics;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
+using ScanNetDownloader.Logic;
+using ScanNetDownloader.View.CustomControls;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ScanNetDownloader.View
 {
@@ -12,51 +17,74 @@ namespace ScanNetDownloader.View
 
         public string ChapterInput { get; set; }
 
+        public List<int> ChapterSelected { get; set; }
+
         public bool Success { get; set; } = false;
 
         public AddScanWindow(Window parentWindow)
         {
             Owner = parentWindow;
             InitializeComponent();
+
+
         }
 
-        private void btnAdd_Click(object sender, RoutedEventArgs e)
+        private void btnUrlView_Click(object sender, RoutedEventArgs e)
         {
+            urlSelectionVw.Visibility = Visibility.Visible;
+            chapterSelectionVw.Visibility = Visibility.Collapsed;
+
+            btnUrlView.IsEnabled = false;
+            btnUrlView.FontWeight = FontWeights.Bold;
+
+            btnChapterView.IsEnabled = false;
+            btnChapterView.FontWeight = FontWeights.Normal;
+        }
+
+        private void btnChapterView_Click(object sender, RoutedEventArgs e)
+        {
+            urlSelectionVw.Visibility = Visibility.Collapsed;
+            chapterSelectionVw.Visibility = Visibility.Visible;
+
+            btnUrlView.IsEnabled = true;
+            btnUrlView.FontWeight = FontWeights.Normal;
+
+            btnChapterView.IsEnabled = false;
+            btnChapterView.FontWeight = FontWeights.Bold;
+        }
+
+        private void btnClose_Click(object sender, RoutedEventArgs e)
+        {
+            Success = false;
+            Close();
+        }
+
+        private void urlSelectionVw_UrlConfirmed(object sender, RoutedEventArgs e)
+        {
+            UrlInput = urlSelectionVw.UrlInput;
+
+            chapterSelectionVw.SetUrlInfo(UrlInput);          
+
+            urlSelectionVw.Visibility = Visibility.Collapsed;
+            chapterSelectionVw.Visibility = Visibility.Visible;
+
+            btnUrlView.IsEnabled = true;
+            btnUrlView.FontWeight = FontWeights.Normal;
+
+            btnChapterView.IsEnabled = false;
+            btnChapterView.FontWeight = FontWeights.Bold;
+        }
+
+        private void chapterSelectionVw_BackBtnPressed(object sender, RoutedEventArgs e)
+        {
+            btnUrlView_Click(sender, e);
+        }
+
+        private void chapterSelectionVw_ChaptersConfirmed(object sender, RoutedEventArgs e)
+        {
+            ChapterInput = chapterSelectionVw.ChapterInput;
             Success = true;
-            UrlInput = txtBoxUrlInput.Text;
-            ChapterInput = txtBoxChapterInput.Text;
             Close();
         }
-
-        private void btnCancel_Click(object sender, RoutedEventArgs e)
-        {
-            Close();
-        }
-
-        private void txtBoxUrlInput_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            // TODO : THIS
-            // Check if valid url
-
-            // if valid check if chapter provided
-            // -y: keep chapter input disabled, set chapterInput, add text to tell chapter is provided through url, enable ok
-            // -n: enabled chapter input
-            if (string.IsNullOrEmpty(txtBoxUrlInput.Text) == false)
-            {
-                txtBoxChapterInput.IsEnabled = true;
-            }
-        }
-
-        private void txtBoxChapterInput_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            // TODO : THIS
-            // if valid chapter, enable ok
-            if (string.IsNullOrEmpty(txtBoxChapterInput.Text) == false)
-            {
-                btnAdd.IsEnabled = true;
-            }
-        }
-
-        
     }
 }

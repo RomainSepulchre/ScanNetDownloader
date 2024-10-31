@@ -1,0 +1,36 @@
+﻿<UserControl x:Class="ScanNetDownloader.View.CustomControls.ChaptersSelectionView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ScanNetDownloader.View.CustomControls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid Name="chapterSelectionVw">
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <TextBlock Name="txtBlockUrlInfo" Text="Choose chapters for..." VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <StackPanel Orientation="Horizontal">
+                <TextBox Name="txtBoxSingleChapter" Width="200"/>
+                <Button Name="btnAddSingleChapter" Content="Add single chapter" Click="btnAddSingleChapter_Click"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0 10 0 0">
+                <TextBox Name="txtBoxStartChapter" Width="90"/>
+                <TextBlock Text="-" VerticalAlignment="Center" TextAlignment="Center" Width="20"/>
+                <TextBox Name="txtBoxEndChapter" Width="90"/>
+                <Button Name="btnAddRangeOfChapter" Content="Add range of chapter" Click="btnAddRangeOfChapter_Click"/>
+            </StackPanel>
+        </StackPanel>
+        <WrapPanel Name="chapterSelectedPanel" Grid.Row="2" Orientation="Horizontal">
+        </WrapPanel>
+        <StackPanel Grid.Row="3" Orientation="Horizontal">
+            <Button Name="btnBackToUrlSelection" Content="Back" Click="btnBackToUrlSelection_Click" Width="100"/>
+            <Button Name="btnConfirmChapters" Content="Next" Click="btnConfirmChapters_Click" IsEnabled="False" Width="100"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

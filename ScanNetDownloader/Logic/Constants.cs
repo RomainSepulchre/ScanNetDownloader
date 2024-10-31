@@ -61,6 +61,11 @@ namespace ScanNetDownloader.Logic
         public const string JPG_EXTENSION = ".jpg";
         public const string CBZ_EXTENSION = ".cbz";
 
+        public static readonly List<string> COMPATIBLE_SCAN_WEBSITES = new List<string>()
+        {
+            SCANVF_DOMAIN_NAME,
+            ANIMESAMA_DOMAIN_NAME
+        };
 
         #endregion
 

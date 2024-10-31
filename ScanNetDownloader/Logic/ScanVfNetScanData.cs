@@ -143,5 +143,24 @@ namespace ScanNetDownloader.Logic
 
             return imgUrls;
         }
+
+        public static bool IsUrlValid(string url)
+        {
+            // What are the caracteristics of a valid scanVf url ?
+            //https://www.scan-vf.net/jujutsu-kaisen/chapitre-164/1 = url with chapter -> at least 5 split
+            //https://www.scan-vf.net/jujutsu-kaisen = url without chapter -> less than 5 split
+            // Check if url is long enough to have a book name
+
+            // Try to form a valid img url for chapter ? page 1 ?
+
+            if (UrlLoadCorrectly(url) == false) // Test if we can load url
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
     }
 }
