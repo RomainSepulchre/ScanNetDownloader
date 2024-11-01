@@ -48,6 +48,7 @@ namespace ScanNetDownloader.Logic
             }
         }
 
+        [Obsolete]
         public static List<ScanData> CreateNewScanData(string urlEntered, string chaptersEntered)
         {
             bool errorOccured = false;
@@ -108,6 +109,52 @@ namespace ScanNetDownloader.Logic
                 default: // Default, unknown domain name
                     errorOccured = true;
                     Error.UnknownScanWebDomain(urlEntered);
+                    break;
+            }
+
+            if (errorOccured)
+            {
+                string mBoxMessage = "Make sure to check the errors and press any key to continue...";
+                string mBoxCaption = "Check errrors";
+                Debug.WriteLine(mBoxMessage);
+                MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+
+            return newScanDatas;
+        }
+
+        public static async Task<List<ScanData>> CreateNewScanDatas(string url, List<int> chaptersSelected)
+        {
+            bool errorOccured = false;
+            List<ScanData> newScanDatas = new List<ScanData>();
+
+            switch (url)
+            {
+                case string s when s.Contains(Constants.SCANVF_DOMAIN_NAME):
+
+                    foreach (int chapterId in chaptersSelected)
+                    {
+                        ScanData scanVfNetData = new ScanVfNetScanData(url, chapterId);
+                        bool initSuccess = await scanVfNetData.InitScanData();
+                        Debug.WriteLine($"After {chapterId} Init");
+                        if (initSuccess) newScanDatas.Add(scanVfNetData);
+                    }
+                    break;
+
+                case string s when s.Contains(Constants.ANIMESAMA_DOMAIN_NAME):
+
+                    foreach(int chapterId in chaptersSelected)
+                    {
+                        ScanData animeSamaData = new AnimeSamaFrScanData(url, chapterId);
+                        bool initSuccess = await animeSamaData.InitScanData();
+                        Debug.WriteLine($"After {chapterId} Init");
+                        if(initSuccess) newScanDatas.Add(animeSamaData);
+                    }
+                    break;
+
+                default: // Default, unknown domain name
+                    errorOccured = true;
+                    Error.UnknownScanWebDomain(url);
                     break;
             }
 

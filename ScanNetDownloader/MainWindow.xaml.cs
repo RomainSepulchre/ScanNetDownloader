@@ -150,19 +150,17 @@ namespace ScanNetDownloader
             if(addWindow.Success) // TODO: Clean this
             {
                 string urlInput = addWindow.UrlInput;
-                string chapterInput = addWindow.ChapterInput;
+                List<ScanData> newScansToAdd = addWindow.NewScanDatas;                
 
-                List<ScanData> newScansToAdd = ScanManagement.CreateNewScanData(urlInput, chapterInput);                
-
-                if (newScansToAdd.Count > 0)
+                if (newScansToAdd == null || newScansToAdd.Count == 0)
                 {
-                    AddScanItems(newScansToAdd);
+                    string mBoxMessage = $"No scan data to add for {urlInput}, make sure you used a valid url";
+                    string mBoxCaption = "No scan data";
+                    MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
                 else
                 {
-                    string mBoxMessage = $"{urlInput} not added, it was not a valid url";
-                    string mBoxCaption = "Invalid URL";
-                    MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Warning);
+                    AddScanItems(newScansToAdd);
                 }             
             }
         }

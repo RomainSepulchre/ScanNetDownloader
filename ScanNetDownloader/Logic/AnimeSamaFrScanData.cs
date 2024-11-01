@@ -1,37 +1,89 @@
 ﻿using Newtonsoft.Json;
 using System.Diagnostics;
+using System.Net.Http;
 
 namespace ScanNetDownloader.Logic
 {
     // TODO: How to manage scan in english for chapter and image url generation
     public class AnimeSamaFrScanData: ScanData
     {
+        public string DownloadUrlBookName { get; private set; }
+
         [JsonConstructor] // Only for Json deserialization, apparently passed variable name ABSOLUTELY must the same as its destination value name  (ex: url-> Url, websiteDomain -> WebsiteDomain)
-        public AnimeSamaFrScanData(string url, string websiteDomain, string bookName, int chapterId, bool isSelectedForDownload) : base(url, websiteDomain, bookName, chapterId, isSelectedForDownload)
+        public AnimeSamaFrScanData(string url, string websiteDomain, string bookName, int chapterId, bool isSelectedForDownload, List<string> pagesUrl, bool isTemporaryData, string downloadUrlBookName)
+            : base(url, websiteDomain, bookName, chapterId, isSelectedForDownload, pagesUrl, isTemporaryData)
         {
             Url = url;
             WebsiteDomain = websiteDomain;
             BookName = bookName;
             ChapterId = chapterId;
             IsSelectedForDownload = isSelectedForDownload;
+            PagesUrl = pagesUrl;
+            IsTemporaryData = isTemporaryData;
+            DownloadUrlBookName = downloadUrlBookName;
         }
 
-        public AnimeSamaFrScanData(string url) : base(url)
+        public AnimeSamaFrScanData(string url) : base(url) // FOR TEMPORARY SCAN DATA ONLY
         {
             this.Url = url;
             WebsiteDomain = "https://anime-sama.fr/";
             ChapterId = -1; // Fake chapter to get book info
             BookName = GetBookNameFromUrl(url);
             IsSelectedForDownload = true;
+            IsTemporaryData = true;
         }
 
-        public AnimeSamaFrScanData(string url, int chapterId) : base(url)
+        public AnimeSamaFrScanData(string url, int chapterId) : base(url, chapterId)
         {
             this.Url = url;
             WebsiteDomain = "https://anime-sama.fr/";
             ChapterId = chapterId;
             BookName = GetBookNameFromUrl(url);
             IsSelectedForDownload = true;
+            IsTemporaryData = false;
+        }
+
+        public override async Task<bool> InitScanData()
+        {
+            string htmlContent = await GetUrlHtmlContent();
+
+            if (htmlContent == null)
+            {
+                Debug.WriteLine($"ERROR WHILE DOWNLOADING HTML CONTENT");
+                Debug.WriteLine($"RETURN INIT {ChapterId} -> {false}");
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(DownloadUrlBookName))
+            {
+                DownloadUrlBookName = ParseToFindBookNameForImgUrl(htmlContent);
+            }
+
+            // Get First Img Url from html and test chapter
+            // TODO: Wrap in a function
+            int firstImgId = 1;
+            string chapterUrl = $"{Constants.ANIMESAMA_IMG_URL_START}{DownloadUrlBookName}/{ChapterId}/";
+            string firstImgUrl = $"{chapterUrl}{firstImgId}{Constants.JPG_EXTENSION}";
+
+            if (await UrlLoadCorrectlyAsync(firstImgUrl) == false)
+            {
+                Error.ChapterDoesntExist(this, firstImgUrl);
+                Debug.WriteLine($"RETURN INIT {ChapterId} -> {false}");
+                return false;
+            }
+
+            // if everything ok -> Get all img url
+            PagesUrl = await ParseHtmlToGetImgLinks(htmlContent);
+
+            if(PagesUrl == null || PagesUrl.Count == 0)
+            {
+                Debug.WriteLine($"NO IMG URL FOUND");
+                Debug.WriteLine($"RETURN INIT {ChapterId} -> {false}");
+                return false;
+            }
+
+            Debug.WriteLine($"RETURN INIT {ChapterId} -> {true}");
+            return true;
         }
 
         protected override string GetBookNameFromUrl(string url, bool removeSpace = false)
@@ -130,7 +182,7 @@ namespace ScanNetDownloader.Logic
             return false; // Anime Sama scan url never contains chapter number
         }
 
-        protected override List<string> ParseHtmlToGetImgLinks(string htmlContent)
+        protected override async Task<List<string>> ParseHtmlToGetImgLinks(string htmlContent)
         {
             Debug.WriteLine($"\nPARSE HTML - {BookName}_{ChapterId} ({Url}), imgs found:");
             // V1 Recreate url since we can't get the page after js loading
@@ -142,29 +194,28 @@ namespace ScanNetDownloader.Logic
             // https://anime-sama.fr/s2/scans/The%20Terminally%20Ill%20Young%20Master%20of%20the%20Baek%20Clan/1/1.jpg
 
             // Get Book Name for download URL
-            string[] splitContent = htmlContent.Split(Constants.ANIMESAMA_BOOK_NAME_START_SEPARATOR, StringSplitOptions.RemoveEmptyEntries); // Split before the meta tag with the book name
-            string bookNameForUrl = splitContent[1]; // Keep the split after our separator (trim the beginning)
-
-            splitContent = bookNameForUrl.Split(Constants.ANIMESAMA_BOOK_NAME_END_SEPARATOR, StringSplitOptions.RemoveEmptyEntries); // Split after the book name
-            bookNameForUrl = splitContent[0]; // Keep the split before our separator (trim the end)
+            if (string.IsNullOrEmpty(DownloadUrlBookName))
+            {
+                DownloadUrlBookName = ParseToFindBookNameForImgUrl(htmlContent);
+            }
 
             // Test if chapter is valid by looking for first image
             // TODO: Manage Scan in english-> VF (normal url)/VA (add: " Anglais" after image name) <- check if reliable
-            int firstImgId = 1;
-            string chapterUrl = $"{Constants.ANIMESAMA_IMG_URL_START}{bookNameForUrl}/{ChapterId}/";
-            string firstImgUrl = $"{chapterUrl}{firstImgId}{Constants.JPG_EXTENSION}";
+            //int firstImgId = 1;
+            string chapterUrl = $"{Constants.ANIMESAMA_IMG_URL_START}{DownloadUrlBookName}/{ChapterId}/";
+            //string firstImgUrl = $"{chapterUrl}{firstImgId}{Constants.JPG_EXTENSION}";
 
-            if (UrlLoadCorrectly(firstImgUrl) == false)
-            {
-                Error.ChapterDoesntExist(this, firstImgUrl);
-                return new List<string>();
-            }
+            //if (await UrlLoadCorrectlyAsync(firstImgUrl) == false)
+            //{
+            //    Error.ChapterDoesntExist(this, firstImgUrl);
+            //    return new List<string>();
+            //}
 
             List<string> imgUrls = new List<string>();
 
             int pageId = 1;
             string imgUrl = $"{chapterUrl}{pageId}{Constants.JPG_EXTENSION}";
-            while (UrlLoadCorrectly(imgUrl))
+            while (await UrlLoadCorrectlyAsync(imgUrl))
             {
                 imgUrls.Add(imgUrl);
                 pageId++;
@@ -184,12 +235,25 @@ namespace ScanNetDownloader.Logic
 
         public override bool DoesThisChapterExist(int chapterId) // TODO: Complete this
         {
+
             // Get a chapter Url from ScanData using chapterId
 
             // Web request to see if url exist -> UrlLoadCorrectly()
 
             // return web request result
             return true;
+        }
+
+        private string ParseToFindBookNameForImgUrl(string htmlContent)
+        {
+            // Get Book Name for download URL
+            string[] splitContent = htmlContent.Split(Constants.ANIMESAMA_BOOK_NAME_START_SEPARATOR, StringSplitOptions.RemoveEmptyEntries); // Split before the meta tag with the book name
+            string bookNameForUrl = splitContent[1]; // Keep the split after our separator (trim the beginning)
+
+            splitContent = bookNameForUrl.Split(Constants.ANIMESAMA_BOOK_NAME_END_SEPARATOR, StringSplitOptions.RemoveEmptyEntries); // Split after the book name
+            bookNameForUrl = splitContent[0]; // Keep the split before our separator (trim the end)
+
+            return bookNameForUrl;
         }
 
         public static UrlValidityResult IsUrlValid(string url)

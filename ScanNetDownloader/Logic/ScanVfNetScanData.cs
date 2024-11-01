@@ -6,16 +6,19 @@ namespace ScanNetDownloader.Logic
     public class ScanVfNetScanData : ScanData
     {
         [JsonConstructor] // Only for Json deserialization, apparently passed variable name ABSOLUTELY must the same as its destination value name  (ex: url-> Url, websiteDomain -> WebsiteDomain)
-        public ScanVfNetScanData(string url, string websiteDomain, string bookName, int chapterId, bool isSelectedForDownload) : base(url, websiteDomain, bookName, chapterId, isSelectedForDownload)
+        public ScanVfNetScanData(string url, string websiteDomain, string bookName, int chapterId, bool isSelectedForDownload, List<string> pagesUrl, bool isTemporaryData)
+            : base(url, websiteDomain, bookName, chapterId, isSelectedForDownload, pagesUrl, isTemporaryData)
         {
             Url = url;
             WebsiteDomain = websiteDomain;
             BookName = bookName;
             ChapterId = chapterId;
             IsSelectedForDownload = isSelectedForDownload;
+            PagesUrl = pagesUrl;
+            IsTemporaryData = isTemporaryData;
         }
 
-        public ScanVfNetScanData(string url) : base(url)
+        public ScanVfNetScanData(string url) : base(url) // FOR TEMPORARY SCAN DATA ONLY
         {
             Url = url;
             WebsiteDomain = "https://www.scan-vf.net/";
@@ -23,7 +26,45 @@ namespace ScanNetDownloader.Logic
             if (UrlContainsChapter()) ChapterId = int.Parse(GetChapterNumberFromUrl(url));
             else ChapterId = -1;
             IsSelectedForDownload = true;
+            IsTemporaryData = true;
+        }
 
+        public ScanVfNetScanData(string url, int chapterId) : base(url, chapterId)
+        {
+            if (UrlContainsChapter() && int.Parse(GetChapterNumberFromUrl(url)) != chapterId ) Url = GenerateAnotherChapterUrl(chapterId);
+            else Url = url;      
+            WebsiteDomain = "https://www.scan-vf.net/";
+            BookName = GetBookNameFromUrl(url);
+            ChapterId = chapterId;
+            IsSelectedForDownload = true;
+            IsTemporaryData = false;
+        }
+
+        public override async Task<bool> InitScanData()
+        {
+            string htmlContent = await GetUrlHtmlContent();
+
+            // with scanvf main url is chapter url so getting no html content equals chapter doesn't exist
+            if (htmlContent == null)
+            {
+                Error.ChapterDoesntExist(this, Url);
+                Debug.WriteLine($"ERROR WHILE DOWNLOADING HTML CONTENT");
+                Debug.WriteLine($"RETURN INIT {ChapterId} -> {false}");
+                return false;
+            }
+
+            // if everything ok -> Get all img url
+            PagesUrl = await ParseHtmlToGetImgLinks(htmlContent);
+
+            if (PagesUrl == null || PagesUrl.Count == 0)
+            {
+                Debug.WriteLine($"NO IMG URL FOUND");
+                Debug.WriteLine($"RETURN INIT {ChapterId} -> {false}");
+                return false;
+            }
+
+            Debug.WriteLine($"RETURN INIT {ChapterId} -> {true}");
+            return true;
         }
 
         protected override string GetBookNameFromUrl(string url, bool removeSpace = false)
@@ -107,7 +148,7 @@ namespace ScanNetDownloader.Logic
             return chapterIsInUrl;
         }
 
-        protected override List<string> ParseHtmlToGetImgLinks(string htmlContent)
+        protected override async Task<List<string>> ParseHtmlToGetImgLinks(string htmlContent)
         {
             Debug.WriteLine($"\nPARSE HTML - {BookName}_{ChapterId} ({Url}), imgs found:");
 

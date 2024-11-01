@@ -31,15 +31,29 @@ namespace ScanNetDownloader.Logic
             get; set;
         }
 
+        public List<string> PagesUrl
+        {
+            get; protected set;
+        }
+
+        public int PagesCount => PagesUrl != null ? PagesUrl.Count : -1;
+
+        public bool IsTemporaryData
+        {
+            get; protected set;
+        }
+
 
         [JsonConstructor] // Only for Json deserialization, apparently passed variable name ABSOLUTELY must the same as its destination value name  (ex: url-> Url, websiteDomain -> WebsiteDomain)
-        public ScanData(string url, string websiteDomain, string bookName, int chapterId, bool isSelectedForDownload)
+        public ScanData(string url, string websiteDomain, string bookName, int chapterId, bool isSelectedForDownload, List<string> pagesUrl, bool isTemporaryData)
         {
             Url = url;
             WebsiteDomain = websiteDomain;
             BookName = bookName;
             ChapterId = chapterId;
             IsSelectedForDownload = isSelectedForDownload;
+            PagesUrl = pagesUrl;
+            IsTemporaryData = isTemporaryData;
         }
 
         public ScanData(string url)
@@ -47,9 +61,24 @@ namespace ScanNetDownloader.Logic
             Url = url;
         }
 
+        public ScanData(string url, int chapterId)
+        {
+            Url = url;
+            ChapterId = chapterId;
+        }
+
         public async Task<List<string>> GetScanImagesUrl()
         {
+            string htmlContent = await GetUrlHtmlContent();
+            if (htmlContent == null) return new List<string>();
+
+            return await ParseHtmlToGetImgLinks(htmlContent);
+        }
+        
+        protected async Task<string> GetUrlHtmlContent()
+        {
             string htmlContent;
+
             using (WebClient client = new WebClient())
             {
                 try
@@ -59,12 +88,14 @@ namespace ScanNetDownloader.Logic
                 catch (WebException ex)
                 {
                     Error.FailedHtmlDownload(ex, Url);
-                    return new List<string>();
+                    htmlContent = null;
                 }
             }
 
-            return ParseHtmlToGetImgLinks(htmlContent);
-        }       
+            return htmlContent;
+        }
+
+        public abstract Task<bool> InitScanData();
 
         protected abstract string GetBookNameFromUrl(string url, bool removeSpace = false);
 
@@ -74,11 +105,35 @@ namespace ScanNetDownloader.Logic
 
         public abstract bool UrlContainsChapter();
 
-        protected abstract List<string> ParseHtmlToGetImgLinks(string htmlContent);
+        protected abstract Task<List<string>> ParseHtmlToGetImgLinks(string htmlContent);
 
+        [Obsolete("Create a private function in ScanVfNet and delete other occurence of this" )] // TODO: Clean this
         public abstract string GenerateAnotherChapterUrl(int chapterId);
 
-        public abstract bool DoesThisChapterExist(int chapterId);
+        [Obsolete] // TODO: Clean this
+        public abstract bool DoesThisChapterExist(int chapterId); 
+
+
+        public async Task<bool> UrlLoadCorrectlyAsync(string url, int timeout = 1500)
+        {
+            // TODO: Improve some give false positive, Why ? Timeout too short ? 1500 seems way better
+            WebRequest webRequest = WebRequest.Create(url);
+            webRequest.Method = "HEAD";
+            webRequest.Timeout = timeout;
+
+            try
+            {
+                WebResponse response = await webRequest.GetResponseAsync();
+                response.Close();
+                return true;
+            }
+            catch (WebException ex)
+            {
+                // TODO: manage different type of Exception -> 404 means wring url but timeout may mean a valid url
+                Debug.WriteLine($"|---> Invalid url: {url}\n{ex}");
+                return false;
+            }
+        }
 
         public static bool UrlLoadCorrectly(string url, int timeout = 1500)
         {

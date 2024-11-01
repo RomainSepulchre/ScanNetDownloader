@@ -15,9 +15,9 @@ namespace ScanNetDownloader.View
     {
         public string UrlInput { get; set; }
 
-        public ScanData TempScanData { get; set; }
+        private ScanData TempScanData { get; set; }
 
-        public string ChapterInput { get; set; }
+        public List<ScanData> NewScanDatas { get; set; }
 
         public List<int> ChapterSelected { get; set; }
 
@@ -27,8 +27,6 @@ namespace ScanNetDownloader.View
         {
             Owner = parentWindow;
             InitializeComponent();
-
-
         }
 
         private void btnUrlView_Click(object sender, RoutedEventArgs e)
@@ -85,9 +83,15 @@ namespace ScanNetDownloader.View
             btnUrlView_Click(sender, e);
         }
 
-        private void chapterSelectionVw_ChaptersConfirmed(object sender, RoutedEventArgs e)
+        private async void chapterSelectionVw_ChaptersConfirmed(object sender, RoutedEventArgs e)
         {
-            ChapterInput = chapterSelectionVw.ChapterInput;
+            ChapterSelected = chapterSelectionVw.ChaptersSelected;
+            ChapterSelected.Log();
+
+            NewScanDatas = await ScanManagement.CreateNewScanDatas(UrlInput, ChapterSelected);
+			
+			// More checks needed before success ?
+
             Success = true;
             Close();
         }
