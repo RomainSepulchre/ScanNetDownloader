@@ -15,7 +15,8 @@
         <TextBlock Name="txtBlockInfos"  Text="Enter scan url..." VerticalAlignment="Center" HorizontalAlignment="Center"/>
         <StackPanel Grid.Row="1" Margin="10 0 10 0">
             <Label Content="Enter the URL here"/>
-            <TextBox Name="txtBoxUrlInput" Text="https://www.scan-vf.net/jujutsu-kaisen/chapitre-21/1" TextChanged="txtBoxUrlInput_TextChanged" VerticalContentAlignment="Center" Height="30" Background="Beige"/>
+            <!--<TextBox Name="txtBoxUrlInput" Text="https://www.scan-vf.net/jujutsu-kaisen/chapitre-18/1" TextChanged="txtBoxUrlInput_TextChanged" VerticalContentAlignment="Center" Height="30" Background="Beige"/>-->
+            <TextBox Name="txtBoxUrlInput" Text="https://anime-sama.fr/catalogue/20th-century-boys/scan-21st-century-boys/vf/" TextChanged="txtBoxUrlInput_TextChanged" VerticalContentAlignment="Center" Height="30" Background="Beige"/>
             <Label Name="lbUrlError" Content="" Foreground="Red"/>
         </StackPanel>
         <Button Grid.Row="2" Name="btnNext" Content="Next" Click="btnNext_Click"/>

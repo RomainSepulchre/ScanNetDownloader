@@ -48,6 +48,88 @@ namespace ScanNetDownloader.Logic
             }
         }
 
+        public static async Task<ScanData> CreateNewScanData(string url, int chapterSelected)
+        {
+            bool errorOccured = false;
+            ScanData newScanData =  null;
+            bool initSuccess = false;
+
+            switch (url)
+            {
+                case string s when s.Contains(Constants.SCANVF_DOMAIN_NAME):
+                    ScanData scanVfNetData = new ScanVfNetScanData(url, chapterSelected);
+                    initSuccess = await scanVfNetData.InitScanData();
+                    if (initSuccess) newScanData = scanVfNetData;
+                    break;
+
+                case string s when s.Contains(Constants.ANIMESAMA_DOMAIN_NAME):
+                    ScanData animeSamaData = new AnimeSamaFrScanData(url, chapterSelected);
+                    initSuccess = await animeSamaData.InitScanData();
+                    if (initSuccess) newScanData = animeSamaData;
+                    break;
+
+                default: // Default, unknown domain name
+                    errorOccured = true;
+                    Error.UnknownScanWebDomain(url);
+                    break;
+            }
+
+            if (errorOccured)
+            {
+                string mBoxMessage = "Make sure to check the errors and press any key to continue...";
+                string mBoxCaption = "Check errrors";
+                Debug.WriteLine(mBoxMessage);
+                MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+
+            return newScanData;
+        }
+
+        public static async Task<List<ScanData>> CreateNewScanDatas(string url, List<int> chaptersSelected)
+        {
+            bool errorOccured = false;
+            List<ScanData> newScanDatas = new List<ScanData>();
+
+            switch (url)
+            {
+                case string s when s.Contains(Constants.SCANVF_DOMAIN_NAME):
+
+                    foreach (int chapterId in chaptersSelected)
+                    {
+                        ScanData scanVfNetData = new ScanVfNetScanData(url, chapterId);
+                        bool initSuccess = await scanVfNetData.InitScanData();
+                        if (initSuccess) newScanDatas.Add(scanVfNetData);
+                    }
+                    break;
+
+                case string s when s.Contains(Constants.ANIMESAMA_DOMAIN_NAME):
+
+                    foreach(int chapterId in chaptersSelected)
+                    {
+                        ScanData animeSamaData = new AnimeSamaFrScanData(url, chapterId);
+                        bool initSuccess = await animeSamaData.InitScanData();
+                        if(initSuccess) newScanDatas.Add(animeSamaData);
+                    }
+                    break;
+
+                default: // Default, unknown domain name
+                    errorOccured = true;
+                    Error.UnknownScanWebDomain(url);
+                    break;
+            }
+
+            if (errorOccured)
+            {
+                string mBoxMessage = "Make sure to check the errors and press any key to continue...";
+                string mBoxCaption = "Check errrors";
+                Debug.WriteLine(mBoxMessage);
+                MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+
+            return newScanDatas;
+        }
+
+        // TODO: Clean obsolete functions once i'm sure nothing in them will be needed
         [Obsolete]
         public static List<ScanData> CreateNewScanData(string urlEntered, string chaptersEntered)
         {
@@ -123,52 +205,7 @@ namespace ScanNetDownloader.Logic
             return newScanDatas;
         }
 
-        public static async Task<List<ScanData>> CreateNewScanDatas(string url, List<int> chaptersSelected)
-        {
-            bool errorOccured = false;
-            List<ScanData> newScanDatas = new List<ScanData>();
-
-            switch (url)
-            {
-                case string s when s.Contains(Constants.SCANVF_DOMAIN_NAME):
-
-                    foreach (int chapterId in chaptersSelected)
-                    {
-                        ScanData scanVfNetData = new ScanVfNetScanData(url, chapterId);
-                        bool initSuccess = await scanVfNetData.InitScanData();
-                        Debug.WriteLine($"After {chapterId} Init");
-                        if (initSuccess) newScanDatas.Add(scanVfNetData);
-                    }
-                    break;
-
-                case string s when s.Contains(Constants.ANIMESAMA_DOMAIN_NAME):
-
-                    foreach(int chapterId in chaptersSelected)
-                    {
-                        ScanData animeSamaData = new AnimeSamaFrScanData(url, chapterId);
-                        bool initSuccess = await animeSamaData.InitScanData();
-                        Debug.WriteLine($"After {chapterId} Init");
-                        if(initSuccess) newScanDatas.Add(animeSamaData);
-                    }
-                    break;
-
-                default: // Default, unknown domain name
-                    errorOccured = true;
-                    Error.UnknownScanWebDomain(url);
-                    break;
-            }
-
-            if (errorOccured)
-            {
-                string mBoxMessage = "Make sure to check the errors and press any key to continue...";
-                string mBoxCaption = "Check errrors";
-                Debug.WriteLine(mBoxMessage);
-                MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-
-            return newScanDatas;
-        }
-
+        [Obsolete]
         private static List<int> ChapterSelection(ScanData scanData, string enteredChapters, ref bool errorOccured)
         {
             List<int> selectedChaptersId = new List<int>();
@@ -194,6 +231,7 @@ namespace ScanNetDownloader.Logic
         }
 
         // TODO : Should not be useful anymore after finishing the addScan Pop-Up
+        [Obsolete]
         private static List<int> AskUserToProvideChapters(ScanData scanData, ref bool errorOccured) // TODO: maybe this could be in a class dedicated to pop up ?
         {
             MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
@@ -213,6 +251,7 @@ namespace ScanNetDownloader.Logic
 
         }
 
+        [Obsolete]
         private static List<int> ParseToFindChapters(ScanData scanData, string stringToParse, ref bool errorOccured)
         {
             List<int> validChapters = new List<int>();

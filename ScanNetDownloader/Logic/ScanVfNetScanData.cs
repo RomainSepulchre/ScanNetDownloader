@@ -31,8 +31,8 @@ namespace ScanNetDownloader.Logic
 
         public ScanVfNetScanData(string url, int chapterId) : base(url, chapterId)
         {
-            if (UrlContainsChapter() && int.Parse(GetChapterNumberFromUrl(url)) != chapterId ) Url = GenerateAnotherChapterUrl(chapterId);
-            else Url = url;      
+            if (UrlContainsChapter() && int.Parse(GetChapterNumberFromUrl(url)) == chapterId) Url = url;
+            else Url = GenerateAnotherChapterUrl(chapterId);
             WebsiteDomain = "https://www.scan-vf.net/";
             BookName = GetBookNameFromUrl(url);
             ChapterId = chapterId;
@@ -45,7 +45,7 @@ namespace ScanNetDownloader.Logic
             string htmlContent = await GetUrlHtmlContent();
 
             // with scanvf main url is chapter url so getting no html content equals chapter doesn't exist
-            if (htmlContent == null)
+            if (string.IsNullOrEmpty(htmlContent))
             {
                 Error.ChapterDoesntExist(this, Url);
                 Debug.WriteLine($"ERROR WHILE DOWNLOADING HTML CONTENT");
@@ -144,7 +144,8 @@ namespace ScanNetDownloader.Logic
 
         public override bool UrlContainsChapter()
         {
-            bool chapterIsInUrl = Url.Split(Constants.SLASH_CHAR).Length > 4; // Check if the url has a chapter name (the number of split let us know if url stop at book name or not)
+            string[] urlSplits = Url.Split(Constants.SLASH_CHAR); // Check if the url has a chapter number (the number of split let us know if url stop at book name or not)
+            bool chapterIsInUrl = urlSplits.Length > 4; // TODO: Should I also check && !string.IsNullOrEmpty(urlSplits[4]); to make sure Chapter split is not an empty split
             return chapterIsInUrl;
         }
 

@@ -279,6 +279,9 @@ namespace ScanNetDownloader
 
         private void AddScanItems(List<ScanData> newScansToAdd) // TODO: Replace the refresh by a add function to prevent recreating the whole view everytime
         {
+
+            // TODO: Check for duplicated ScanData (Same BookName, chapter and url)
+
             // Add in saved data
             ScanDatas.AddRange(newScansToAdd);
 

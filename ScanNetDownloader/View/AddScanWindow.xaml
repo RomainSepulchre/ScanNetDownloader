@@ -22,6 +22,7 @@
             <StackPanel Orientation="Horizontal">
                 <Button Name="btnUrlView" Click="btnUrlView_Click" Content="Url" FontWeight="Black" IsEnabled="False"  Width="70"  Margin="10 0 0 0"/>
                 <Button Name="btnChapterView" Click="btnChapterView_Click"  Content="Chapter selection" FontWeight="Normal" IsEnabled="False" Width="150" Margin="10 0 0 0"/>
+                <Button Name="btnScanDataCreationView"  Content="Scan Data creation" FontWeight="Normal" IsEnabled="False" Width="150" Margin="10 0 0 0"/>
             </StackPanel>
             <Button Grid.Column="1" Name="btnClose" Click="btnClose_Click" Content="X" Width="30" />
         </Grid>
@@ -29,6 +30,25 @@
         <customControls:UrlSelectionView Grid.Row="1" x:Name="urlSelectionVw" UrlConfirmed="urlSelectionVw_UrlConfirmed" Visibility="Visible"/>
 
         <customControls:ChaptersSelectionView Grid.Row="1" x:Name="chapterSelectionVw" BackBtnPressed="chapterSelectionVw_BackBtnPressed" ChaptersConfirmed="chapterSelectionVw_ChaptersConfirmed" Visibility="Collapsed"/>
+
+        <Grid Grid.Row="1" Name="scanDataCreationVw" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition/>
+                <RowDefinition Height="30"/>
+            </Grid.RowDefinitions>
+            <Label Content="Scan Data Creation" FontWeight="Bold"/>
+            <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center">
+                <Label Content="Progress..."/>
+                <ProgressBar Name="progrBarScanDataCreation" Minimum="0" Maximum="100" Width="430" Height="20"/>
+            </StackPanel>
+            <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                <ListView Name="listVwCreationStatus" HorizontalContentAlignment="Stretch">
+                </ListView>
+            </ScrollViewer>
+            <Button Grid.Row="3" Name="btnFinish" Content="Finish" Click="btnFinish_Click" IsEnabled="False"/>
+        </Grid>
 
     </Grid>
 </Window>

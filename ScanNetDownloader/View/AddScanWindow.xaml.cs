@@ -33,29 +33,36 @@ namespace ScanNetDownloader.View
         {
             urlSelectionVw.Visibility = Visibility.Visible;
             chapterSelectionVw.Visibility = Visibility.Collapsed;
+            scanDataCreationVw.Visibility = Visibility.Collapsed;
 
             btnUrlView.IsEnabled = false;
             btnUrlView.FontWeight = FontWeights.Bold;
 
             btnChapterView.IsEnabled = false;
             btnChapterView.FontWeight = FontWeights.Normal;
+
+            btnScanDataCreationView.IsEnabled = false;
+            btnScanDataCreationView.FontWeight = FontWeights.Normal;
         }
 
         private void btnChapterView_Click(object sender, RoutedEventArgs e)
         {
             urlSelectionVw.Visibility = Visibility.Collapsed;
             chapterSelectionVw.Visibility = Visibility.Visible;
+            scanDataCreationVw.Visibility = Visibility.Collapsed;
 
             btnUrlView.IsEnabled = true;
             btnUrlView.FontWeight = FontWeights.Normal;
 
             btnChapterView.IsEnabled = false;
             btnChapterView.FontWeight = FontWeights.Bold;
+
+            btnScanDataCreationView.IsEnabled = false;
+            btnScanDataCreationView.FontWeight = FontWeights.Normal;
         }
 
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
-            Success = false;
             Close();
         }
 
@@ -88,11 +95,60 @@ namespace ScanNetDownloader.View
             ChapterSelected = chapterSelectionVw.ChaptersSelected;
             ChapterSelected.Log();
 
-            NewScanDatas = await ScanManagement.CreateNewScanDatas(UrlInput, ChapterSelected);
-			
-			// More checks needed before success ?
+            chapterSelectionVw.Visibility = Visibility.Collapsed;
+            scanDataCreationVw.Visibility = Visibility.Visible;
 
-            Success = true;
+            btnUrlView.IsEnabled = false;
+            btnUrlView.FontWeight = FontWeights.Normal;
+
+            btnChapterView.IsEnabled = false;
+            btnChapterView.FontWeight = FontWeights.Normal;
+
+            btnScanDataCreationView.IsEnabled = false;
+            btnScanDataCreationView.FontWeight = FontWeights.Bold;
+
+            // TODO: Create scan data one by one to have a better visual representation of what is happening
+            progrBarScanDataCreation.Value = 0;
+
+            NewScanDatas = new List<ScanData>();
+            for (int i = 0; i < ChapterSelected.Count; i++)
+            {
+                int chapter = ChapterSelected[i];
+
+                // TODO: Replace txtBlock with a dedicated item
+                TextBlock chapterTxtBlock = new TextBlock();
+                chapterTxtBlock.TextWrapping = TextWrapping.Wrap;
+                chapterTxtBlock.Text = $"Scan Data creation for {TempScanData.BookName}-{chapter} in progress...";
+                listVwCreationStatus.Items.Add(chapterTxtBlock);
+
+                ScanData newScanData = await ScanManagement.CreateNewScanData(UrlInput, chapter);
+                if(newScanData != null)
+                {
+                    NewScanDatas.Add(newScanData);
+                    chapterTxtBlock.Text = $"Scan Data creation for {TempScanData.BookName}-{chapter} successful!";
+                    chapterTxtBlock.Foreground = Brushes.Green;
+                }
+                else
+                {
+                    chapterTxtBlock.Text = $"Scan Data creation for {TempScanData.BookName}-{chapter} failed!";
+                    // TODO: Add reason why it failed
+                    chapterTxtBlock.Foreground = Brushes.Red;
+                }
+                progrBarScanDataCreation.Value = ((float)(i+1) / ChapterSelected.Count) * 100;
+            }
+            // Old way doing everything at once -> no progress evolution
+            //NewScanDatas = await ScanManagement.CreateNewScanDatas(UrlInput, ChapterSelected);
+
+            if (NewScanDatas != null && NewScanDatas.Count > 0)
+            {
+                Success = true;
+            }
+            
+            btnFinish.IsEnabled = true;
+        }
+
+        private void btnFinish_Click(object sender, RoutedEventArgs e)
+        {
             Close();
         }
     }
