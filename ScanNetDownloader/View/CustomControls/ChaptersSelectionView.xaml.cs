@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ScanNetDownloader.Logic;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ScanNetDownloader.View.CustomControls
 {
@@ -25,7 +27,7 @@ namespace ScanNetDownloader.View.CustomControls
 
         public string ChapterInput { get; set; }
 
-        public List<string> ChaptersString { get; set; } = new List<string>();
+        public Dictionary<string, List<int>> ChaptersSelected { get; set; } = new Dictionary<string, List<int>>();
 
         public static RoutedEvent BackBtnPressedEvent = EventManager.RegisterRoutedEvent(nameof(BackBtnPressed), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ScanItem));
 
@@ -56,19 +58,23 @@ namespace ScanNetDownloader.View.CustomControls
 
             SetUrlInfo();
 
-            if (TempScanData.UrlContainsChapter())
+            if (TempScanData.UrlContainsChapter() )
             {
-                string chapterToAdd = TempScanData.ChapterId.ToString();
+                if(ChapterAlreadyAdded(TempScanData.ChapterId) == false)
+                {
+                    string chapterToAdd = TempScanData.ChapterId.ToString();
 
-                AddChapterSelected(chapterToAdd);
-                if (string.IsNullOrEmpty(ChapterInput))
-                {
-                    ChapterInput += chapterToAdd;
-                }
-                else
-                {
-                    ChapterInput += ";" + chapterToAdd;
-                }
+                    ChaptersSelected.Add(chapterToAdd, new List<int>() { TempScanData.ChapterId });
+                    AddChapterItem(chapterToAdd);
+                    if (string.IsNullOrEmpty(ChapterInput))
+                    {
+                        ChapterInput += chapterToAdd;
+                    }
+                    else
+                    {
+                        ChapterInput += ";" + chapterToAdd;
+                    }
+                }    
             }
         }
 
@@ -90,29 +96,25 @@ namespace ScanNetDownloader.View.CustomControls
             bool validNumber = int.TryParse(txtBoxSingleChapter.Text, out int chapterToAdd);
             if (validNumber)
             {
-                // TODO: Check if chapter exist online
-
-                // Add chapter
-                string singleChapter = txtBoxSingleChapter.Text;
-                ChaptersString.Add(singleChapter);
-                AddChapterSelected(singleChapter);
-
-                if (string.IsNullOrEmpty(ChapterInput))
+                if(ChapterAlreadyAdded(chapterToAdd))
                 {
-                    ChapterInput += singleChapter;
+                    txtBlockChapterError.Text = $"Chapter {chapterToAdd} is already added";
+                    txtBoxSingleChapter.Background = Brushes.IndianRed;
                 }
                 else
                 {
-                    ChapterInput += ";" + singleChapter;
-                }
+                    // Add chapter
+                    string chapterKey = txtBoxSingleChapter.Text;
+                    AddSelectedChapters(chapterKey, new List<int>() { chapterToAdd });
 
-                // Clear txt box
-                txtBoxSingleChapter.Text = "";
+                    // Clear txt box
+                    txtBoxSingleChapter.Text = "";
+                }
             }
             else // Invalid number entered
             {
-
                 //TODO: Show error, Add text explanation
+                txtBlockChapterError.Text = $"\"{txtBoxSingleChapter.Text}\" is not a valid number";             
                 txtBoxSingleChapter.Background = Brushes.IndianRed;
             }
         }
@@ -127,35 +129,119 @@ namespace ScanNetDownloader.View.CustomControls
             {
                 if (startChapter > endChapter) (startChapter, endChapter) = (endChapter, startChapter); // invert two value to make sure start is the lower value
 
-                // TODO: Check if chapter exist online
-                // Add chapter
-                string chapterRange = $"{startChapter}-{endChapter}";
-                ChaptersString.Add(chapterRange);
-                AddChapterSelected(chapterRange);
-                if (string.IsNullOrEmpty(ChapterInput))
+                if (ChaptersAlreadyAdded(startChapter, endChapter, out List<int> nonDuplicatedChapters))
                 {
-                    ChapterInput += chapterRange;
+                    if (nonDuplicatedChapters.Count == 0)
+                    {
+                        txtBlockChapterError.Text = $"{startChapter}-{endChapter} all chapters in the range are already added";
+                        txtBoxEndChapter.Background = Brushes.IndianRed;
+                        txtBoxStartChapter.Background = Brushes.IndianRed;
+                    }
+                    else
+                    {
+                        nonDuplicatedChapters.Log();
+                        string chaptersAdded = string.Join(',', nonDuplicatedChapters);
+
+                        while (nonDuplicatedChapters.Count > 0)
+                        {
+                            if (nonDuplicatedChapters.Count == 1)
+                            {
+                                string chapterKey = nonDuplicatedChapters[0].ToString();
+                                AddSelectedChapters(chapterKey, new List<int>() { nonDuplicatedChapters[0] });
+                                nonDuplicatedChapters.Remove(nonDuplicatedChapters[0]);
+                            }
+                            else if (nonDuplicatedChapters.IsAnIncreasingSuite(out int breakIndex) == false)
+                            {
+                                if (breakIndex > 0) // there is an incomplete suite at the beginning
+                                {
+                                    int rangeStart = nonDuplicatedChapters[0];
+                                    int rangeEnd = nonDuplicatedChapters[breakIndex];
+
+                                    List<int> selectedChapters = Enumerable.Range(rangeStart, (rangeEnd - rangeStart) + 1).ToList();
+
+                                    string chapterKey = $"{rangeStart}{Constants.DASH_CHAR}{rangeEnd}";
+                                    AddSelectedChapters(chapterKey, selectedChapters);
+
+                                    nonDuplicatedChapters.RemoveRange(0, breakIndex + 1);
+                                }
+                                else // add first item as single chapter
+                                {
+                                    string chapterKey = nonDuplicatedChapters.First().ToString();
+                                    AddSelectedChapters(chapterKey, new List<int>() { nonDuplicatedChapters.First() });
+                                    nonDuplicatedChapters.Remove(nonDuplicatedChapters.First());
+                                }
+                            }
+                            else // List is a suite of increasing int
+                            {
+                                int rangeStart = nonDuplicatedChapters.First();
+                                int rangeEnd = nonDuplicatedChapters.Last();
+
+                                List<int> selectedChapters = Enumerable.Range(rangeStart, (rangeEnd - rangeStart) + 1).ToList();
+
+                                string chapterKey = $"{rangeStart}{Constants.DASH_CHAR}{rangeEnd}";
+                                AddSelectedChapters(chapterKey, selectedChapters);
+                                nonDuplicatedChapters.Clear();
+                            }
+                        } 
+                        
+                        txtBlockChapterError.Text = $"Some chapters were already added, only chapters {chaptersAdded} have been added";
+
+                        // Clear txt box
+                        txtBoxStartChapter.Text = "";
+                        txtBoxEndChapter.Text = "";
+                    }
                 }
                 else
                 {
-                    ChapterInput += ";" + chapterRange;
-                }
+                    // Add chapter
+                    string chapterKey = $"{startChapter}{Constants.DASH_CHAR}{endChapter}";
+                    List<int> selectedChapters = Enumerable.Range(startChapter, (endChapter - startChapter) + 1).ToList();
+                    AddSelectedChapters(chapterKey, selectedChapters);
 
-
-                // Clear txt box
-                txtBoxStartChapter.Text = "";
-                txtBoxEndChapter.Text = "";
+                    // Clear txt box
+                    txtBoxStartChapter.Text = "";
+                    txtBoxEndChapter.Text = "";
+                }    
             }
             else // Invalid number entered
             {
                 //TODO: Show error, Add text explanation
-                if (validStartChapter == false) txtBoxStartChapter.Background = Brushes.IndianRed;
-                if (validEndChapter == false) txtBoxEndChapter.Background = Brushes.IndianRed;
+                string errorMessage = "";
+                if (validStartChapter == false)
+                {
+                    errorMessage += $"\"{txtBoxStartChapter.Text}\"";
+                    txtBoxStartChapter.Background = Brushes.IndianRed;
+                }
+                if (validEndChapter == false)
+                {
+                    errorMessage += string.IsNullOrEmpty(errorMessage) ? $"\"{txtBoxEndChapter.Text}\"" : $", \"{txtBoxEndChapter.Text}\"";
+                    txtBoxEndChapter.Background = Brushes.IndianRed;
+                }
+                errorMessage += " is not a valid number";
+                txtBlockChapterError.Text = errorMessage;
             }
         }
 
-        private void AddChapterSelected(string chapter)
+        private void AddSelectedChapters(string chapterKey, List<int> chapterValues)
         {
+            ChaptersSelected.Add(chapterKey, chapterValues);
+            AddChapterItem(chapterKey);
+
+            if (string.IsNullOrEmpty(ChapterInput))
+            {
+                ChapterInput += chapterKey;
+            }
+            else
+            {
+                ChapterInput += ";" + chapterKey;
+            }
+        }
+
+        private void AddChapterItem(string chapter)
+        {
+            //TODO: find a way to reorder the items to always have from an increasing order
+            //TODO: Create a proper chapterItem with a delete button + manage deleting Item
+
             TextBlock chapterTxtBlock = new TextBlock();
             chapterTxtBlock.Text = chapter;
             chapterTxtBlock.Width = 50;
@@ -163,11 +249,52 @@ namespace ScanNetDownloader.View.CustomControls
             chapterTxtBlock.Background = Brushes.Orange;
             chapterTxtBlock.VerticalAlignment = VerticalAlignment.Center;
             chapterTxtBlock.TextAlignment = TextAlignment.Center;
-            chapterTxtBlock.Margin = new Thickness(10);
+            chapterTxtBlock.Margin = new Thickness(5,0,0,0);
 
             chapterSelectedPanel.Children.Add(chapterTxtBlock);
 
             btnConfirmChapters.IsEnabled = true;
+        }
+
+        private bool ChapterAlreadyAdded(int chapterId)
+        {
+            foreach (List<int> chapterAdded in ChaptersSelected.Values.ToList())
+            {
+                if (chapterAdded.Contains(chapterId)) return true;
+            }
+            return false;
+        }
+
+        private bool ChaptersAlreadyAdded(int rangeStart, int rangeEnd, out List<int> nonDuplicatedChapters)
+        {
+            nonDuplicatedChapters = new List<int>();
+            for (int i = rangeStart; i <= rangeEnd; i++)
+            {
+                nonDuplicatedChapters.Add(i);
+            }
+
+            bool chapterAlreadyAdded = false;
+            foreach (List<int> chapterAdded in ChaptersSelected.Values.ToList())
+            {
+                int firstItem = chapterAdded.First();
+                int lastItem = chapterAdded.Last();
+
+                bool duplicateInRange = (rangeStart >= firstItem && rangeStart <= lastItem) || (rangeEnd >= firstItem && rangeEnd <= lastItem) || (firstItem > rangeStart && lastItem < rangeEnd);
+                if (duplicateInRange)
+                {
+                    chapterAlreadyAdded = true;
+
+                    foreach (int item in chapterAdded)
+                    {
+                        if (nonDuplicatedChapters.Contains(item))
+                        {
+                            nonDuplicatedChapters.Remove(item); // Remove duplicated chapters
+                            Debug.WriteLine($"Remove {item}");
+                        }
+                    }
+                }
+            }
+            return chapterAlreadyAdded;
         }
 
         private void btnBackToUrlSelection_Click(object sender, RoutedEventArgs e)

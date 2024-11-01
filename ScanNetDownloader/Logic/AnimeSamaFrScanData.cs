@@ -3,6 +3,7 @@ using System.Diagnostics;
 
 namespace ScanNetDownloader.Logic
 {
+    // TODO: How to manage scan in english for chapter and image url generation
     public class AnimeSamaFrScanData: ScanData
     {
         [JsonConstructor] // Only for Json deserialization, apparently passed variable name ABSOLUTELY must the same as its destination value name  (ex: url-> Url, websiteDomain -> WebsiteDomain)
@@ -174,6 +175,21 @@ namespace ScanNetDownloader.Logic
             Debug.WriteLine("\n");
 
             return imgUrls;
+        }
+
+        public override string GenerateAnotherChapterUrl(int chapterId)
+        {
+            return Url; // Chapter is not specified in anime sama url we can get any chapter from the base url
+        }
+
+        public override bool DoesThisChapterExist(int chapterId) // TODO: Complete this
+        {
+            // Get a chapter Url from ScanData using chapterId
+
+            // Web request to see if url exist -> UrlLoadCorrectly()
+
+            // return web request result
+            return true;
         }
 
         public static UrlValidityResult IsUrlValid(string url)

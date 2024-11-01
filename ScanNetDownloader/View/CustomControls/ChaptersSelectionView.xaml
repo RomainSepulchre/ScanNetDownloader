@@ -5,29 +5,34 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ScanNetDownloader.View.CustomControls"
              mc:Ignorable="d" 
-             d:DesignHeight="270" d:DesignWidth="500">
+             d:DesignHeight="300" d:DesignWidth="500">
     <Grid Name="chapterSelectionVw">
         <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
+            <RowDefinition Height="0.25*"/>
+            <RowDefinition Height="0.45*"/>
+            <RowDefinition Height="0.3*"/>
             <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
         <TextBlock Name="txtBlockUrlInfo" Text="Choose chapters for..." VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap"/>
         <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
-            <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <TextBox Name="txtBoxSingleChapter" Width="200"/>
                 <Button Name="btnAddSingleChapter" Content="Add single chapter" Click="btnAddSingleChapter_Click"/>
             </StackPanel>
-            <StackPanel Orientation="Horizontal" Margin="0 10 0 0">
+            <StackPanel Orientation="Horizontal" Margin="0 10 0 0" HorizontalAlignment="Center">
                 <TextBox Name="txtBoxStartChapter" Width="90"/>
                 <TextBlock Text="-" VerticalAlignment="Center" TextAlignment="Center" Width="20"/>
                 <TextBox Name="txtBoxEndChapter" Width="90"/>
                 <Button Name="btnAddRangeOfChapter" Content="Add range of chapter" Click="btnAddRangeOfChapter_Click"/>
             </StackPanel>
+            <TextBlock Name="txtBlockChapterError" Text="" Foreground="Red" TextWrapping="Wrap"/>
         </StackPanel>
-        <WrapPanel Name="chapterSelectedPanel" Grid.Row="2" Orientation="Horizontal">
-        </WrapPanel>
+        <StackPanel Grid.Row="2">
+            <Label Content="Chapters selected" FontWeight="Bold"/>
+            <WrapPanel Name="chapterSelectedPanel"  Orientation="Horizontal">
+            </WrapPanel>
+        </StackPanel>
+        
         <StackPanel Grid.Row="3" Orientation="Horizontal">
             <Button Name="btnBackToUrlSelection" Content="Back" Click="btnBackToUrlSelection_Click" Width="150"/>
             <Button Name="btnConfirmChapters" Content="Next" Click="btnConfirmChapters_Click" IsEnabled="False" Width="350"/>

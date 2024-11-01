@@ -45,11 +45,13 @@ namespace ScanNetDownloader.View.CustomControls
             {
                 txtBlockInfos.Text += $"\n-{website}";
             }
+
+            btnNext.IsEnabled = string.IsNullOrEmpty(txtBoxUrlInput.Text) == false;
         }
 
         private void txtBoxUrlInput_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (string.IsNullOrEmpty(txtBoxUrlInput.Text) == false)
+            if (string.IsNullOrEmpty(txtBoxUrlInput.Text) == false && btnNext != null)
             {
                 btnNext.IsEnabled = true;
             }

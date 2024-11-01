@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ScanNetDownloader.View.CustomControls"
              mc:Ignorable="d" 
-             d:DesignHeight="270" d:DesignWidth="500">
+             d:DesignHeight="300" d:DesignWidth="500">
     <Grid Grid.Row="1" Name="urlSelectionVw" Visibility="Visible">
         <Grid.RowDefinitions>
             <RowDefinition Height="0.63*"/>
@@ -15,9 +15,9 @@
         <TextBlock Name="txtBlockInfos"  Text="Enter scan url..." VerticalAlignment="Center" HorizontalAlignment="Center"/>
         <StackPanel Grid.Row="1" Margin="10 0 10 0">
             <Label Content="Enter the URL here"/>
-            <TextBox Name="txtBoxUrlInput" TextChanged="txtBoxUrlInput_TextChanged" VerticalContentAlignment="Center" Height="30" Background="Beige"/>
+            <TextBox Name="txtBoxUrlInput" Text="https://www.scan-vf.net/jujutsu-kaisen/chapitre-21/1" TextChanged="txtBoxUrlInput_TextChanged" VerticalContentAlignment="Center" Height="30" Background="Beige"/>
             <Label Name="lbUrlError" Content="" Foreground="Red"/>
         </StackPanel>
-        <Button Grid.Row="2" Name="btnNext" Content="Next" Click="btnNext_Click" IsEnabled="False"/>
+        <Button Grid.Row="2" Name="btnNext" Content="Next" Click="btnNext_Click"/>
     </Grid>
 </UserControl>

@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Globalization;
+using System.Windows.Documents;
 
 namespace ScanNetDownloader.Logic
 {
@@ -33,6 +34,20 @@ namespace ScanNetDownloader.Logic
             }
 
             return false;
+        }
+
+        public static bool IsAnIncreasingSuite(this List<int> intList, out int breakIndex)
+        {
+            breakIndex = intList.Count-1;
+            for (int i = 0; i < intList.Count - 1; i++) // Count-1 because we don't need to test last item
+            {
+                if (intList[i] + 1 != intList[i+1])
+                {
+                    breakIndex = i;
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

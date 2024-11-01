@@ -150,6 +150,33 @@ namespace ScanNetDownloader.Logic
             return imgUrls;
         }
 
+        public override string GenerateAnotherChapterUrl(int chapterId)
+        {
+            if(UrlContainsChapter())
+            {
+                string UrlStart = string.Join(Constants.SLASH_CHAR, Url.Split(Constants.SLASH_CHAR).Take(4)); // Take the Url up to book name
+                return $"{UrlStart}{Constants.SCANVF_CHAPTER_IN_URL}{chapterId}"; // No need to specify "/1" after chapter number redirection is done by website
+            }
+            else
+            {
+                return $"{Url}{Constants.SCANVF_CHAPTER_IN_URL}{chapterId}";
+            }     
+        }
+
+        public override bool DoesThisChapterExist(int chapterId) // TODO: Complete this
+        {
+            string chapterUrlTotest = GenerateAnotherChapterUrl(chapterId);
+            Debug.WriteLine($"Generated URL: {chapterUrlTotest}");
+            if(UrlLoadCorrectly(chapterUrlTotest))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public static UrlValidityResult IsUrlValid(string url)
         {
             // What are the caracteristics of a valid scanVf url ?

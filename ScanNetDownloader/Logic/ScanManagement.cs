@@ -75,7 +75,8 @@ namespace ScanNetDownloader.Logic
                         // Create link
                         foreach (int chapterId in selectedChaptersId)
                         {
-                            string urlWithChapter = $"{urlEntered}{Constants.SCANVF_CHAPTER_IN_URL}{chapterId}"; // No need to specify "/1" after chapter number redirection is done by website
+                            string urlWithChapter = temporaryScanVfNetData.GenerateAnotherChapterUrl(chapterId); // TODO: Test this
+                            //string urlWithChapter = $"{urlEntered}{Constants.SCANVF_CHAPTER_IN_URL}{chapterId}"; // No need to specify "/1" after chapter number redirection is done by website
                             ScanData scanVfNetData = new ScanVfNetScanData(urlWithChapter);
                             newScanDatas.Add(scanVfNetData);
                             // TODO: we never check if chapter exist with ScanVf ? Check this before creating ScanData

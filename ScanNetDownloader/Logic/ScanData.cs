@@ -76,18 +76,13 @@ namespace ScanNetDownloader.Logic
 
         protected abstract List<string> ParseHtmlToGetImgLinks(string htmlContent);
 
-        public bool DoesThisChapterExist(int chapterId) // TODO: Complete this
+        public abstract string GenerateAnotherChapterUrl(int chapterId);
+
+        public abstract bool DoesThisChapterExist(int chapterId);
+
+        public static bool UrlLoadCorrectly(string url, int timeout = 1500)
         {
-            // Get a chapter Url from ScanData using chapterId
-
-            // Web request to see if url exist
-
-            // return web request result
-            return true;
-        }
-
-        public static bool UrlLoadCorrectly(string url, int timeout = 1000)
-        {
+            // TODO: Improve some give false positive, Why ? Timeout too short ? 1500 seems way better
             WebRequest webRequest = WebRequest.Create(url);
             webRequest.Method = "HEAD";
             webRequest.Timeout = timeout;
@@ -98,9 +93,10 @@ namespace ScanNetDownloader.Logic
                 response.Close();
                 return true;
             }
-            catch
+            catch(WebException ex)
             {
-                Debug.WriteLine($"|---> Invalid url: {url}");
+                // TODO: manage different type of Exception -> 404 means wring url but timeout may mean a valid url
+                Debug.WriteLine($"|---> Invalid url: {url}\n{ex}");
                 return false;
             }
         }
