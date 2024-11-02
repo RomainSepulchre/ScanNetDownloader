@@ -48,10 +48,10 @@ namespace ScanNetDownloader.Logic
         public const string CHAPTER_PREFIX = "Chapter ";
         public static readonly string SCAN_CHAPTER_PATH = $"{SCAN_SUFFIX}{BACKSLASH_CHAR}{CHAPTER_PREFIX}";
 
-        public const string SCANVF_DOMAIN_NAME = "scan-vf.net";
+        public const string SCANVF_DOMAIN_NAME = "https://www.scan-vf.net";
         public const string SCANVF_IMG_URL_MARKER = "uploads";
         public const string SCANVF_CHAPTER_IN_URL = "/chapitre-";
-        public const string ANIMESAMA_DOMAIN_NAME = "anime-sama.fr";
+        public const string ANIMESAMA_DOMAIN_NAME = "https://anime-sama.fr";
         public const string ANIMESAMA_IMG_URL_START = "https://anime-sama.fr/s2/scans/";
         public const string ANIMESAMA_IMG_URL_MARKER = "scans";
 

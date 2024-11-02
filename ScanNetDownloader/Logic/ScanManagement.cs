@@ -15,15 +15,15 @@ namespace ScanNetDownloader.Logic
     /// </summary>
     class ScanManagement
     {
-        public static UrlValidityResult IsValidScanUrl(string url)
+        public static async Task<UrlValidityResult> IsValidScanUrl(string url)
         {
             switch (url)
             {
                 case string s when s.Contains(Constants.SCANVF_DOMAIN_NAME):
-                    return ScanVfNetScanData.IsUrlValid(url);
+                    return await ScanVfNetScanData.IsUrlValid(url);
 
                 case string s when s.Contains(Constants.ANIMESAMA_DOMAIN_NAME):
-                    return AnimeSamaFrScanData.IsUrlValid(url);
+                    return await AnimeSamaFrScanData.IsUrlValid(url);
 
                 default:
                     Error.UnknownScanWebDomain(url);
@@ -153,7 +153,7 @@ namespace ScanNetDownloader.Logic
                     else
                     {
                         // Chapters to download
-                        ScanData temporaryScanVfNetData = new ScanVfNetScanData(urlEntered);
+                        ScanVfNetScanData temporaryScanVfNetData = new ScanVfNetScanData(urlEntered);
                         selectedChaptersId = ChapterSelection(temporaryScanVfNetData, chaptersEntered, ref errorOccured);
                         // Create link
                         foreach (int chapterId in selectedChaptersId)

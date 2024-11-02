@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Net;
+using System.Windows.Navigation;
 
 namespace ScanNetDownloader.Logic
 {
@@ -67,14 +68,53 @@ namespace ScanNetDownloader.Logic
             ChapterId = chapterId;
         }
 
+
+        #region Abstract functions
+        public abstract Task<bool> InitScanData();
+
+        public abstract bool UrlContainsChapter();
+
+        protected abstract string GetBookNameFromUrl(string url, bool removeSpace = false);
+
+        protected abstract string GetChapterNumberFromUrl(string url, bool keepNumberOnly = true);
+
+        public abstract string GetFileExtensionFromImgUrl(string url); //TODO: Can probably be improved once img url will be saved in ScanData     
+
+        protected abstract Task<List<string>> ParseHtmlToGetImgLinks(string htmlContent);
+        #endregion
+
+        #region Temporary Data Exception
+        protected void ThrowExceptionIfTemporaryData()
+        {
+            if (IsTemporaryData)
+            {
+                throw new Exception($"A temporary scan data should never call this function");
+            }
+        } 
+        #endregion
+
+        #region Download Images
         public async Task<List<string>> GetScanImagesUrl()
         {
-            string htmlContent = await GetUrlHtmlContent();
-            if (htmlContent == null) return new List<string>();
+            ThrowExceptionIfTemporaryData();
 
-            return await ParseHtmlToGetImgLinks(htmlContent);
-        }
-        
+            if (PagesUrl.Count == 0) // if no urls saved retry to get them
+            {
+                string htmlContent = await GetUrlHtmlContent();
+                if (htmlContent == null) return new List<string>();
+
+                PagesUrl = await ParseHtmlToGetImgLinks(htmlContent);
+
+                return PagesUrl;
+            }
+            else // Return saved urls
+            {
+                return PagesUrl;
+            }
+        } 
+        #endregion
+
+        #region Web Request
         protected async Task<string> GetUrlHtmlContent()
         {
             string htmlContent;
@@ -95,26 +135,7 @@ namespace ScanNetDownloader.Logic
             return htmlContent;
         }
 
-        public abstract Task<bool> InitScanData();
-
-        protected abstract string GetBookNameFromUrl(string url, bool removeSpace = false);
-
-        protected abstract string GetChapterNumberFromUrl(string url, bool keepNumberOnly = true);
-
-        public abstract string GetFileExtensionFromUrl(string url); //TODO: Can probably be improved once img url will be saved in ScanData
-
-        public abstract bool UrlContainsChapter();
-
-        protected abstract Task<List<string>> ParseHtmlToGetImgLinks(string htmlContent);
-
-        [Obsolete("Create a private function in ScanVfNet and delete other occurence of this" )] // TODO: Clean this
-        public abstract string GenerateAnotherChapterUrl(int chapterId);
-
-        [Obsolete] // TODO: Clean this
-        public abstract bool DoesThisChapterExist(int chapterId); 
-
-
-        public async Task<bool> UrlLoadCorrectlyAsync(string url, int timeout = 1500)
+        public static async Task<bool> UrlLoadCorrectlyAsync(string url, int timeout = 1500)
         {
             // TODO: Improve some give false positive, Why ? Timeout too short ? 1500 seems way better
             WebRequest webRequest = WebRequest.Create(url);
@@ -134,28 +155,13 @@ namespace ScanNetDownloader.Logic
                 return false;
             }
         }
-
-        public static bool UrlLoadCorrectly(string url, int timeout = 1500)
-        {
-            // TODO: Improve some give false positive, Why ? Timeout too short ? 1500 seems way better
-            WebRequest webRequest = WebRequest.Create(url);
-            webRequest.Method = "HEAD";
-            webRequest.Timeout = timeout;
-
-            try
-            {
-                WebResponse response = webRequest.GetResponse();
-                response.Close();
-                return true;
-            }
-            catch(WebException ex)
-            {
-                // TODO: manage different type of Exception -> 404 means wring url but timeout may mean a valid url
-                Debug.WriteLine($"|---> Invalid url: {url}\n{ex}");
-                return false;
-            }
-        }
+        #endregion
     }
+
+    //
+    // Result objects to return more information at the end of an operation
+    // TODO: Should I move this in a dedicated class ?
+    //
 
     public class UrlValidityResult
     {

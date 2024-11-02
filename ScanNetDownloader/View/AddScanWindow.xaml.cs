@@ -29,6 +29,7 @@ namespace ScanNetDownloader.View
             InitializeComponent();
         }
 
+        #region Button Events
         private void btnUrlView_Click(object sender, RoutedEventArgs e)
         {
             urlSelectionVw.Visibility = Visibility.Visible;
@@ -65,7 +66,10 @@ namespace ScanNetDownloader.View
         {
             Close();
         }
+        #endregion
 
+
+        #region Custom view events
         private void urlSelectionVw_UrlConfirmed(object sender, RoutedEventArgs e)
         {
             UrlInput = urlSelectionVw.UrlInput;
@@ -73,8 +77,8 @@ namespace ScanNetDownloader.View
 
             // Check if chapter is already specified
 
-            chapterSelectionVw.StartChapterSelection(TempScanData);
-                   
+            chapterSelectionVw.InitChapterSelection(TempScanData);
+
             urlSelectionVw.Visibility = Visibility.Collapsed;
             chapterSelectionVw.Visibility = Visibility.Visible;
 
@@ -92,9 +96,11 @@ namespace ScanNetDownloader.View
 
         private async void chapterSelectionVw_ChaptersConfirmed(object sender, RoutedEventArgs e)
         {
+            
             ChapterSelected = chapterSelectionVw.ChaptersSelected;
             ChapterSelected.Log();
 
+            // TODO: Switch To scanDataCreationVw (create a custom view and move everyting below in this custom class)
             chapterSelectionVw.Visibility = Visibility.Collapsed;
             scanDataCreationVw.Visibility = Visibility.Visible;
 
@@ -107,7 +113,6 @@ namespace ScanNetDownloader.View
             btnScanDataCreationView.IsEnabled = false;
             btnScanDataCreationView.FontWeight = FontWeights.Bold;
 
-            // TODO: Create scan data one by one to have a better visual representation of what is happening
             progrBarScanDataCreation.Value = 0;
 
             NewScanDatas = new List<ScanData>();
@@ -122,7 +127,7 @@ namespace ScanNetDownloader.View
                 listVwCreationStatus.Items.Add(chapterTxtBlock);
 
                 ScanData newScanData = await ScanManagement.CreateNewScanData(UrlInput, chapter);
-                if(newScanData != null)
+                if (newScanData != null)
                 {
                     NewScanDatas.Add(newScanData);
                     chapterTxtBlock.Text = $"Scan Data creation for {TempScanData.BookName}-{chapter} successful!";
@@ -134,7 +139,7 @@ namespace ScanNetDownloader.View
                     // TODO: Add reason why it failed
                     chapterTxtBlock.Foreground = Brushes.Red;
                 }
-                progrBarScanDataCreation.Value = ((float)(i+1) / ChapterSelected.Count) * 100;
+                progrBarScanDataCreation.Value = ((float)(i + 1) / ChapterSelected.Count) * 100;
             }
             // Old way doing everything at once -> no progress evolution
             //NewScanDatas = await ScanManagement.CreateNewScanDatas(UrlInput, ChapterSelected);
@@ -143,10 +148,12 @@ namespace ScanNetDownloader.View
             {
                 Success = true;
             }
-            
-            btnFinish.IsEnabled = true;
-        }
 
+            btnFinish.IsEnabled = true;
+        } 
+        #endregion
+
+        // TODO: Create a custom view for scan data creation
         private void btnFinish_Click(object sender, RoutedEventArgs e)
         {
             Close();

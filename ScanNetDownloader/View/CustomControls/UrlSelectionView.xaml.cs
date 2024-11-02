@@ -26,6 +26,7 @@ namespace ScanNetDownloader.View.CustomControls
 
         public string UrlInput { get; set; }
 
+        // View Events
         public static RoutedEvent UrlConfirmedEvent = EventManager.RegisterRoutedEvent(nameof(UrlConfirmed), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ScanItem));
 
         public event RoutedEventHandler UrlConfirmed
@@ -33,6 +34,7 @@ namespace ScanNetDownloader.View.CustomControls
             add { AddHandler(UrlConfirmedEvent, value); }
             remove { RemoveHandler(UrlConfirmedEvent, value); }
         }
+
 
         public UrlSelectionView()
         {
@@ -49,6 +51,8 @@ namespace ScanNetDownloader.View.CustomControls
             btnNext.IsEnabled = string.IsNullOrEmpty(txtBoxUrlInput.Text) == false;
         }
 
+
+        #region Buttons and Ui Events
         private void txtBoxUrlInput_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (string.IsNullOrEmpty(txtBoxUrlInput.Text) == false && btnNext != null)
@@ -57,17 +61,17 @@ namespace ScanNetDownloader.View.CustomControls
             }
         }
 
-        private void btnNext_Click(object sender, RoutedEventArgs e)
+        private async void btnNext_Click(object sender, RoutedEventArgs e)
         {
             string userInput = txtBoxUrlInput.Text;
 
-            UrlValidityResult urlTestResult = ScanManagement.IsValidScanUrl(userInput);
+            UrlValidityResult urlTestResult = await ScanManagement.IsValidScanUrl(userInput);
             if (urlTestResult.IsValid) // TODO: Find a way to know if the url is valid for each website
             {
                 UrlInput = txtBoxUrlInput.Text; // TODO: binding for this
 
                 TempScanData = ScanManagement.CreateTemporaryScanData(UrlInput);
-                if(TempScanData == null)
+                if (TempScanData == null)
                 {
                     lbUrlError.Content = "Impossible to create a ScanData object from url";
                     txtBoxUrlInput.Background = Brushes.IndianRed;
@@ -88,5 +92,6 @@ namespace ScanNetDownloader.View.CustomControls
                 txtBoxUrlInput.Background = Brushes.IndianRed;
             }
         }
+        #endregion
     }
 }

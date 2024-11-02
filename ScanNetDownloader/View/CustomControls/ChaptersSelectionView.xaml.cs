@@ -27,6 +27,7 @@ namespace ScanNetDownloader.View.CustomControls
 
         public List<int> ChaptersSelected => GetSelectedChapters();
 
+        // View Events
         public static RoutedEvent BackBtnPressedEvent = EventManager.RegisterRoutedEvent(nameof(BackBtnPressed), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ScanItem));
 
         public event RoutedEventHandler BackBtnPressed
@@ -44,23 +45,24 @@ namespace ScanNetDownloader.View.CustomControls
         }
 
 
-
         public ChaptersSelectionView()
         {
             InitializeComponent();
         }
 
-        public void StartChapterSelection(ScanData tempScanData) // TODO: How to manage adding more chapters for Url with chapter number -> add url with chapter first remove chapter from list and then generate url for all the other added chapter
+
+        #region View Initialization
+        public void InitChapterSelection(ScanData tempScanData) // TODO: How to manage adding more chapters for Url with chapter number -> add url with chapter first remove chapter from list and then generate url for all the other added chapter
         {
             SetUrlInfo(tempScanData);
 
-            if (tempScanData.UrlContainsChapter() )
+            if (tempScanData.UrlContainsChapter())
             {
-                if(ChapterAlreadyAdded(tempScanData.ChapterId) == false)
+                if (ChapterAlreadyAdded(tempScanData.ChapterId) == false)
                 {
                     string chapterKey = tempScanData.ChapterId.ToString();
                     AddToChaptersSelection(chapterKey, new List<int>() { tempScanData.ChapterId });
-                }    
+                }
             }
         }
 
@@ -73,87 +75,11 @@ namespace ScanNetDownloader.View.CustomControls
             else
             {
                 txtBlockUrlInfo.Text = $"Choose chapters for {tempScanData.Url}";
-            }      
-        }   
-
-        private void AddToChaptersSelection(string chapterKey, List<int> chapterValues)
-        {
-            ChaptersSelection.Add(chapterKey, chapterValues);
-            AddChapterItem(chapterKey);
-        }
-
-        private void AddChapterItem(string chapter)
-        {
-            //TODO: find a way to reorder the items to always have from an increasing order
-            //TODO: Create a proper chapterItem with a delete button + manage deleting Item
-
-            TextBlock chapterTxtBlock = new TextBlock();
-            chapterTxtBlock.Text = chapter;
-            chapterTxtBlock.Width = 50;
-            chapterTxtBlock.Height = 20;
-            chapterTxtBlock.Background = Brushes.Orange;
-            chapterTxtBlock.VerticalAlignment = VerticalAlignment.Center;
-            chapterTxtBlock.TextAlignment = TextAlignment.Center;
-            chapterTxtBlock.Margin = new Thickness(5,0,0,0);
-
-            chapterSelectedPanel.Children.Add(chapterTxtBlock);
-
-            btnConfirmChapters.IsEnabled = true;
-        }
-
-        private bool ChapterAlreadyAdded(int chapterId)
-        {
-            foreach (List<int> chapterAdded in ChaptersSelection.Values.ToList())
-            {
-                if (chapterAdded.Contains(chapterId)) return true;
             }
-            return false;
         }
+        #endregion
 
-        private bool ChaptersAlreadyAdded(int rangeStart, int rangeEnd, out List<int> nonDuplicatedChapters)
-        {
-            nonDuplicatedChapters = new List<int>();
-            for (int i = rangeStart; i <= rangeEnd; i++)
-            {
-                nonDuplicatedChapters.Add(i);
-            }
-
-            bool chapterAlreadyAdded = false;
-            foreach (List<int> chapterAdded in ChaptersSelection.Values.ToList())
-            {
-                int firstItem = chapterAdded.First();
-                int lastItem = chapterAdded.Last();
-
-                bool duplicateInRange = (rangeStart >= firstItem && rangeStart <= lastItem) || (rangeEnd >= firstItem && rangeEnd <= lastItem) || (firstItem > rangeStart && lastItem < rangeEnd);
-                if (duplicateInRange)
-                {
-                    chapterAlreadyAdded = true;
-
-                    foreach (int item in chapterAdded)
-                    {
-                        if (nonDuplicatedChapters.Contains(item))
-                        {
-                            nonDuplicatedChapters.Remove(item); // Remove duplicated chapters
-                        }
-                    }
-                }
-            }
-            return chapterAlreadyAdded;
-        }
-
-        private List<int> GetSelectedChapters()
-        {
-            List<int> selectedChapters = new List<int>();
-
-            foreach (List<int> chapterList in ChaptersSelection.Values.ToList())
-            {
-                selectedChapters.AddRange(chapterList);
-            }
-            selectedChapters.Sort();
-            return selectedChapters;
-        }
-
-        #region Buttons and Events
+        #region Buttons and Ui events
         private void btnAddSingleChapter_Click(object sender, RoutedEventArgs e)
         {
             bool validNumber = int.TryParse(txtBoxSingleChapter.Text, out int chapterToAdd);
@@ -176,7 +102,6 @@ namespace ScanNetDownloader.View.CustomControls
             }
             else // Invalid number entered
             {
-                //TODO: Show error, Add text explanation
                 txtBlockChapterError.Text = $"\"{txtBoxSingleChapter.Text}\" is not a valid number";
                 txtBoxSingleChapter.Background = Brushes.IndianRed;
             }
@@ -268,7 +193,6 @@ namespace ScanNetDownloader.View.CustomControls
             }
             else // Invalid number entered
             {
-                //TODO: Show error, Add text explanation
                 string errorMessage = "";
                 if (validStartChapter == false)
                 {
@@ -293,7 +217,86 @@ namespace ScanNetDownloader.View.CustomControls
         private void btnConfirmChapters_Click(object sender, RoutedEventArgs e)
         {
             RaiseEvent(new RoutedEventArgs(ChaptersConfirmedEvent, this));
-        } 
+        }
+        #endregion
+
+        #region Chapter Management
+        private void AddToChaptersSelection(string chapterKey, List<int> chapterValues)
+        {
+            ChaptersSelection.Add(chapterKey, chapterValues);
+            AddChapterItem(chapterKey);
+        }
+
+        private void AddChapterItem(string chapter)
+        {
+            //TODO: find a way to reorder the items to always have from an increasing order
+            //TODO: Create a proper chapterItem with a delete button + manage deleting Item
+
+            TextBlock chapterTxtBlock = new TextBlock();
+            chapterTxtBlock.Text = chapter;
+            chapterTxtBlock.Width = 50;
+            chapterTxtBlock.Height = 20;
+            chapterTxtBlock.Background = Brushes.Orange;
+            chapterTxtBlock.VerticalAlignment = VerticalAlignment.Center;
+            chapterTxtBlock.TextAlignment = TextAlignment.Center;
+            chapterTxtBlock.Margin = new Thickness(5, 0, 0, 0);
+
+            chapterSelectedPanel.Children.Add(chapterTxtBlock);
+
+            btnConfirmChapters.IsEnabled = true;
+        }
+
+        private List<int> GetSelectedChapters()
+        {
+            List<int> selectedChapters = new List<int>();
+
+            foreach (List<int> chapterList in ChaptersSelection.Values.ToList())
+            {
+                selectedChapters.AddRange(chapterList);
+            }
+            selectedChapters.Sort();
+            return selectedChapters;
+        }
+
+        private bool ChapterAlreadyAdded(int chapterId)
+        {
+            foreach (List<int> chapterAdded in ChaptersSelection.Values.ToList())
+            {
+                if (chapterAdded.Contains(chapterId)) return true;
+            }
+            return false;
+        }
+
+        private bool ChaptersAlreadyAdded(int rangeStart, int rangeEnd, out List<int> nonDuplicatedChapters)
+        {
+            nonDuplicatedChapters = new List<int>();
+            for (int i = rangeStart; i <= rangeEnd; i++)
+            {
+                nonDuplicatedChapters.Add(i);
+            }
+
+            bool chapterAlreadyAdded = false;
+            foreach (List<int> chapterAdded in ChaptersSelection.Values.ToList())
+            {
+                int firstItem = chapterAdded.First();
+                int lastItem = chapterAdded.Last();
+
+                bool duplicateInRange = (rangeStart >= firstItem && rangeStart <= lastItem) || (rangeEnd >= firstItem && rangeEnd <= lastItem) || (firstItem > rangeStart && lastItem < rangeEnd);
+                if (duplicateInRange)
+                {
+                    chapterAlreadyAdded = true;
+
+                    foreach (int item in chapterAdded)
+                    {
+                        if (nonDuplicatedChapters.Contains(item))
+                        {
+                            nonDuplicatedChapters.Remove(item); // Remove duplicated chapters
+                        }
+                    }
+                }
+            }
+            return chapterAlreadyAdded;
+        }
         #endregion
     }
 }

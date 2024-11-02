@@ -117,7 +117,7 @@ namespace ScanNetDownloader.Logic
                     progress = float.Lerp(minProgress, maxProgress, chapterCompletion);
                     UpdateDownloadProgress(progress);
 
-                    string fileExtension = scanData.GetFileExtensionFromUrl(imgUrl);
+                    string fileExtension = scanData.GetFileExtensionFromImgUrl(imgUrl);
                     string imgName = $"{bookName}_{chapterNumber}-{pageId.ToString("D3")}{fileExtension}";
                     string downloadFile = Path.Combine(downloadPath, imgName);
 

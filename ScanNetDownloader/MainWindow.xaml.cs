@@ -322,24 +322,7 @@ namespace ScanNetDownloader
 
         private void btnDbg2_Click(object sender, RoutedEventArgs e)
         {
-            ScanData dataScanvfWithChapter = new ScanVfNetScanData("https://www.scan-vf.net/jujutsu-kaisen/chapitre-164/1");
-            ScanData dataScanvfNoChapter = new ScanVfNetScanData("https://www.scan-vf.net/jujutsu-kaisen");
-            ScanData dataAnimeSama = new AnimeSamaFrScanData("https://anime-sama.fr/catalogue/20th-century-boys/scan/vf/");
 
-            int chapterIdScanVf = 5;
-            int chapterIdAnimeSama = 5;
-
-            //string urlScanVfWithChapter = dataScanvfWithChapter.GenerateAnotherChapterUrl(chapterIdScanVf);
-            //string urlScanVfNoChapter = dataScanvfNoChapter.GenerateAnotherChapterUrl(chapterIdScanVf);
-            //string urlAnimeSama = dataAnimeSama.GenerateAnotherChapterUrl(chapterIdAnimeSama);
-
-            int endChapter = 300;
-
-            for (int i = 1; i <= endChapter; i++)
-            {
-                bool exist = dataScanvfNoChapter.DoesThisChapterExist(i);
-                Debug.WriteLine($"Chapter {i} exist: {exist}");
-            }
         }
 
         private void btnDbg3_Click(object sender, RoutedEventArgs e)
