@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -21,11 +23,65 @@ namespace ScanNetDownloader.View.CustomControls
     /// <summary>
     /// Logique d'interaction pour ChaptersSelectionView.xaml
     /// </summary>
-    public partial class ChaptersSelectionView : UserControl
+    public partial class ChaptersSelectionView : UserControl, INotifyPropertyChanged
     {
         private Dictionary<string, List<int>> ChaptersSelection { get; set; } = new Dictionary<string, List<int>>();
 
         public List<int> ChaptersSelected => GetSelectedChapters();
+
+
+        private string _selectChapterInfos = "Choose some chapter...";
+        public string SelectChapterInfos
+        {
+            get { return _selectChapterInfos; }
+            set {
+                _selectChapterInfos = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _singleChapterInput;
+        public string SingleChapterInput
+        {
+            get { return _singleChapterInput; }
+            set {
+                _singleChapterInput = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _startChapterInput;
+        public string StartChapterInput
+        {
+            get { return _startChapterInput; }
+            set {
+                _startChapterInput = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _endChapterInput;
+        public string EndChapterInput
+        {
+            get { return _endChapterInput; }
+            set {
+                _endChapterInput = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _errorMessage;
+        public string ErrorMessage
+        {
+            get { return _errorMessage; }
+            set {
+                _errorMessage = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         // View Events
         public static RoutedEvent BackBtnPressedEvent = EventManager.RegisterRoutedEvent(nameof(BackBtnPressed), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ScanItem));
@@ -38,18 +94,25 @@ namespace ScanNetDownloader.View.CustomControls
 
         public static RoutedEvent ChaptersConfirmedEvent = EventManager.RegisterRoutedEvent(nameof(ChaptersConfirmed), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ScanItem));
 
+        
+
         public event RoutedEventHandler ChaptersConfirmed
         {
             add { AddHandler(ChaptersConfirmedEvent, value); }
             remove { RemoveHandler(ChaptersConfirmedEvent, value); }
         }
 
-
         public ChaptersSelectionView()
         {
+            DataContext = this;
             InitializeComponent();
         }
 
+
+        private void OnPropertyChanged([CallerMemberName] string property = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+        }
 
         #region View Initialization
         public void InitChapterSelection(ScanData tempScanData) // TODO: How to manage adding more chapters for Url with chapter number -> add url with chapter first remove chapter from list and then generate url for all the other added chapter
@@ -70,11 +133,11 @@ namespace ScanNetDownloader.View.CustomControls
         {
             if (tempScanData.UrlContainsChapter())
             {
-                txtBlockUrlInfo.Text = $"Chapter {tempScanData.ChapterId} is already specified in {tempScanData.Url} but you can add additionnal chapter";
+                SelectChapterInfos = $"Chapter {tempScanData.ChapterId} is already specified in {tempScanData.Url} but you can add additionnal chapter";
             }
             else
             {
-                txtBlockUrlInfo.Text = $"Choose chapters for {tempScanData.Url}";
+                SelectChapterInfos = $"Choose chapters for {tempScanData.Url}";
             }
         }
         #endregion
@@ -82,36 +145,37 @@ namespace ScanNetDownloader.View.CustomControls
         #region Buttons and Ui events
         private void btnAddSingleChapter_Click(object sender, RoutedEventArgs e)
         {
-            bool validNumber = int.TryParse(txtBoxSingleChapter.Text, out int chapterToAdd);
+            bool validNumber = int.TryParse(SingleChapterInput, out int chapterToAdd);
             if (validNumber)
             {
                 if (ChapterAlreadyAdded(chapterToAdd))
                 {
-                    txtBlockChapterError.Text = $"Chapter {chapterToAdd} is already added";
+                    ErrorMessage = $"Chapter {chapterToAdd} is already added";
                     txtBoxSingleChapter.Background = Brushes.IndianRed;
                 }
                 else
                 {
                     // Add chapter
-                    string chapterKey = txtBoxSingleChapter.Text;
+                    string chapterKey = SingleChapterInput;
                     AddToChaptersSelection(chapterKey, new List<int>() { chapterToAdd });
 
                     // Clear txt box
-                    txtBoxSingleChapter.Text = "";
+                    SingleChapterInput = "";
                 }
             }
             else // Invalid number entered
             {
-                txtBlockChapterError.Text = $"\"{txtBoxSingleChapter.Text}\" is not a valid number";
+                ErrorMessage = $"\"{SingleChapterInput}\" is not a valid number";
                 txtBoxSingleChapter.Background = Brushes.IndianRed;
             }
         }
 
         private void btnAddRangeOfChapter_Click(object sender, RoutedEventArgs e)
         {
+            Debug.WriteLine($"START:{StartChapterInput}, END:{EndChapterInput}");
             int startChapter, endChapter;
-            bool validStartChapter = int.TryParse(txtBoxStartChapter.Text, out startChapter);
-            bool validEndChapter = int.TryParse(txtBoxEndChapter.Text, out endChapter);
+            bool validStartChapter = int.TryParse(StartChapterInput, out startChapter);
+            bool validEndChapter = int.TryParse(EndChapterInput, out endChapter);
 
             if (validStartChapter && validEndChapter)
             {
@@ -121,7 +185,7 @@ namespace ScanNetDownloader.View.CustomControls
                 {
                     if (nonDuplicatedChapters.Count == 0)
                     {
-                        txtBlockChapterError.Text = $"{startChapter}-{endChapter} all chapters in the range are already added";
+                        ErrorMessage = $"{startChapter}-{endChapter} all chapters in the range are already added";
                         txtBoxEndChapter.Background = Brushes.IndianRed;
                         txtBoxStartChapter.Background = Brushes.IndianRed;
                     }
@@ -172,11 +236,11 @@ namespace ScanNetDownloader.View.CustomControls
                             }
                         }
 
-                        txtBlockChapterError.Text = $"Some chapters were already added, only chapters {chaptersAdded} have been added";
+                        ErrorMessage = $"Some chapters were already added, only chapters {chaptersAdded} have been added";
 
                         // Clear txt box
-                        txtBoxStartChapter.Text = "";
-                        txtBoxEndChapter.Text = "";
+                        StartChapterInput = "";
+                        EndChapterInput = "";
                     }
                 }
                 else
@@ -187,8 +251,8 @@ namespace ScanNetDownloader.View.CustomControls
                     AddToChaptersSelection(chapterKey, selectedChapters);
 
                     // Clear txt box
-                    txtBoxStartChapter.Text = "";
-                    txtBoxEndChapter.Text = "";
+                    StartChapterInput = "";
+                    EndChapterInput = "";
                 }
             }
             else // Invalid number entered
@@ -196,16 +260,16 @@ namespace ScanNetDownloader.View.CustomControls
                 string errorMessage = "";
                 if (validStartChapter == false)
                 {
-                    errorMessage += $"\"{txtBoxStartChapter.Text}\"";
+                    errorMessage += $"\"{StartChapterInput}\"";
                     txtBoxStartChapter.Background = Brushes.IndianRed;
                 }
                 if (validEndChapter == false)
                 {
-                    errorMessage += string.IsNullOrEmpty(errorMessage) ? $"\"{txtBoxEndChapter.Text}\"" : $", \"{txtBoxEndChapter.Text}\"";
+                    errorMessage += string.IsNullOrEmpty(errorMessage) ? $"\"{EndChapterInput}\"" : $", \"{EndChapterInput}\"";
                     txtBoxEndChapter.Background = Brushes.IndianRed;
                 }
                 errorMessage += " is not a valid number";
-                txtBlockChapterError.Text = errorMessage;
+                ErrorMessage = errorMessage;
             }
         }
 
@@ -217,6 +281,24 @@ namespace ScanNetDownloader.View.CustomControls
         private void btnConfirmChapters_Click(object sender, RoutedEventArgs e)
         {
             RaiseEvent(new RoutedEventArgs(ChaptersConfirmedEvent, this));
+        }
+
+        private void txtBoxSingleChapter_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (txtBoxSingleChapter.Background == Brushes.IndianRed)
+                txtBoxSingleChapter.ClearValue(Control.BackgroundProperty);
+        }
+
+        private void txtBoxStartChapter_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (txtBoxStartChapter.Background == Brushes.IndianRed)
+                txtBoxStartChapter.ClearValue(Control.BackgroundProperty);
+        }
+
+        private void txtBoxEndChapter_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (txtBoxEndChapter.Background == Brushes.IndianRed)
+                txtBoxEndChapter.ClearValue(Control.BackgroundProperty);
         }
         #endregion
 

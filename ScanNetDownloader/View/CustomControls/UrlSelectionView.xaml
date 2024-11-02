@@ -6,18 +6,17 @@
              xmlns:local="clr-namespace:ScanNetDownloader.View.CustomControls"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="500">
-    <Grid Grid.Row="1" Name="urlSelectionVw" Visibility="Visible">
+    <Grid Grid.Row="1" Visibility="Visible">
         <Grid.RowDefinitions>
             <RowDefinition Height="0.63*"/>
             <RowDefinition Height="0.37*"/>
             <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
-        <TextBlock Name="txtBlockInfos"  Text="Enter scan url..." VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <TextBlock Name="txtBlockInfos"  Text="{Binding SelectUrlInfos}" VerticalAlignment="Center" Margin="30" TextWrapping="Wrap"/>
         <StackPanel Grid.Row="1" Margin="10 0 10 0">
             <Label Content="Enter the URL here"/>
-            <!--<TextBox Name="txtBoxUrlInput" Text="https://www.scan-vf.net/jujutsu-kaisen/chapitre-18/1" TextChanged="txtBoxUrlInput_TextChanged" VerticalContentAlignment="Center" Height="30" Background="Beige"/>-->
-            <TextBox Name="txtBoxUrlInput" Text="https://anime-sama.fr/catalogue/20th-century-boys/scan-21st-century-boys/vf/" TextChanged="txtBoxUrlInput_TextChanged" VerticalContentAlignment="Center" Height="30" Background="Beige"/>
-            <Label Name="lbUrlError" Content="" Foreground="Red"/>
+            <TextBox Name="txtBoxUrlInput" Text="{Binding UrlInput}" TextChanged="txtBoxUrlInput_TextChanged" VerticalContentAlignment="Center" Height="30" Background="Beige"/>
+            <Label Name="lbUrlError" Content="{Binding ErrorMessage}" Foreground="Red"/>
         </StackPanel>
         <Button Grid.Row="2" Name="btnNext" Content="Next" Click="btnNext_Click"/>
     </Grid>

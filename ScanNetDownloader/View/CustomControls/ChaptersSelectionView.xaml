@@ -6,26 +6,26 @@
              xmlns:local="clr-namespace:ScanNetDownloader.View.CustomControls"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="500">
-    <Grid Name="chapterSelectionVw">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="0.25*"/>
             <RowDefinition Height="0.45*"/>
             <RowDefinition Height="0.3*"/>
             <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
-        <TextBlock Name="txtBlockUrlInfo" Text="Choose chapters for..." VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap"/>
+        <TextBlock Name="txtBlockSelectChapterInfo" Text="{Binding SelectChapterInfos}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="30 0 30 0" TextWrapping="Wrap"/>
         <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <TextBox Name="txtBoxSingleChapter" Width="200"/>
+                <TextBox Name="txtBoxSingleChapter" Text="{Binding SingleChapterInput}" TextChanged="txtBoxSingleChapter_TextChanged" Width="200"/>
                 <Button Name="btnAddSingleChapter" Content="Add single chapter" Click="btnAddSingleChapter_Click"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="0 10 0 0" HorizontalAlignment="Center">
-                <TextBox Name="txtBoxStartChapter" Width="90"/>
+                <TextBox Name="txtBoxStartChapter" Text="{Binding StartChapterInput}" TextChanged="txtBoxStartChapter_TextChanged" Width="90"/>
                 <TextBlock Text="-" VerticalAlignment="Center" TextAlignment="Center" Width="20"/>
-                <TextBox Name="txtBoxEndChapter" Width="90"/>
+                <TextBox Name="txtBoxEndChapter" Text="{Binding EndChapterInput}" TextChanged="txtBoxEndChapter_TextChanged" Width="90"/>
                 <Button Name="btnAddRangeOfChapter" Content="Add range of chapter" Click="btnAddRangeOfChapter_Click"/>
             </StackPanel>
-            <TextBlock Name="txtBlockChapterError" Text="" Foreground="Red" TextWrapping="Wrap"/>
+            <TextBlock Name="txtBlockChapterError" Text="{Binding ErrorMessage}" Foreground="Red" TextWrapping="Wrap"/>
         </StackPanel>
         <StackPanel Grid.Row="2">
             <Label Content="Chapters selected" FontWeight="Bold"/>

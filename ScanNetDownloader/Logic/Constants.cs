@@ -67,6 +67,12 @@ namespace ScanNetDownloader.Logic
             ANIMESAMA_DOMAIN_NAME
         };
 
+        public static readonly Dictionary<string, string> EXAMPLE_URLS = new Dictionary<string, string>()
+        {
+            { SCANVF_DOMAIN_NAME, "https://www.scan-vf.net/one_piece or https://www.scan-vf.net/one_piece/chapitre-1/1" },
+            { ANIMESAMA_DOMAIN_NAME, "https://anime-sama.fr/catalogue/berserk/scan/vf/" }
+        };
+
         #endregion
 
         #region Time values

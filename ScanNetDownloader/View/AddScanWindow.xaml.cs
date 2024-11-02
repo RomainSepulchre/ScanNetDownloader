@@ -98,9 +98,7 @@ namespace ScanNetDownloader.View
         {
             
             ChapterSelected = chapterSelectionVw.ChaptersSelected;
-            ChapterSelected.Log();
 
-            // TODO: Switch To scanDataCreationVw (create a custom view and move everyting below in this custom class)
             chapterSelectionVw.Visibility = Visibility.Collapsed;
             scanDataCreationVw.Visibility = Visibility.Visible;
 
@@ -113,50 +111,19 @@ namespace ScanNetDownloader.View
             btnScanDataCreationView.IsEnabled = false;
             btnScanDataCreationView.FontWeight = FontWeights.Bold;
 
-            progrBarScanDataCreation.Value = 0;
-
-            NewScanDatas = new List<ScanData>();
-            for (int i = 0; i < ChapterSelected.Count; i++)
-            {
-                int chapter = ChapterSelected[i];
-
-                // TODO: Replace txtBlock with a dedicated item
-                TextBlock chapterTxtBlock = new TextBlock();
-                chapterTxtBlock.TextWrapping = TextWrapping.Wrap;
-                chapterTxtBlock.Text = $"Scan Data creation for {TempScanData.BookName}-{chapter} in progress...";
-                listVwCreationStatus.Items.Add(chapterTxtBlock);
-
-                ScanData newScanData = await ScanManagement.CreateNewScanData(UrlInput, chapter);
-                if (newScanData != null)
-                {
-                    NewScanDatas.Add(newScanData);
-                    chapterTxtBlock.Text = $"Scan Data creation for {TempScanData.BookName}-{chapter} successful!";
-                    chapterTxtBlock.Foreground = Brushes.Green;
-                }
-                else
-                {
-                    chapterTxtBlock.Text = $"Scan Data creation for {TempScanData.BookName}-{chapter} failed!";
-                    // TODO: Add reason why it failed
-                    chapterTxtBlock.Foreground = Brushes.Red;
-                }
-                progrBarScanDataCreation.Value = ((float)(i + 1) / ChapterSelected.Count) * 100;
-            }
-            // Old way doing everything at once -> no progress evolution
-            //NewScanDatas = await ScanManagement.CreateNewScanDatas(UrlInput, ChapterSelected);
+            // Create Scan Datas
+            NewScanDatas = await scanDataCreationVw.CreateScanDatas(UrlInput, ChapterSelected, TempScanData);
 
             if (NewScanDatas != null && NewScanDatas.Count > 0)
             {
                 Success = true;
             }
+        }
 
-            btnFinish.IsEnabled = true;
-        } 
-        #endregion
-
-        // TODO: Create a custom view for scan data creation
-        private void btnFinish_Click(object sender, RoutedEventArgs e)
+        private void scanDataCreationVw_FinishBtnPressed(object sender, RoutedEventArgs e)
         {
             Close();
         }
+        #endregion
     }
 }

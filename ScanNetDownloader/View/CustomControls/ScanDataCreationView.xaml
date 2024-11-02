@@ -1,0 +1,27 @@
+﻿<UserControl x:Class="ScanNetDownloader.View.CustomControls.ScanDataCreationView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ScanNetDownloader.View.CustomControls"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="500">
+    <Grid Grid.Row="1">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+        <Label Content="Scan Data Creation" FontWeight="Bold"/>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center">
+            <Label Content="Progress..."/>
+            <ProgressBar Name="progrBarScanDataCreation" Minimum="0" Maximum="100" Width="430" Height="20"/>
+        </StackPanel>
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+            <ListView Name="listVwCreationStatus" HorizontalContentAlignment="Stretch">
+            </ListView>
+        </ScrollViewer>
+        <Button Grid.Row="3" Name="btnFinish" Content="Finish" Click="btnFinish_Click" IsEnabled="False"/>
+    </Grid>
+</UserControl>
