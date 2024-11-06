@@ -30,8 +30,8 @@ namespace ScanNetDownloader.View.CustomControls
 
         public List<int> ChaptersSelected => GetSelectedChapters();
 
-        private ObservableCollection<TextBlock> _chapterItems;
-        public ObservableCollection<TextBlock> ChapterItems
+        private ObservableCollection<ChapterItem> _chapterItems;
+        public ObservableCollection<ChapterItem> ChapterItems
         {
             get { return _chapterItems; }
             set { _chapterItems = value; }
@@ -114,7 +114,7 @@ namespace ScanNetDownloader.View.CustomControls
         public ChaptersSelectionView()
         {
             DataContext = this;
-            ChapterItems = new ObservableCollection<TextBlock>();
+            ChapterItems = new ObservableCollection<ChapterItem>();
             InitializeComponent();
         }
 
@@ -202,7 +202,7 @@ namespace ScanNetDownloader.View.CustomControls
                     else
                     {
                         nonDuplicatedChapters.Log();
-                        string chaptersAdded = string.Join(',', nonDuplicatedChapters);
+                        List<string> chaptersForErrorMsg = new List<string>();
 
                         while (nonDuplicatedChapters.Count > 0)
                         {
@@ -211,6 +211,7 @@ namespace ScanNetDownloader.View.CustomControls
                                 string chapterKey = nonDuplicatedChapters[0].ToString();
                                 AddToChaptersSelection(chapterKey, new List<int>() { nonDuplicatedChapters[0] });
                                 nonDuplicatedChapters.Remove(nonDuplicatedChapters[0]);
+                                chaptersForErrorMsg.Add(chapterKey);
                             }
                             else if (nonDuplicatedChapters.IsAnIncreasingSuite(out int breakIndex) == false)
                             {
@@ -225,12 +226,14 @@ namespace ScanNetDownloader.View.CustomControls
                                     AddToChaptersSelection(chapterKey, selectedChapters);
 
                                     nonDuplicatedChapters.RemoveRange(0, breakIndex + 1);
+                                    chaptersForErrorMsg.Add(chapterKey);
                                 }
                                 else // add first item as single chapter
                                 {
                                     string chapterKey = nonDuplicatedChapters.First().ToString();
                                     AddToChaptersSelection(chapterKey, new List<int>() { nonDuplicatedChapters.First() });
                                     nonDuplicatedChapters.Remove(nonDuplicatedChapters.First());
+                                    chaptersForErrorMsg.Add(chapterKey);
                                 }
                             }
                             else // List is a suite of increasing int
@@ -243,10 +246,12 @@ namespace ScanNetDownloader.View.CustomControls
                                 string chapterKey = $"{rangeStart}{Constants.DASH_CHAR}{rangeEnd}";
                                 AddToChaptersSelection(chapterKey, selectedChapters);
                                 nonDuplicatedChapters.Clear();
+                                chaptersForErrorMsg.Add(chapterKey);
                             }
                         }
 
-                        ErrorMessage = $"Some chapters were already added, only chapters {chaptersAdded} have been added";
+                        string chaptersToShowInMsg= string.Join(',', chaptersForErrorMsg);
+                        ErrorMessage = $"Some chapters were already added, only chapters {chaptersToShowInMsg} have been added";
 
                         // Clear txt box
                         StartChapterInput = "";
@@ -310,6 +315,15 @@ namespace ScanNetDownloader.View.CustomControls
             if (txtBoxEndChapter.Background == Brushes.IndianRed)
                 txtBoxEndChapter.ClearValue(Control.BackgroundProperty);
         }
+
+        private void ChapterItem_DeleteChapter(object sender, RoutedEventArgs e)
+        {
+            ChapterItem item = e.Source as ChapterItem;
+            if (item != null)
+            {
+                DeleteChaptersFromSelection(item);
+            }   
+        }
         #endregion
 
         #region Chapter Management
@@ -317,26 +331,29 @@ namespace ScanNetDownloader.View.CustomControls
         {
             ChaptersSelection.Add(chapterKey, chapterValues);
             AddChapterItem(chapterKey);
+
+            if (ChaptersSelection.Count > 0) btnConfirmChapters.IsEnabled = true;
         }
 
-        private void AddChapterItem(string chapter)
+        private void DeleteChaptersFromSelection(ChapterItem item)
         {
-            //TODO: find a way to reorder the items to always have from an increasing order
-            //TODO: Create a proper chapterItem with a delete button + manage deleting Item
+            ChaptersSelection.Remove(item.ChapterKey);
+            DeleteChapterItem(item);
+            if (ChaptersSelection.Count == 0) btnConfirmChapters.IsEnabled = false;
+        }
 
-            TextBlock chapterTxtBlock = new TextBlock();
-            chapterTxtBlock.Text = chapter;
-            chapterTxtBlock.Width = 50;
-            chapterTxtBlock.Height = 20;
-            chapterTxtBlock.Background = Brushes.Orange;
-            chapterTxtBlock.VerticalAlignment = VerticalAlignment.Center;
-            chapterTxtBlock.TextAlignment = TextAlignment.Center;
-            chapterTxtBlock.Margin = new Thickness(5, 0, 0, 0);
+        private void AddChapterItem(string chapterKey)
+        {
+            ChapterItem chapterItem = new ChapterItem(chapterKey);
+            chapterItem.Margin = new Thickness(5, 0, 0, 0);
+            chapterItem.DeleteChapterBtnPressed += ChapterItem_DeleteChapter;
 
-            ChapterItems.Add(chapterTxtBlock);
-            //chapterSelectedPanel.Children.Add(chapterTxtBlock);
+            ChapterItems.Add(chapterItem); // Object ordered on display with a CollectionViewSource
+        }
 
-            btnConfirmChapters.IsEnabled = true;
+        private void DeleteChapterItem(ChapterItem item)
+        {         
+            ChapterItems.Remove(item);          
         }
 
         private List<int> GetSelectedChapters()

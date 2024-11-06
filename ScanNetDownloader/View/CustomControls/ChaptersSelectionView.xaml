@@ -4,8 +4,16 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ScanNetDownloader.View.CustomControls"
+             xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="500">
+    <UserControl.Resources>
+        <CollectionViewSource x:Key="ChapterItemsSource" Source="{Binding ChapterItems}">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="SortingId"/>
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="0.25*"/>
@@ -29,7 +37,7 @@
         </StackPanel>
         <StackPanel Grid.Row="2">
             <Label Content="Chapters selected" FontWeight="Bold"/>
-            <ItemsControl Name="chapterSelectedPanel" ItemsSource="{Binding ChapterItems}">
+            <ItemsControl Name="chapterSelectedPanel" ItemsSource="{Binding Source={StaticResource ChapterItemsSource}}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel   Orientation="Horizontal" IsItemsHost="True"/>

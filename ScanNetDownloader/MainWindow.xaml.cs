@@ -270,7 +270,7 @@ namespace ScanNetDownloader
                 bool cbzAlreadyCreated = FileManagement.IsCbzArchiveCreated(scanData);
 
                 ScanItem item = new ScanItem(scanData, filesAlreadyDownloaded, cbzAlreadyCreated);
-                item.DeleteBtnPressed += ScanItem_DeleteBtnPressed;
+                item.DeleteScanBtnPressed += ScanItem_DeleteBtnPressed;
                 item.CreateCbzBtnPressed += ScanItem_CreateCbzBtnPressed;
                 item.StatusBtnPressed += ScanItem_StatusBtnPressed;
                 ScanListItems.Add(item);
@@ -296,7 +296,7 @@ namespace ScanNetDownloader
                 bool cbzAlreadyCreated = FileManagement.IsCbzArchiveCreated(scanData);
 
                 ScanItem item = new ScanItem(scanData, filesAlreadyDownloaded, cbzAlreadyCreated);
-                item.DeleteBtnPressed += ScanItem_DeleteBtnPressed;
+                item.DeleteScanBtnPressed += ScanItem_DeleteBtnPressed;
                 item.CreateCbzBtnPressed += ScanItem_CreateCbzBtnPressed;               
                 ScanListItems.Add(item);
             }
