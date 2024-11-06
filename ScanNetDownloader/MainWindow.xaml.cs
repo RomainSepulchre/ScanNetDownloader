@@ -131,7 +131,7 @@ namespace ScanNetDownloader
             tabCtrlNavigation.SelectedItem = tabDownload; // Switch to download tab
 
             List<ScanData> scansToDownload = new List<ScanData>();
-            foreach (ScanItem item in _scanListItems)
+            foreach (ScanItem item in ScanListItems)
             {
                 if (item.IsSelectedForDownload) scansToDownload.Add(item.linkedScanData);
             }

@@ -29,8 +29,13 @@
         </StackPanel>
         <StackPanel Grid.Row="2">
             <Label Content="Chapters selected" FontWeight="Bold"/>
-            <WrapPanel Name="chapterSelectedPanel"  Orientation="Horizontal">
-            </WrapPanel>
+            <ItemsControl Name="chapterSelectedPanel" ItemsSource="{Binding ChapterItems}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel   Orientation="Horizontal" IsItemsHost="True"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
         </StackPanel>
         
         <StackPanel Grid.Row="3" Orientation="Horizontal">

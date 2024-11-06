@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -28,6 +29,14 @@ namespace ScanNetDownloader.View.CustomControls
         private Dictionary<string, List<int>> ChaptersSelection { get; set; } = new Dictionary<string, List<int>>();
 
         public List<int> ChaptersSelected => GetSelectedChapters();
+
+        private ObservableCollection<TextBlock> _chapterItems;
+        public ObservableCollection<TextBlock> ChapterItems
+        {
+            get { return _chapterItems; }
+            set { _chapterItems = value; }
+        }
+
 
 
         private string _selectChapterInfos = "Choose some chapter...";
@@ -105,6 +114,7 @@ namespace ScanNetDownloader.View.CustomControls
         public ChaptersSelectionView()
         {
             DataContext = this;
+            ChapterItems = new ObservableCollection<TextBlock>();
             InitializeComponent();
         }
 
@@ -323,7 +333,8 @@ namespace ScanNetDownloader.View.CustomControls
             chapterTxtBlock.TextAlignment = TextAlignment.Center;
             chapterTxtBlock.Margin = new Thickness(5, 0, 0, 0);
 
-            chapterSelectedPanel.Children.Add(chapterTxtBlock);
+            ChapterItems.Add(chapterTxtBlock);
+            //chapterSelectedPanel.Children.Add(chapterTxtBlock);
 
             btnConfirmChapters.IsEnabled = true;
         }
