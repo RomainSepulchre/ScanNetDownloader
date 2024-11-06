@@ -57,29 +57,38 @@ namespace ScanNetDownloader.Logic
 
 
         #region Inherited functions
-        public override async Task<bool> InitScanData()
+        public override async Task<ScanDataInitResult> InitScanData()
         {
             ThrowExceptionIfTemporaryData();
 
-            string htmlContent = await GetUrlHtmlContent();
-            bool chapterDoesntExist = string.IsNullOrEmpty(htmlContent); // with scanvf main url is chapter url so getting no html content equals chapter doesn't exist
+            HtmlContentResult htmlContentResult = await GetUrlHtmlContent();
+            ScanDataInitResult result = new ScanDataInitResult(this, htmlContentResult);
+
+            bool chapterDoesntExist = htmlContentResult.Success == false;
 
             if (chapterDoesntExist)
             {
                 Error.ChapterDoesntExist(this, Url);
                 Debug.WriteLine($"ERROR WHILE DOWNLOADING HTML CONTENT -> CHAPTER DOESNT EXIST");
-                return false;
+                // TODO : Return more based on HtmlContentResult info
+                result.Success = false;
+                result.Exception = new Exception($"The chapter {ChapterId} doesn't exist, {Url} does not load and we are unable to get its html content");
+                return result;
             }
 
+            string htmlContent = htmlContentResult.HtmlContent;
             PagesUrl = await ParseHtmlToGetImgLinks(htmlContent);
 
             if (PagesUrl == null || PagesUrl.Count == 0)
             {
                 Debug.WriteLine($"NO IMG URL FOUND");
-                return false;
+                result.Success = false;
+                result.Exception = new Exception($"No images urls were found for {BookName}-{ChapterId}");
+                return result;
             }
 
-            return true;
+            result.Success = true;
+            return result;
         }
 
         public override bool UrlContainsChapter()
@@ -238,23 +247,25 @@ namespace ScanNetDownloader.Logic
             if (urlSplitAtSlash.Length < 4 || (urlSplitAtSlash.Length == 4 && string.IsNullOrEmpty(urlSplitAtSlash[3]))) // Check if there is enough or too much / in the url to be a valid url
             {
                 result.InvalidityReason = "Url is too short, book name is probably missing in the url";
-                result.IsValid = false;
+                result.Success = false;
             }
             else if (urlSplitAtSlash.Length > 6)
             {
                 result.InvalidityReason = "Url seems too long, url should stop with page id";
-                result.IsValid = false;
+                result.Success = false;
             }
             else
             {
-                if (await UrlLoadCorrectlyAsync(url) == false)
+                UrlLoadResult loadResult = await UrlLoadCorrectlyAsync(url);
+                if (loadResult.Success == false)
                 {
                     result.InvalidityReason = "Impossible to load url, make sure the url load in a web browser";
-                    result.IsValid = false;
+                    result.Exception = loadResult.Exception;
+                    result.Success = false;
                 }
                 else
                 {
-                    result.IsValid = true;
+                    result.Success = true;
                 }
             }
 

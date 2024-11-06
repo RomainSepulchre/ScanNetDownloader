@@ -109,7 +109,7 @@ namespace ScanNetDownloader.View.CustomControls
         private async void btnNext_Click(object sender, RoutedEventArgs e)
         {
             UrlValidityResult urlTestResult = await ScanManagement.IsValidScanUrl(UrlInput);
-            if (urlTestResult.IsValid) // TODO: Find a way to know if the url is valid for each website
+            if (urlTestResult.Success) // TODO: Find a way to know if the url is valid for each website
             {
                 Debug.WriteLine($"URL INPUT = {UrlInput}");
 

@@ -48,41 +48,26 @@ namespace ScanNetDownloader.Logic
             }
         }
 
-        public static async Task<ScanData> CreateNewScanData(string url, int chapterSelected)
+        public static async Task<ScanDataInitResult> CreateNewScanData(string url, int chapterSelected)
         {
-            bool errorOccured = false;
-            ScanData newScanData =  null;
-            bool initSuccess = false;
 
             switch (url)
             {
                 case string s when s.Contains(Constants.SCANVF_DOMAIN_NAME):
                     ScanData scanVfNetData = new ScanVfNetScanData(url, chapterSelected);
-                    initSuccess = await scanVfNetData.InitScanData();
-                    if (initSuccess) newScanData = scanVfNetData;
-                    break;
+                    return await scanVfNetData.InitScanData();
 
                 case string s when s.Contains(Constants.ANIMESAMA_DOMAIN_NAME):
                     ScanData animeSamaData = new AnimeSamaFrScanData(url, chapterSelected);
-                    initSuccess = await animeSamaData.InitScanData();
-                    if (initSuccess) newScanData = animeSamaData;
-                    break;
+                    return await animeSamaData.InitScanData();
 
                 default: // Default, unknown domain name
-                    errorOccured = true;
                     Error.UnknownScanWebDomain(url);
-                    break;
+                    ScanDataInitResult result = new ScanDataInitResult(null);
+                    result.Success = false;
+                    result.Exception = new NotImplementedException("Unknown Scan Web Domain, this domain is not compatible with ScanNetDownloader");
+                    return result;
             }
-
-            if (errorOccured)
-            {
-                string mBoxMessage = "Make sure to check the errors and press any key to continue...";
-                string mBoxCaption = "Check errrors";
-                Debug.WriteLine(mBoxMessage);
-                MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-
-            return newScanData;
         }
 
         public static async Task<List<ScanData>> CreateNewScanDatas(string url, List<int> chaptersSelected)
@@ -97,8 +82,9 @@ namespace ScanNetDownloader.Logic
                     foreach (int chapterId in chaptersSelected)
                     {
                         ScanData scanVfNetData = new ScanVfNetScanData(url, chapterId);
-                        bool initSuccess = await scanVfNetData.InitScanData();
-                        if (initSuccess) newScanDatas.Add(scanVfNetData);
+                        ScanDataInitResult initResult = await scanVfNetData.InitScanData();
+                        if (initResult.Success) newScanDatas.Add(scanVfNetData);
+                        //TODO: Else Error Management
                     }
                     break;
 
@@ -107,8 +93,9 @@ namespace ScanNetDownloader.Logic
                     foreach(int chapterId in chaptersSelected)
                     {
                         ScanData animeSamaData = new AnimeSamaFrScanData(url, chapterId);
-                        bool initSuccess = await animeSamaData.InitScanData();
-                        if(initSuccess) newScanDatas.Add(animeSamaData);
+                        ScanDataInitResult initResult = await animeSamaData.InitScanData();
+                        if(initResult.Success) newScanDatas.Add(animeSamaData);
+                        //TODO: Else Error Management
                     }
                     break;
 

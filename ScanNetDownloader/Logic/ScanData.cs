@@ -70,7 +70,7 @@ namespace ScanNetDownloader.Logic
 
 
         #region Abstract functions
-        public abstract Task<bool> InitScanData();
+        public abstract Task<ScanDataInitResult> InitScanData();
 
         public abstract bool UrlContainsChapter();
 
@@ -100,12 +100,19 @@ namespace ScanNetDownloader.Logic
 
             if (PagesUrl.Count == 0) // if no urls saved retry to get them
             {
-                string htmlContent = await GetUrlHtmlContent();
-                if (htmlContent == null) return new List<string>();
+                HtmlContentResult htmlContentResult = await GetUrlHtmlContent();
+                if (htmlContentResult.Success == false)
+                {
+                    // TODO: Manage error here, if this is still needed after download rework
+                    return new List<string>();
+                }
+                else
+                {
+                    string htmlContent = htmlContentResult.HtmlContent;
+                    PagesUrl = await ParseHtmlToGetImgLinks(htmlContent);
 
-                PagesUrl = await ParseHtmlToGetImgLinks(htmlContent);
-
-                return PagesUrl;
+                    return PagesUrl;
+                }
             }
             else // Return saved urls
             {
@@ -115,28 +122,33 @@ namespace ScanNetDownloader.Logic
         #endregion
 
         #region Web Request
-        protected async Task<string> GetUrlHtmlContent()
+        protected async Task<HtmlContentResult> GetUrlHtmlContent()
         {
-            string htmlContent;
+            HtmlContentResult result = new HtmlContentResult();
 
             using (WebClient client = new WebClient())
             {
                 try
                 {
-                    htmlContent = await client.DownloadStringTaskAsync(Url); // Save html code in a variable
+                    result.HtmlContent = await client.DownloadStringTaskAsync(Url); // Save html code in a variable
+                    result.Success = true;
                 }
                 catch (WebException ex)
                 {
                     Error.FailedHtmlDownload(ex, Url);
-                    htmlContent = null;
+                    result.Success = false;
+                    result.Exception = ex;
+                    result.HtmlContent = null;
                 }
             }
 
-            return htmlContent;
+            return result;
         }
 
-        public static async Task<bool> UrlLoadCorrectlyAsync(string url, int timeout = 1500)
+        public static async Task<UrlLoadResult> UrlLoadCorrectlyAsync(string url, int timeout = 1500)
         {
+            UrlLoadResult result = new UrlLoadResult(url);
+
             // TODO: Improve some give false positive, Why ? Timeout too short ? 1500 seems way better
             WebRequest webRequest = WebRequest.Create(url);
             webRequest.Method = "HEAD";
@@ -146,41 +158,18 @@ namespace ScanNetDownloader.Logic
             {
                 WebResponse response = await webRequest.GetResponseAsync();
                 response.Close();
-                return true;
+                result.Success = true;
+                return result;
             }
             catch (WebException ex)
             {
                 // TODO: manage different type of Exception -> 404 means wring url but timeout may mean a valid url
                 Debug.WriteLine($"|---> Invalid url: {url}\n{ex}");
-                return false;
+                result.Success = false;
+                result.Exception = ex;
+                return result;
             }
         }
         #endregion
-    }
-
-    //
-    // Result objects to return more information at the end of an operation
-    // TODO: Should I move this in a dedicated class ?
-    //
-
-    public class UrlValidityResult
-    {
-        public string UrlTested;
-        public bool IsValid;
-        public string InvalidityReason;
-
-        public UrlValidityResult(string urlToTest)
-        {
-            UrlTested = urlToTest;
-            IsValid = false;
-            InvalidityReason = "";
-        }
-
-        public UrlValidityResult(string urlToTest, bool isValid, string invalidityReason)
-        {
-            UrlTested = urlToTest;
-            IsValid = isValid;
-            InvalidityReason = invalidityReason;
-        }
     }
 }

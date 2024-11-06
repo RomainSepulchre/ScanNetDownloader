@@ -55,17 +55,18 @@ namespace ScanNetDownloader.View.CustomControls
                 chapterTxtBlock.Text = $"Scan Data creation for {tempScanData.BookName}-{chapter} in progress...";
                 listVwCreationStatus.Items.Add(chapterTxtBlock);
 
-                ScanData newScanData = await ScanManagement.CreateNewScanData(url, chapter);
-                if (newScanData != null)
+                ScanDataInitResult newScanDataResult = await ScanManagement.CreateNewScanData(url, chapter);
+
+                if (newScanDataResult.Success)
                 {
-                    NewScanDatas.Add(newScanData);
+                    NewScanDatas.Add(newScanDataResult.NewScanData);
                     chapterTxtBlock.Text = $"Scan Data creation for {tempScanData.BookName}-{chapter} successful!";
                     chapterTxtBlock.Foreground = Brushes.Green;
                 }
                 else
                 {
                     chapterTxtBlock.Text = $"Scan Data creation for {tempScanData.BookName}-{chapter} failed!";
-                    // TODO: Add reason why it failed
+                    chapterTxtBlock.Text += $"\n -> {newScanDataResult.Exception.Message}";
                     chapterTxtBlock.Foreground = Brushes.Red;
                 }
                 progrBarScanDataCreation.Value = ((float)(i + 1) / chaptersSelected.Count) * 100;
