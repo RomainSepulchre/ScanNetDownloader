@@ -85,15 +85,22 @@ namespace ScanNetDownloader.Logic
 
         static async Task DownloadScans(List<ScanData> scansToDownload)
         {
+            int NumberOfImagesToDownload = scansToDownload.GetTotalOfScanPages();
             float progress = 0;
             float minProgress = 0;
             float maxProgress = 0;
 
             foreach (ScanData scanData in scansToDownload)
             {
+                if (scanData.IsTemporaryData)
+                {
+                    WriteDlInfoLine($"Nothing can be downloaded from a temporary scan data, it should not be possible to add a temporary scan to the download list");
+                    continue;
+                }
+
                 minProgress = maxProgress;
                 int scanIndex = scansToDownload.IndexOf(scanData);
-                maxProgress = (((float)scanIndex + 1) / (scansToDownload.Count)) * 100;
+                maxProgress = minProgress + ((((float)scanData.PagesCount) / (NumberOfImagesToDownload)) * 100);
 
 
                 string url = scanData.Url;
@@ -103,7 +110,7 @@ namespace ScanNetDownloader.Logic
                 string header = $"Download {bookName} - chapter {chapterNumber} from {url}";
 
                 WriteDlInfoLine($"\nLook for images url for {bookName}-{chapterNumber} at {url}...");
-                List<string> imgsToDownload = await scanData.GetScanImagesUrl();
+                List<string> imgsToDownload = scanData.PagesUrl;
                 if (imgsToDownload.Count == 0) { continue; } // if list is empty (in case of error while getting html content) skip directly to the next url
 
                 // Create output folder if necessary

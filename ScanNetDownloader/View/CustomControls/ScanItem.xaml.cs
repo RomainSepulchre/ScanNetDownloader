@@ -104,7 +104,7 @@ namespace ScanNetDownloader.View.CustomControls
             IsSelectedForDownload = _scanData.IsSelectedForDownload;           
 
             lbBookName.Content = BookName;
-            lbChapterNumber.Content = ChapterId;
+            lbChapterNumber.Content = $"{ChapterId} - {linkedScanData.PagesCount} pages";
             lbWebsite.Content = Website;
         }
 

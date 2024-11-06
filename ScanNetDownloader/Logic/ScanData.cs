@@ -37,7 +37,7 @@ namespace ScanNetDownloader.Logic
             get; protected set;
         }
 
-        public int PagesCount => PagesUrl != null ? PagesUrl.Count : -1;
+        public int PagesCount => PagesUrl != null ? PagesUrl.Count : 0;
 
         public bool IsTemporaryData
         {
