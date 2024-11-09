@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -90,47 +91,48 @@ namespace ScanNetDownloader.Logic
             float minProgress = 0;
             float maxProgress = 0;
 
-            foreach (ScanData scanData in scansToDownload)
+            using (HttpClient client = new HttpClient())
             {
-                if (scanData.IsTemporaryData)
+                foreach (ScanData scanData in scansToDownload)
                 {
-                    WriteDlInfoLine($"Nothing can be downloaded from a temporary scan data, it should not be possible to add a temporary scan to the download list");
-                    continue;
-                }
-
-                minProgress = maxProgress;
-                int scanIndex = scansToDownload.IndexOf(scanData);
-                maxProgress = minProgress + ((((float)scanData.PagesCount) / (NumberOfImagesToDownload)) * 100);
-
-
-                string url = scanData.Url;
-                string bookName = scanData.BookName;
-                string chapterNumber = scanData.ChapterId.ToString();
-
-                string header = $"Download {bookName} - chapter {chapterNumber} from {url}";
-
-                WriteDlInfoLine($"\nLook for images url for {bookName}-{chapterNumber} at {url}...");
-                List<string> imgsToDownload = scanData.PagesUrl;
-                if (imgsToDownload.Count == 0) { continue; } // if list is empty (in case of error while getting html content) skip directly to the next url
-
-                // Create output folder if necessary
-                string downloadPath = FileManagement.CreateChapterDirectory(bookName, chapterNumber);
-
-                int pageId = 1;
-                foreach (string imgUrl in imgsToDownload)
-                {
-                    int pageIndex = imgsToDownload.IndexOf(imgUrl);
-                    float chapterCompletion = (float)pageIndex / (imgsToDownload.Count - 1);
-                    progress = float.Lerp(minProgress, maxProgress, chapterCompletion);
-                    UpdateDownloadProgress(progress);
-
-                    string fileExtension = scanData.GetFileExtensionFromImgUrl(imgUrl);
-                    string imgName = $"{bookName}_{chapterNumber}-{pageId.ToString("D3")}{fileExtension}";
-                    string downloadFile = Path.Combine(downloadPath, imgName);
-
-
-                    using (WebClient client = new WebClient())
+                    if (scanData.IsTemporaryData)
                     {
+                        WriteDlInfoLine($"Nothing can be downloaded from a temporary scan data, it should not be possible to add a temporary scan to the download list");
+                        continue;
+                    }
+
+                    minProgress = maxProgress;
+                    int scanIndex = scansToDownload.IndexOf(scanData);
+                    maxProgress = minProgress + ((((float)scanData.PagesCount) / (NumberOfImagesToDownload)) * 100);
+
+
+                    string url = scanData.Url;
+                    string bookName = scanData.BookName;
+                    string chapterNumber = scanData.ChapterId.ToString();
+
+                    string header = $"Download {bookName} - chapter {chapterNumber} from {url}";
+
+                    WriteDlInfoLine($"\nLook for images url for {bookName}-{chapterNumber} at {url}...");
+                    List<string> imgsToDownload = scanData.PagesUrl;
+                    if (imgsToDownload.Count == 0) { continue; } // if list is empty (in case of error while getting html content) skip directly to the next url
+
+                    // Create output folder if necessary
+                    string downloadPath = FileManagement.CreateChapterDirectory(bookName, chapterNumber);
+
+                    int pageId = 1;
+
+                    foreach (string imgUrl in imgsToDownload)
+                    {
+                        int pageIndex = imgsToDownload.IndexOf(imgUrl);
+                        float chapterCompletion = (float)pageIndex / (imgsToDownload.Count - 1);
+                        progress = float.Lerp(minProgress, maxProgress, chapterCompletion);
+                        UpdateDownloadProgress(progress);
+
+                        string fileExtension = scanData.GetFileExtensionFromImgUrl(imgUrl);
+                        string imgName = $"{bookName}_{chapterNumber}-{pageId.ToString("D3")}{fileExtension}";
+                        string downloadFile = Path.Combine(downloadPath, imgName);
+
+
                         try
                         {
                             WriteDlInfoLine($"\nDownloading {imgName} from {imgUrl}");
@@ -142,25 +144,56 @@ namespace ScanNetDownloader.Logic
                             }
                             else
                             {
-                                await client.DownloadFileTaskAsync(new Uri(imgUrl), downloadFile);
+                                byte[] img = await client.GetByteArrayAsync(imgUrl);
+                                File.WriteAllBytes(downloadFile, img);
                                 WriteDlInfoLine($"Sucessfully downloaded!\n");
                             }
+
                         }
-                        catch (WebException ex)
+                        catch (HttpRequestException ex)
                         {
                             Error.FailedImageDownload(ex, imgUrl);
                         }
+                        catch (IOException ex)
+                        {
+                            //TODO : Manage IO Eception
+                        }
+
+
+                        //using (WebClient client = new WebClient())
+                        //{
+                        //try
+                        //{
+                        //    WriteDlInfoLine($"\nDownloading {imgName} from {imgUrl}");
+                        //    WriteDlInfoLine($"...");
+
+                        //    if (File.Exists(downloadFile) == true && File.ReadAllBytes(downloadFile).Length > 0 == true)
+                        //    {
+                        //        WriteDlInfoLine($"File already downloaded!\n");
+                        //    }
+                        //    else
+                        //    {
+                        //        await client.DownloadFileTaskAsync(new Uri(imgUrl), downloadFile);
+                        //        WriteDlInfoLine($"Sucessfully downloaded!\n");
+                        //    }
+                        //}
+                        //catch (WebException ex)
+                        //{
+                        //    Error.FailedImageDownload(ex, imgUrl);
+                        //}
+                        //}
+                        pageId++;
                     }
-                    pageId++;
-                }
 
-                if (CurrentSettings.CreateCbzArchive)
-                {
-                    CbzCreator.BuildCbzArchive(scanData, downloadPath);
-                }
 
-                // Deselect since we just downloaded it
-                OnScanDownloaded(scanData);
+                    if (CurrentSettings.CreateCbzArchive)
+                    {
+                        CbzCreator.BuildCbzArchive(scanData, downloadPath);
+                    }
+
+                    // Deselect since we just downloaded it
+                    OnScanDownloaded(scanData);
+                }
             }
         }
 

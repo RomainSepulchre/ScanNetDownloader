@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Net;
+using System.Net.Http;
 using System.Windows.Navigation;
 
 namespace ScanNetDownloader.Logic
@@ -126,22 +127,24 @@ namespace ScanNetDownloader.Logic
         {
             HtmlContentResult result = new HtmlContentResult();
 
-            using (WebClient client = new WebClient())
+            using (HttpClient client = new HttpClient())
             {
                 try
                 {
-                    result.HtmlContent = await client.DownloadStringTaskAsync(Url); // Save html code in a variable
+                    result.HtmlContent = await client.GetStringAsync(Url);
                     result.Success = true;
                 }
-                catch (WebException ex)
+                catch (HttpRequestException ex)
                 {
+                    // Check ex.StatusCode to know act depending on the type of error
+                    Debug.WriteLine(ex);
                     Error.FailedHtmlDownload(ex, Url);
                     result.Success = false;
+                    result.StatusCode = ex.StatusCode;
                     result.Exception = ex;
                     result.HtmlContent = null;
                 }
             }
-
             return result;
         }
 
@@ -149,26 +152,39 @@ namespace ScanNetDownloader.Logic
         {
             UrlLoadResult result = new UrlLoadResult(url);
 
-            // TODO: Improve some give false positive, Why ? Timeout too short ? 1500 seems way better
-            WebRequest webRequest = WebRequest.Create(url);
-            webRequest.Method = "HEAD";
-            webRequest.Timeout = timeout;
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    using (HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Head, url))
+                    {
+                        using (HttpResponseMessage response = await client.SendAsync(request))
+                        {
+                            result.StatusCode = response.StatusCode;
+                            if (response.IsSuccessStatusCode)
+                            {
+                                result.Success = true;   
+                            }
+                            else
+                            {
+                                // TODO: Manage Status Code -> return in result ?
+                                result.Success = false;
+                            }
+                            
+                        }
+                    }
+                }
+                catch (HttpRequestException ex)
+                {
+                    // TODO: Manage Status Code -> return in result ?
+                    Debug.WriteLine($"|---> Invalid url: {url}\n{ex}");
+                    result.Success = false;
+                    result.StatusCode = ex.StatusCode;
+                    result.Exception = ex;
+                }
+            }
 
-            try
-            {
-                WebResponse response = await webRequest.GetResponseAsync();
-                response.Close();
-                result.Success = true;
-                return result;
-            }
-            catch (WebException ex)
-            {
-                // TODO: manage different type of Exception -> 404 means wring url but timeout may mean a valid url
-                Debug.WriteLine($"|---> Invalid url: {url}\n{ex}");
-                result.Success = false;
-                result.Exception = ex;
-                return result;
-            }
+            return result;
         }
         #endregion
     }

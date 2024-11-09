@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -34,6 +35,7 @@ namespace ScanNetDownloader.Logic
         public string UrlToLoad;
         public bool Success = false;
         public Exception Exception = null;
+        public HttpStatusCode? StatusCode; // TODO : Default Status code ?
 
         public UrlLoadResult(string urlToLoad)
         {
@@ -46,7 +48,8 @@ namespace ScanNetDownloader.Logic
     {
         public bool Success = false;
         public string HtmlContent = null;
-        public WebException Exception = null;
+        public Exception Exception = null;
+        public HttpStatusCode? StatusCode; // TODO : Default Status code ?
 
         public HtmlContentResult()
         {

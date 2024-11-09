@@ -234,6 +234,7 @@ namespace ScanNetDownloader.Logic
                 imgUrls.Add(imgUrl);
                 pageId++;
                 imgUrl = $"{chapterUrl}{pageId}{Constants.JPG_EXTENSION}";
+                Debug.WriteLine($"New img found: {imgUrl}");
             }
 
             imgUrls.Log(); // Debug log of list items
