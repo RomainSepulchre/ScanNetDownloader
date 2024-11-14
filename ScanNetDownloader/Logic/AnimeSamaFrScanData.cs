@@ -137,6 +137,8 @@ namespace ScanNetDownloader.Logic
             bookName = bookName.Replace(Constants.DASH_CHAR.ToString(), removeSpace ? string.Empty : Constants.SPACE);
             bookName = bookName.Replace(Constants.UNDERSCORE_CHAR.ToString(), removeSpace ? string.Empty : Constants.SPACE);
 
+            if (IsUrlForScanInEnglish()) bookName += Constants.ANIMESAMA_ENGLISH_BOOKNAME_SUFFIX;
+
             return bookName;
         }
 
@@ -254,7 +256,14 @@ namespace ScanNetDownloader.Logic
                 DownloadUrlBookName = ParseToFindBookNameForImgUrl(htmlContent);
             }
 
-            return $"{Constants.ANIMESAMA_IMG_URL_START}{DownloadUrlBookName}/{ChapterId}/";
+            if (IsUrlForScanInEnglish() == true)
+            {
+                return $"{Constants.ANIMESAMA_IMG_URL_START}{DownloadUrlBookName}{Constants.ANIMESAMA_ENGLISH_IMG_SUFFIX}/{ChapterId}/";
+            }
+            else
+            {
+                return $"{Constants.ANIMESAMA_IMG_URL_START}{DownloadUrlBookName}/{ChapterId}/";
+            }
         }
 
         private string ParseToFindBookNameForImgUrl(string htmlContent)
@@ -287,6 +296,19 @@ namespace ScanNetDownloader.Logic
 
         }
 
+        private bool IsUrlForScanInEnglish() // TODO: If I discover more scan language on the website, I need to have a cleaner way to do this.
+        {
+            string[] splitUrl = Url.Split(Constants.SLASH_CHAR);
+            if (splitUrl.Length > 6) // Language split index is 6 so count must be 7 at least
+            {
+                return splitUrl[6].Contains(Constants.ANIMESAMA_ENGLISH_SCAN_URL_MARKER);
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public static async Task<UrlValidityResult> IsUrlValid(string url)
         {
             // What are the caracteristics of a valid anime sama url ?
@@ -294,14 +316,14 @@ namespace ScanNetDownloader.Logic
             // https://anime-sama.fr/catalogue/20th-century-boys ==> 5 splits and last split must not be empty
             // Check if url is long enough to have a book name
 
-            // TODO: Not sure about allowing short url for this website
+            // TODO: Manage short url ? Give Url Example when this happens
 
             UrlValidityResult result = new UrlValidityResult(url);
 
             string[] urlSplitAtSlash = url.Split(Constants.SLASH_CHAR);
-            if (urlSplitAtSlash.Length < 5 || (urlSplitAtSlash.Length == 5 && string.IsNullOrEmpty(urlSplitAtSlash[4]))) // Check if there is enough or too much / in the url to be a valid url
+            if (urlSplitAtSlash.Length < 7 || string.IsNullOrEmpty(urlSplitAtSlash[6]))// || (urlSplitAtSlash.Length == 5 && string.IsNullOrEmpty(urlSplitAtSlash[4]))) // Check if there is enough or too much / in the url to be a valid url
             {
-                result.InvalidityReason = "Url is too short, book name is probably missing in the url";
+                result.InvalidityReason = "Url is too short, informations are missing in the url";
                 result.Success = false;
             }
             else if (urlSplitAtSlash.Length > 8)

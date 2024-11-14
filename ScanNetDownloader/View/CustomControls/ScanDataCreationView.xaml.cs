@@ -61,6 +61,7 @@ namespace ScanNetDownloader.View.CustomControls
                 {
                     NewScanDatas.Add(newScanDataResult.NewScanData);
                     chapterTxtBlock.Text = $"Scan Data creation for {tempScanData.BookName}-{chapter} successful!";
+                    chapterTxtBlock.Text += $"\n -> {newScanDataResult.NewScanData.PagesCount} pages found";
                     chapterTxtBlock.Foreground = Brushes.Green;
                 }
                 else

@@ -77,7 +77,7 @@
                     <Button Name="btnDbg1" Content="Save html Files" Click="btnDbg1_Click" Width="200" Height="50" Margin="10"/>
                     <Button Name="btnDbg2" Content="Test HttpClient" Width="200" Click="btnDbg2_Click" Height="50" Margin="10"/>
                     <Button Name="btnDbg3" Content="Test Dl img" Width="200" Click="btnDbg3_Click" Height="50" Margin="10"/>
-                    <Button Name="btnDbg4" Content="" Width="200" Click="btnDbg4_Click" Height="50" Margin="10"/>
+                    <Button Name="btnDbg4" Content="AnimeSama VA test" Width="200" Click="btnDbg4_Click" Height="50" Margin="10"/>
                     <Button Name="btnDbg5" Content="" Width="200" Click="btnDbg5_Click" Height="50" Margin="10"/>
                     <Button Name="btnDbg6" Content="" Width="200" Click="btnDbg6_Click" Height="50" Margin="10"/>
                 </WrapPanel>

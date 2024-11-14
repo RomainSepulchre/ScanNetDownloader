@@ -53,6 +53,9 @@ namespace ScanNetDownloader.Logic
         public const string ANIMESAMA_DOMAIN_NAME = "https://anime-sama.fr";
         public const string ANIMESAMA_IMG_URL_START = "https://anime-sama.fr/s2/scans/";
         public const string ANIMESAMA_IMG_URL_MARKER = "scans";
+        public const string ANIMESAMA_ENGLISH_SCAN_URL_MARKER = "va";
+        public const string ANIMESAMA_ENGLISH_IMG_SUFFIX = " Anglais";
+        public const string ANIMESAMA_ENGLISH_BOOKNAME_SUFFIX = " (English)";
 
         public const string CBZ_CHAPTER_PREFIX = " - chapter ";
 

@@ -375,7 +375,8 @@ namespace ScanNetDownloader
 
         private void btnDbg4_Click(object sender, RoutedEventArgs e)
         {
-
+            //AnimeSamaFrScanData d = new AnimeSamaFrScanData("https://anime-sama.fr/catalogue/the-story-of-a-manga-artist-confined-by-a-strange-high-school-girl/scan/va/");
+            //Debug.WriteLine("ENGLISH SCAN LINK - " + d.BookName + " -> " + d.IsUrlForScanInEnglish());
         }
 
         private void btnDbg5_Click(object sender, RoutedEventArgs e)
