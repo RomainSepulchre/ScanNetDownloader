@@ -146,7 +146,10 @@ namespace ScanNetDownloader.Logic
             string chapterDirPath = GetChapterDirectoryPath(scanData);
             if (Directory.Exists(chapterDirPath))
             {
-                if (Directory.GetFiles(chapterDirPath).Length > 0) // TODO: Improve this to know if we have the correct amount of page, need more info in ScanData
+                int expectedImgsCount = scanData.PagesCount;
+                int filesInChapterDirCount = Directory.GetFiles(chapterDirPath).Length;
+
+                if (filesInChapterDirCount > 0 && expectedImgsCount == filesInChapterDirCount)
                 {
                     return true;
                 }
