@@ -345,34 +345,31 @@ namespace ScanNetDownloader
             string downloadFile = @"D:\Download\ScanNetDownloader\Dev\Test\testImg.png";
             string imgUrl = "https://www.scan-vf.net/uploads/manga/jujutsu-kaisen/chapters/chapitre-21/01.png";
 
-            using (HttpClient client = new HttpClient())
+            HttpClient client = HttpClientSingleton.Client;
+            try
             {
-                try
-                {
-                    Debug.WriteLine($"\nDownloading TEST IMG from {imgUrl}");
-                    Debug.WriteLine($"...");
+                Debug.WriteLine($"\nDownloading TEST IMG from {imgUrl}");
+                Debug.WriteLine($"...");
 
-                    if (File.Exists(downloadFile) == true && File.ReadAllBytes(downloadFile).Length > 0 == true)
-                    {
-                        Debug.WriteLine($"File already downloaded!\n");
-                    }
-                    else
-                    {
-                        //await client.DownloadFileTaskAsync(new Uri(imgUrl), downloadFile);
-                        byte[] img = await client.GetByteArrayAsync(imgUrl);
-                        File.WriteAllBytes(downloadFile, img);
-                        Debug.WriteLine($"Sucessfully downloaded!\n");
-                    }
-
-                }
-                catch (HttpRequestException ex)
+                if (File.Exists(downloadFile) == true && File.ReadAllBytes(downloadFile).Length > 0 == true)
                 {
-                    Error.FailedImageDownload(ex, imgUrl);
+                    Debug.WriteLine($"File already downloaded!\n");
                 }
-                catch (IOException ex)
+                else
                 {
-                    //TODO : Manage IO Eception
+                    //await client.DownloadFileTaskAsync(new Uri(imgUrl), downloadFile);
+                    byte[] img = await client.GetByteArrayAsync(imgUrl);
+                    File.WriteAllBytes(downloadFile, img);
+                    Debug.WriteLine($"Sucessfully downloaded!\n");
                 }
+            }
+            catch (HttpRequestException ex)
+            {
+                Error.FailedImageDownload(ex, imgUrl);
+            }
+            catch (IOException ex)
+            {
+                //TODO : Manage IO Eception
             }
         }
 

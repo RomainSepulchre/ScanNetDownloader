@@ -127,23 +127,21 @@ namespace ScanNetDownloader.Logic
         {
             HtmlContentResult result = new HtmlContentResult();
 
-            using (HttpClient client = new HttpClient())
+            HttpClient client = HttpClientSingleton.Client;
+            try
             {
-                try
-                {
-                    result.HtmlContent = await client.GetStringAsync(Url);
-                    result.Success = true;
-                }
-                catch (HttpRequestException ex)
-                {
-                    // Check ex.StatusCode to know act depending on the type of error
-                    Debug.WriteLine(ex);
-                    Error.FailedHtmlDownload(ex, Url);
-                    result.Success = false;
-                    result.StatusCode = ex.StatusCode;
-                    result.Exception = ex;
-                    result.HtmlContent = null;
-                }
+                result.HtmlContent = await client.GetStringAsync(Url);
+                result.Success = true;
+            }
+            catch (HttpRequestException ex)
+            {
+                // Check ex.StatusCode to know act depending on the type of error
+                Debug.WriteLine(ex);
+                Error.FailedHtmlDownload(ex, Url);
+                result.Success = false;
+                result.StatusCode = ex.StatusCode;
+                result.Exception = ex;
+                result.HtmlContent = null;
             }
             return result;
         }
@@ -152,36 +150,34 @@ namespace ScanNetDownloader.Logic
         {
             UrlLoadResult result = new UrlLoadResult(url);
 
-            using (HttpClient client = new HttpClient())
+            HttpClient client = HttpClientSingleton.Client;
+
+            try
             {
-                try
+                using (HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Head, url))
                 {
-                    using (HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Head, url))
+                    using (HttpResponseMessage response = await client.SendAsync(request))
                     {
-                        using (HttpResponseMessage response = await client.SendAsync(request))
+                        result.StatusCode = response.StatusCode;
+                        if (response.IsSuccessStatusCode)
                         {
-                            result.StatusCode = response.StatusCode;
-                            if (response.IsSuccessStatusCode)
-                            {
-                                result.Success = true;   
-                            }
-                            else
-                            {
-                                // TODO: Manage Status Code -> return in result ?
-                                result.Success = false;
-                            }
-                            
+                            result.Success = true;   
                         }
+                        else
+                        {
+                            // TODO: Manage Status Code -> return in result ?
+                            result.Success = false;
+                        }     
                     }
                 }
-                catch (HttpRequestException ex)
-                {
-                    // TODO: Manage Status Code -> return in result ?
-                    Debug.WriteLine($"|---> Invalid url: {url}\n{ex}");
-                    result.Success = false;
-                    result.StatusCode = ex.StatusCode;
-                    result.Exception = ex;
-                }
+            }
+            catch (HttpRequestException ex)
+            {
+                // TODO: Manage Status Code -> return in result ?
+                Debug.WriteLine($"|---> Invalid url: {url}\n{ex}");
+                result.Success = false;
+                result.StatusCode = ex.StatusCode;
+                result.Exception = ex;
             }
 
             return result;
