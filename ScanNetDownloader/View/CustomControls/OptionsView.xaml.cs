@@ -131,11 +131,6 @@ namespace ScanNetDownloader.View.CustomControls
             SaveSettings();
         }
 
-        private void btnDbgOpenSettingsJson_Click(object sender, RoutedEventArgs e)
-        {
-            Settings.OpenJsonFile();
-        }
-
         public void RefreshSettings()
         {
             Debug.WriteLine("REFRESH SETTINGS");

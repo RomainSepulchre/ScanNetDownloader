@@ -109,7 +109,7 @@ namespace ScanNetDownloader
                 if (tabCtrlNavigation.SelectedItem == tabMain)
                 {
                     previousTabSelected = tabMain;
-                    RefreshScanListView(); 
+                    RefreshScanListView(); // TODO: Refresh should be necessary ? Make sure everything is updated correctly after downloading a scan -> Cbz not updated
                 }
                 else if (tabCtrlNavigation.SelectedItem == tabDownload)
                 {
@@ -164,17 +164,6 @@ namespace ScanNetDownloader
                     AddScanItems(newScansToAdd);
                 }             
             }
-        }
-
-        private void btnDbgSave_Click(object sender, RoutedEventArgs e)
-        {
-            // Save the scans local data
-            ScansLocalData.Update(ScanDatas);
-        }
-
-        private void btnDbgOpenDataJson_Click(object sender, RoutedEventArgs e)
-        {
-            ScansLocalData.OpenJsonFile();
         }
 
         private void btnOpenStatusBar_Click(object sender, RoutedEventArgs e)
@@ -262,6 +251,7 @@ namespace ScanNetDownloader
 
         private void RefreshScanListView()
         {
+            // TODO: Why is it so long with a lot of items ? Way to optiomize this ?
             Debug.WriteLine("REFRESH SCAN LIST");
             ScanListItems.Clear();
 
@@ -315,7 +305,24 @@ namespace ScanNetDownloader
             ScanListItems.Remove(itemToDelete);
         }
 
-        #region Debug Tab 
+        #region Debug Tab
+
+        private void btnDbgSave_Click(object sender, RoutedEventArgs e)
+        {
+            // Save the scans local data
+            ScansLocalData.Update(ScanDatas);
+        }
+
+        private void btnDbgOpenDataJson_Click(object sender, RoutedEventArgs e)
+        {
+            ScansLocalData.OpenJsonFile();
+        }
+
+        private void btnDbgOpenSettingsJson_Click(object sender, RoutedEventArgs e)
+        {
+            Settings.OpenJsonFile();
+        }
+
         private void btnDbg1_Click(object sender, RoutedEventArgs e)
         {
             SaveHtmlFiles();

@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:ScanNetDownloader"
         xmlns:customControls="clr-namespace:ScanNetDownloader.View.CustomControls"
         mc:Ignorable="d"
-        Title="ScanNetDownloader" Height="450" Width="800">
+        Title="ScanNetDownloader" Height="720" Width="1280">
     <Grid>
 
         <Grid.RowDefinitions>
@@ -28,15 +28,21 @@
 
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="10 10 10 0">
                         <ListView Name="listVwScans" ItemsSource="{Binding ScanListItems, UpdateSourceTrigger=PropertyChanged}" Background="Beige" HorizontalContentAlignment="Stretch">
-
+                            <!--<ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="Download"/>
+                                    <GridViewColumn Header="Book Name"/>
+                                    <GridViewColumn Header="Chapter"/>
+                                    <GridViewColumn Header="Pages"/>
+                                    <GridViewColumn Header="Options"/>
+                                </GridView>
+                            </ListView.View>-->
                         </ListView>
                     </ScrollViewer>
 
                     <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
                         <Button Name="btnAdd" Content="Add" Click="btnAdd_Click" Height="40" Width="100" Margin="5"/>
                         <Button Name="btnStart" Content="Start" Click="btnStart_Click" Height="40" Width="100" Margin="5"/>
-                        <Button Name="btnDbgSave" Content="Debug_Save" Click="btnDbgSave_Click" Background="Orchid" Height="40" Width="100" Margin="5"/>
-                        <Button Name="btnDbgOpenDataJson" Content="Debug_OpenJson" Click="btnDbgOpenDataJson_Click"  Background="Orchid" Height="40" Width="100" Margin="5"/>
 
                     </StackPanel>
                 </Grid>
@@ -74,6 +80,9 @@
             <!--Debug-->
             <TabItem Name="tabDebug" Header="Debug">
                 <WrapPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0 20 0 0">
+                    <Button Name="btnDbgSave" Content="Force Save Scan Data" Click="btnDbgSave_Click" Background="Orchid" Height="50" Width="200" Margin="10"/>
+                    <Button Name="btnDbgOpenDataJson" Content="Open Scan Data Json" Click="btnDbgOpenDataJson_Click"  Background="Orchid" Height="50" Width="200" Margin="10"/>
+                    <Button Name="btnDbgOpenSettingsJson" Content="Open Settings Json" Click="btnDbgOpenSettingsJson_Click"  Background="Orchid" Height="50" Width="200" Margin="10"/>
                     <Button Name="btnDbg1" Content="Save html Files" Click="btnDbg1_Click" Width="200" Height="50" Margin="10"/>
                     <Button Name="btnDbg2" Content="Test HttpClient" Width="200" Click="btnDbg2_Click" Height="50" Margin="10"/>
                     <Button Name="btnDbg3" Content="Test Dl img" Width="200" Click="btnDbg3_Click" Height="50" Margin="10"/>
