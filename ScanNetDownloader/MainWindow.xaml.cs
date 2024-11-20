@@ -81,7 +81,13 @@ namespace ScanNetDownloader
 
             // Setup Ui
             RefreshScanListView(); // Populate listView based on the local data
-            // Note: Settings are refreshed at OptionsView Initialization
+                                   // Note: Settings are refreshed at OptionsView Initialization
+
+#if !DEBUG
+            tabDebug.Visibility = Visibility.Collapsed;
+            gridStatusBar.Visibility = Visibility.Collapsed;
+            gridMainContent.RowDefinitions[2].Height = new GridLength(0);
+#endif
         }
 
         private void OnPropertyChanged([CallerMemberName]string property=null)
@@ -235,8 +241,8 @@ namespace ScanNetDownloader
         public void ScanDownloaded(object sender, ScanData downloadedScan) // This happens when the 
         {
             // TODO: What's best way to retrieve item ? .First() ? using index in scanDataList ?
-            //ScanItem item = ScanListItems.First(x => x.linkedScanData == downloadedScan);
-            ScanItem item = ScanListItems[ScanDatas.IndexOf(downloadedScan)];
+            ScanItem item = ScanListItems.First(x => x.linkedScanData == downloadedScan);
+            //ScanItem item = ScanListItems[ScanDatas.IndexOf(downloadedScan)];
                        
             item.IsSelectedForDownload = false; // Disable download selection since we just downloaded
 

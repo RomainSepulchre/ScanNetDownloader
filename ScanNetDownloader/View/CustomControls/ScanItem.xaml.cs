@@ -30,6 +30,8 @@ namespace ScanNetDownloader.View.CustomControls
 
         public int ChapterId { get; private set; }
 
+        public int PagesCount { get; private set; }
+
         public string Url { get; private set; }
 
         public string Website { get; private set; }
@@ -97,15 +99,16 @@ namespace ScanNetDownloader.View.CustomControls
             linkedScanData = _scanData;
             BookName = _scanData.BookName;
             ChapterId = _scanData.ChapterId;
+            PagesCount = _scanData.PagesCount;
             Url = _scanData.Url;
             Website = _scanData.WebsiteDomain;
             IsDownloaded = fileAlreadyDownloaded;
             CbzArchiveCreated = cbzAlreadyCreated;
             IsSelectedForDownload = _scanData.IsSelectedForDownload;           
 
-            lbBookName.Content = BookName;
-            lbChapterNumber.Content = $"{ChapterId} - {linkedScanData.PagesCount} pages";
-            lbWebsite.Content = Website;
+            //lbBookName.Content = BookName;
+            //lbChapterNumber.Content = $"{ChapterId} - {linkedScanData.PagesCount} pages";
+            //lbWebsite.Content = Website;
         }
 
         private void OnPropertyChanged([CallerMemberName] string property = null)
