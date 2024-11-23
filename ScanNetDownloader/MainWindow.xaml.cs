@@ -13,6 +13,9 @@ using System.Runtime.CompilerServices;
 using System.Security.Policy;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Media;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ScanNetDownloader
 {
@@ -86,7 +89,10 @@ namespace ScanNetDownloader
 #if !DEBUG
             tabDebug.Visibility = Visibility.Collapsed;
             gridStatusBar.Visibility = Visibility.Collapsed;
+            gridMainContent.RowDefinitions[1].Height = new GridLength(0);
             gridMainContent.RowDefinitions[2].Height = new GridLength(0);
+            scrollVwDownloadInfo.Visibility = Visibility.Collapsed;
+            gridDlInfo.RowDefinitions[0].Height = new GridLength(0);
 #endif
         }
 
@@ -115,11 +121,13 @@ namespace ScanNetDownloader
                 if (tabCtrlNavigation.SelectedItem == tabMain)
                 {
                     previousTabSelected = tabMain;
-                    RefreshScanListView(); // TODO: Refresh should be necessary ? Make sure everything is updated correctly after downloading a scan -> Cbz not updated
                 }
                 else if (tabCtrlNavigation.SelectedItem == tabDownload)
                 {
                     previousTabSelected = tabDownload;
+
+                    List<ScanItem> scanItemsToDownload = ScanListItems.GetScanItemsSelectedForDownload();
+                    RefreshDownloadView(scanItemsToDownload);
                 }
                 else if (tabCtrlNavigation.SelectedItem == tabOptions)
                 {
@@ -137,14 +145,13 @@ namespace ScanNetDownloader
         {
             tabCtrlNavigation.SelectedItem = tabDownload; // Switch to download tab
 
-            List<ScanData> scansToDownload = new List<ScanData>();
-            foreach (ScanItem item in ScanListItems)
-            {
-                if (item.IsSelectedForDownload) scansToDownload.Add(item.linkedScanData);
-            }
-
             DlInfo = ""; // Clear download info
-            Downloader.StartDownloader(scansToDownload);
+
+            List<ScanItem> scanItemsToDownload = ScanListItems.GetScanItemsSelectedForDownload();     
+
+            RefreshDownloadView(scanItemsToDownload);
+
+            Downloader.StartDownloader(scanItemsToDownload);
         }
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
@@ -238,7 +245,7 @@ namespace ScanNetDownloader
             progrBarDownload.Value = percentageDone;
         }
 
-        public void ScanDownloaded(object sender, ScanData downloadedScan) // This happens when the 
+        public void ScanDownloaded(object sender, ScanData downloadedScan) // This happens when the Scan download finish
         {
             // TODO: What's best way to retrieve item ? .First() ? using index in scanDataList ?
             ScanItem item = ScanListItems.First(x => x.linkedScanData == downloadedScan);
@@ -247,13 +254,30 @@ namespace ScanNetDownloader
             item.IsSelectedForDownload = false; // Disable download selection since we just downloaded
 
             bool fileSuccessfullyDownloaded = FileManagement.AreScanFilesDownloaded(downloadedScan);
+            bool cbzCreated = FileManagement.IsCbzArchiveCreated(downloadedScan);
             item.IsDownloaded = fileSuccessfullyDownloaded; 
-
-            // TODO: Check if Cbz has been created
-
-            // TODO: When do I save changes ? When Download is finished ?
+            item.CbzArchiveCreated = cbzCreated;
         }
         #endregion
+
+        private void RefreshDownloadView(List<ScanItem> scanItemsToDownload)
+        {
+            stPanelDownloadInfo.Children.Clear();
+            //TextBlock txtView = new TextBlock();
+            //Binding txtBinding = new Binding(nameof(DlInfo));
+            //txtBinding.Source = this;
+            //txtView.SetBinding(TextBlock.TextProperty, txtBinding);
+            //txtView.Height = 300;
+            //txtView.Background = Brushes.Aquamarine;
+            //txtView.Margin = new Thickness(5);
+            //stPanelDownloadInfo.Children.Add(txtView);
+
+            foreach (var item in scanItemsToDownload)
+            {
+                DownloadItem downloadItem = new DownloadItem(item);
+                stPanelDownloadInfo.Children.Add(downloadItem);
+            }
+        }
 
         private void RefreshScanListView()
         {

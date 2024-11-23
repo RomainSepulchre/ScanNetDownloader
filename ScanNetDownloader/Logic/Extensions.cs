@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using ScanNetDownloader.View.CustomControls;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Windows.Documents;
 
@@ -60,6 +62,38 @@ namespace ScanNetDownloader.Logic
             }
 
             return pageTotal;
+        }
+
+        public static List<ScanData> GetScansToDownload(this ObservableCollection<ScanItem> scanItems)
+        {
+            List<ScanData> scansToDownload = new List<ScanData>();
+            foreach (ScanItem item in scanItems)
+            {
+                if (item.IsSelectedForDownload) scansToDownload.Add(item.linkedScanData);
+            }
+
+            return scansToDownload;
+        }
+
+        public static List<ScanItem> GetScanItemsSelectedForDownload(this ObservableCollection<ScanItem> scanItems)
+        {
+            List<ScanItem> scanItemsToDownload = new List<ScanItem>();
+            foreach (ScanItem item in scanItems)
+            {
+                if (item.IsSelectedForDownload) scanItemsToDownload.Add(item);
+            }
+
+            return scanItemsToDownload;
+        }
+
+        public static List<ScanData> ToScanDataList (this List<ScanItem> scanItems)
+        {
+            List<ScanData> scansToDownload = new List<ScanData>();
+            foreach(ScanItem item in scanItems)
+            {
+                scansToDownload.Add(item.linkedScanData);
+            }
+            return scansToDownload;
         }
     }
 }

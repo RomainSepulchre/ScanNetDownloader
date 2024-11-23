@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ScanNetDownloader.View.CustomControls;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -25,8 +26,9 @@ namespace ScanNetDownloader.Logic
 
         public static event EventHandler<ScanData> ScanDownloadedEvent;
 
-        public static async void StartDownloader(List<ScanData> scansToDownload)
+        public static async void StartDownloader(List<ScanItem> scanItemsToDownload)
         {
+            List<ScanData> scansToDownload = scanItemsToDownload.ToScanDataList();
             if (scansToDownload.Count == 0)
             {
                 // TODO: Prevent to click on start button if no scan are selected even before clicking calling this
@@ -34,13 +36,13 @@ namespace ScanNetDownloader.Logic
                 return;
             }
 
-            WriteDlInfoLine($"\nHere is the list of scans you are going to download:");
+            WriteDlInfoLine($"Here is the list of scans you are going to download:");
             foreach (ScanData item in scansToDownload)
             {
                 WriteDlInfoLine($"-> {item.BookName} - {item.ChapterId} (source:{item.Url})");
             }
 
-            WriteDlInfoLine($"\nThe files will be downloaded in {Settings.Instance.OutputDirectory}, a folder will automatically be created for each title and chapters");
+            WriteDlInfoLine($"The files will be downloaded in {Settings.Instance.OutputDirectory}, a folder will automatically be created for each title and chapters");
             if (FileManagement.OutputDirectoryIsValid() == false)
             {
                 WriteDlInfoLine("\nDOWNLOAD STOPPED");
@@ -49,14 +51,14 @@ namespace ScanNetDownloader.Logic
 
             string mBoxMessage = "Do you to start the download ?";
             string mBoxCaption = "Continue ?";
-            WriteDlInfoLine($"\n{mBoxMessage}");
+            WriteDlInfoLine($"{mBoxMessage}");
             MessageBoxResult result = MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.YesNo, MessageBoxImage.Question);
 
             WriteDlInfoLine($" YESNO RESULT = {result}");
 
             if (result == MessageBoxResult.No)
             {
-                WriteDlInfoLine("\nDOWNLOAD STOPPED");
+                WriteDlInfoLine("DOWNLOAD STOPPED");
                 return;
             }
 
@@ -66,7 +68,7 @@ namespace ScanNetDownloader.Logic
             {
                 mBoxMessage = "Finished, press any key to close...";
                 mBoxCaption = "Finished";
-                WriteDlInfoLine($"\n{mBoxMessage}");
+                WriteDlInfoLine($"{mBoxMessage}");
                 MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.None);
             }
             else
@@ -74,7 +76,7 @@ namespace ScanNetDownloader.Logic
                 Error.ShowDownloadErrors();
                 mBoxMessage = "Finished with error, press any key to close...";
                 mBoxCaption = "Finished";
-                WriteDlInfoLine($"\n{mBoxMessage}");
+                WriteDlInfoLine($"{mBoxMessage}");
                 MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.None);
             }
 
