@@ -93,6 +93,7 @@ namespace ScanNetDownloader
             gridMainContent.RowDefinitions[2].Height = new GridLength(0);
             scrollVwDownloadInfo.Visibility = Visibility.Collapsed;
             gridDlInfo.RowDefinitions[0].Height = new GridLength(0);
+            gridDlInfo.RowDefinitions[1].Height = new GridLength(0);
 #endif
         }
 

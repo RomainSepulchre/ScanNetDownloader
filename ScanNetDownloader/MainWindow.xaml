@@ -95,15 +95,18 @@
 
                     <Grid Name="gridDlInfo">
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="300"/>
-                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
                         <ScrollViewer Name="scrollVwDownloadInfo"  VerticalScrollBarVisibility="Auto">
                             <TextBlock Name="txtBlockDownloadInfo" Text="{Binding DlInfo,UpdateSourceTrigger=PropertyChanged}" Background="Aquamarine" Margin="5"/>
                         </ScrollViewer>
 
-                        <ScrollViewer Grid.Row="1"  VerticalScrollBarVisibility="Auto">
+                        <GridSplitter Grid.Row="1" Height="3" Background="Black" VerticalAlignment="Top" HorizontalAlignment="Stretch" ShowsPreview="True" ResizeDirection="Rows"/>
+
+                        <ScrollViewer Grid.Row="2"  VerticalScrollBarVisibility="Auto">
                             <StackPanel Name="stPanelDownloadInfo" Orientation="Vertical" Background="LightGray" Margin="5">
                             </StackPanel>
                         </ScrollViewer>
