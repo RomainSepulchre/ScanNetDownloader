@@ -24,12 +24,14 @@ namespace ScanNetDownloader.Logic
 
         public static event EventHandler<float> UpdateDlProgressBarEvent;
 
-        public static event EventHandler<ScanData> ScanDownloadedEvent;
+        public static event EventHandler<PageDownloadedEventArgs> PageDownloadedEvent;
+
+        public static event EventHandler<ScanItem> ScanDownloadedEvent;
 
         public static async void StartDownloader(List<ScanItem> scanItemsToDownload)
         {
             List<ScanData> scansToDownload = scanItemsToDownload.ToScanDataList();
-            if (scansToDownload.Count == 0)
+            if (scanItemsToDownload.Count == 0)
             {
                 // TODO: Prevent to click on start button if no scan are selected even before clicking calling this
                 WriteDlInfoLine($"No scans have been selected, select at least a scan to start the download");
@@ -37,7 +39,7 @@ namespace ScanNetDownloader.Logic
             }
 
             WriteDlInfoLine($"Here is the list of scans you are going to download:");
-            foreach (ScanData item in scansToDownload)
+            foreach (ScanItem item in scanItemsToDownload)
             {
                 WriteDlInfoLine($"-> {item.BookName} - {item.ChapterId} (source:{item.Url})");
             }
@@ -62,7 +64,7 @@ namespace ScanNetDownloader.Logic
                 return;
             }
 
-            await DownloadScans(scansToDownload);
+            await DownloadScans(scanItemsToDownload);
 
             if (CurrentSettings.ErrorPauseApp)
             {
@@ -86,17 +88,18 @@ namespace ScanNetDownloader.Logic
             }
         }
 
-        static async Task DownloadScans(List<ScanData> scansToDownload)
+        static async Task DownloadScans(List<ScanItem> scanItemsToDownload)
         {
-            int NumberOfImagesToDownload = scansToDownload.GetTotalOfScanPages();
+            int NumberOfImagesToDownload = scanItemsToDownload.GetTotalOfScanPages();
             float progress = 0;
             float minProgress = 0;
             float maxProgress = 0;
 
             HttpClient client = HttpClientSingleton.Client;
 
-            foreach (ScanData scanData in scansToDownload)
+            foreach (ScanItem scanItem in scanItemsToDownload)
             {
+                ScanData scanData = scanItem.linkedScanData;
                 if (scanData.IsTemporaryData)
                 {
                     WriteDlInfoLine($"Nothing can be downloaded from a temporary scan data, it should not be possible to add a temporary scan to the download list");
@@ -104,7 +107,6 @@ namespace ScanNetDownloader.Logic
                 }
 
                 minProgress = maxProgress;
-                int scanIndex = scansToDownload.IndexOf(scanData);
                 maxProgress = minProgress + ((((float)scanData.PagesCount) / (NumberOfImagesToDownload)) * 100);
 
 
@@ -150,7 +152,7 @@ namespace ScanNetDownloader.Logic
                             File.WriteAllBytes(downloadFile, img);
                             WriteDlInfoLine($"Sucessfully downloaded!\n");
                         }
-
+                        OnPageDownloaded(scanItem, pageIndex);
                     }
                     catch (HttpRequestException ex)
                     {
@@ -194,7 +196,7 @@ namespace ScanNetDownloader.Logic
                 }
 
                 // Deselect since we just downloaded it
-                OnScanDownloaded(scanData);
+                OnScanDownloaded(scanItem);
             }
         }
 
@@ -216,13 +218,31 @@ namespace ScanNetDownloader.Logic
             }
         }
 
-        public static void OnScanDownloaded(ScanData unselectedScan)
+        public static void OnPageDownloaded(ScanItem scanItem, int pageIndex)
+        {
+            if (PageDownloadedEvent != null)
+            {
+                PageDownloadedEventArgs args = new PageDownloadedEventArgs();
+                args.ScanItem = scanItem;
+                args.PageIndex = pageIndex;
+
+                PageDownloadedEvent(null, args);
+            }
+        }
+
+        public static void OnScanDownloaded(ScanItem scanDownloaded)
         {
             if (ScanDownloadedEvent != null)
             {
-                ScanDownloadedEvent(null, unselectedScan);
+                ScanDownloadedEvent(null, scanDownloaded);
             }
         }
         #endregion
+    }
+
+    public class PageDownloadedEventArgs : EventArgs
+    {
+        public ScanItem ScanItem { get; set; }
+        public int PageIndex { get; set; }
     }
 }

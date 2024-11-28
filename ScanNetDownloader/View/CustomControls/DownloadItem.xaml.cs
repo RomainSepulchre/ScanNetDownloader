@@ -80,5 +80,29 @@ namespace ScanNetDownloader.View.CustomControls
                 btnShowDetails.Content = "˃";
             }
         }
+
+        public void PageDownloaded(int pageIndex)
+        {
+            bool isEven = pageIndex % 2 == 0;
+
+            Border pageItem = new Border();
+            pageItem.Height = 30;
+            pageItem.Background = isEven ? Brushes.Bisque : Brushes.White;
+
+            TextBlock info = new TextBlock();
+            info.Text = $"Page {pageIndex} successfully downloaded !";
+            info.VerticalAlignment = VerticalAlignment.Center;
+            info.Margin = new Thickness(5, 0, 0, 0);
+
+            pageItem.Child = info;
+
+            stPanelDetails.Children.Add(pageItem);
+        }
+
+        public void ScanDownloaded()
+        {
+            gridDlStatus.Background = Brushes.Green;
+            txtBlockDlStatus.Text = "Downloaded";
+        }
     }
 }

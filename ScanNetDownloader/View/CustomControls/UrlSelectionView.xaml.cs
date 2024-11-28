@@ -82,9 +82,11 @@ namespace ScanNetDownloader.View.CustomControls
                 SelectUrlInfos += $"\n-{website} (ex: {Constants.EXAMPLE_URLS[website]})";
             }
 
+#if DEBUG
             // For easier debug
-            UrlInput = "https://www.scan-vf.net/jujutsu-kaisen/chapitre-18/1";
-            //UrlInput = "https://anime-sama.fr/catalogue/20th-century-boys/scan-21st-century-boys/vf/";
+            //UrlInput = "https://www.scan-vf.net/jujutsu-kaisen/chapitre-18/1";
+            UrlInput = "https://anime-sama.fr/catalogue/20th-century-boys/scan-21st-century-boys/vf/";
+#endif
 
             btnNext.IsEnabled = string.IsNullOrEmpty(UrlInput) == false;
         }

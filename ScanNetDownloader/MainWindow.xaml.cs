@@ -48,6 +48,15 @@ namespace ScanNetDownloader
             }
         }
 
+        private ObservableCollection<DownloadItem> _downloadItems;
+
+        public ObservableCollection<DownloadItem> DownloadItems
+        {
+            get { return _downloadItems; }
+            set { _downloadItems = value; }
+        }
+
+
         private string _dlInfo;
 
         public string DlInfo
@@ -66,12 +75,14 @@ namespace ScanNetDownloader
         public MainWindow()
         {
             DataContext = this;
-            _scanListItems = new ObservableCollection<ScanItem>();
+            ScanListItems = new ObservableCollection<ScanItem>();
+            DownloadItems = new ObservableCollection<DownloadItem>();
 
             // Download Events
             Downloader.DlInfoWriteLineEvent += new EventHandler<string>(WriteDlInfoLine);
             Downloader.UpdateDlProgressBarEvent += new EventHandler<float>(UpdateDownloadProgress);
-            Downloader.ScanDownloadedEvent += new EventHandler<ScanData>(ScanDownloaded);
+            Downloader.ScanDownloadedEvent += new EventHandler<ScanItem>(ScanDownloaded);
+            Downloader.PageDownloadedEvent += new EventHandler<PageDownloadedEventArgs>(PageDownloaded);
 
             // Load Settings
             Settings.InitializeAppSettings();
@@ -246,24 +257,34 @@ namespace ScanNetDownloader
             progrBarDownload.Value = percentageDone;
         }
 
-        public void ScanDownloaded(object sender, ScanData downloadedScan) // This happens when the Scan download finish
+        public void PageDownloaded(object sender, PageDownloadedEventArgs args)
         {
-            // TODO: What's best way to retrieve item ? .First() ? using index in scanDataList ?
-            ScanItem item = ScanListItems.First(x => x.linkedScanData == downloadedScan);
-            //ScanItem item = ScanListItems[ScanDatas.IndexOf(downloadedScan)];
-                       
-            item.IsSelectedForDownload = false; // Disable download selection since we just downloaded
+            ScanItem scanItem = args.ScanItem;
+            int pageIndex = args.PageIndex;
 
-            bool fileSuccessfullyDownloaded = FileManagement.AreScanFilesDownloaded(downloadedScan);
-            bool cbzCreated = FileManagement.IsCbzArchiveCreated(downloadedScan);
-            item.IsDownloaded = fileSuccessfullyDownloaded; 
-            item.CbzArchiveCreated = cbzCreated;
+            DownloadItem dlItem = DownloadItems.First(x => x.linkedScanItem == scanItem);
+
+            dlItem.PageDownloaded(pageIndex);
+        }
+
+        public void ScanDownloaded(object sender, ScanItem downloadedScan) // This happens when the Scan download finish
+        {
+            downloadedScan.IsSelectedForDownload = false; // Disable download selection since we just downloaded
+
+            bool fileSuccessfullyDownloaded = FileManagement.AreScanFilesDownloaded(downloadedScan.linkedScanData);
+            bool cbzCreated = FileManagement.IsCbzArchiveCreated(downloadedScan.linkedScanData);
+            downloadedScan.IsDownloaded = fileSuccessfullyDownloaded;
+            downloadedScan.CbzArchiveCreated = cbzCreated;
+
+            DownloadItem dlItem = DownloadItems.First(x => x.linkedScanItem == downloadedScan);
+            dlItem.ScanDownloaded();
+
         }
         #endregion
 
         private void RefreshDownloadView(List<ScanItem> scanItemsToDownload)
         {
-            stPanelDownloadInfo.Children.Clear();
+            DownloadItems.Clear();
             //TextBlock txtView = new TextBlock();
             //Binding txtBinding = new Binding(nameof(DlInfo));
             //txtBinding.Source = this;
@@ -276,7 +297,7 @@ namespace ScanNetDownloader
             foreach (var item in scanItemsToDownload)
             {
                 DownloadItem downloadItem = new DownloadItem(item);
-                stPanelDownloadInfo.Children.Add(downloadItem);
+                DownloadItems.Add(downloadItem);
             }
         }
 

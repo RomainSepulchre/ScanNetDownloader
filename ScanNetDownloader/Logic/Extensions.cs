@@ -52,6 +52,18 @@ namespace ScanNetDownloader.Logic
             return true;
         }
 
+        public static int GetTotalOfScanPages(this List<ScanItem> scanItemList)
+        {
+            int pageTotal = 0;
+
+            foreach (ScanItem scanItem in scanItemList)
+            {
+                pageTotal += scanItem.PagesCount;
+            }
+
+            return pageTotal;
+        }
+
         public static int GetTotalOfScanPages(this List<ScanData> scanList)
         {
             int pageTotal = 0;

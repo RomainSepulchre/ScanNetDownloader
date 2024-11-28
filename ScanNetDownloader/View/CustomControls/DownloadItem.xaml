@@ -27,9 +27,9 @@
             </Border>
         </StackPanel>
 
-        <Grid Grid.Column="2" Background="Orange">
+        <Grid Name="gridDlStatus" Grid.Column="2" Background="Orange">
             <Border Height="20" Margin="10 0 10 0">
-                <TextBlock Text="Ready for download..." VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <TextBlock Name="txtBlockDlStatus" Text="Ready for download..." VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </Border>
         </Grid>
 
@@ -42,18 +42,6 @@
         
         <!--Details-->
         <StackPanel Grid.Row="1" Grid.ColumnSpan="3" Name="stPanelDetails" Orientation="Vertical" Background="Aqua" Visibility="Collapsed">
-            <Border Height="30" Background="Bisque">
-                <TextBlock Text="Lorem ipsum" VerticalAlignment="Center" Margin="5 0 0 0"/>
-            </Border>
-            <Border Height="30">
-                <TextBlock Text="Lorem ipsum" VerticalAlignment="Center" Margin="5 0 0 0"/>
-            </Border>
-            <Border Height="30" Background="Bisque">
-                <TextBlock Text="Lorem ipsum" VerticalAlignment="Center" Margin="5 0 0 0"/>
-            </Border>
-            <Border Height="30">
-                <TextBlock Text="Lorem ipsum" VerticalAlignment="Center" Margin="5 0 0 0"/>
-            </Border>
         </StackPanel>
     </Grid>
 </UserControl>

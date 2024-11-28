@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using ScanNetDownloader.View.CustomControls;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

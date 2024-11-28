@@ -10,6 +10,8 @@
     <Window.Resources>
         <CollectionViewSource x:Key="ScanItemsSource" Source="{Binding ScanListItems}">
         </CollectionViewSource>
+        <CollectionViewSource x:Key="DownloadItemsSource" Source="{Binding DownloadItems}">
+        </CollectionViewSource>
     </Window.Resources>
     <Grid x:Name="gridMainContent">
 
@@ -100,20 +102,26 @@
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
-                        <ScrollViewer Name="scrollVwDownloadInfo"  VerticalScrollBarVisibility="Auto">
+                        <ScrollViewer Name="scrollVwDownloadInfo"  VerticalScrollBarVisibility="Visible">
                             <TextBlock Name="txtBlockDownloadInfo" Text="{Binding DlInfo,UpdateSourceTrigger=PropertyChanged}" Background="Aquamarine" Margin="5"/>
                         </ScrollViewer>
 
                         <GridSplitter Grid.Row="1" Height="3" Background="Black" VerticalAlignment="Top" HorizontalAlignment="Stretch" ShowsPreview="True" ResizeDirection="Rows"/>
 
-                        <ScrollViewer Grid.Row="2"  VerticalScrollBarVisibility="Auto">
-                            <StackPanel Name="stPanelDownloadInfo" Orientation="Vertical" Background="LightGray" Margin="5">
-                            </StackPanel>
+                        <ScrollViewer Grid.Row="2"  VerticalScrollBarVisibility="Visible">
+                            <ItemsControl Name="stPanelDownloadInfo" ItemsSource="{Binding Source={StaticResource DownloadItemsSource}}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+
+                                            <StackPanel Orientation="Vertical" IsItemsHost="True" Background="LightGray" Margin="5">
+                                            </StackPanel>
+
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                </ItemsControl>
                         </ScrollViewer>
                     </Grid>
-                    
-                    
-                    
+
                     <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="0.1*"/>
