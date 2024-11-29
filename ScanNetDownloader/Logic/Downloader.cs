@@ -24,6 +24,8 @@ namespace ScanNetDownloader.Logic
 
         public static event EventHandler<float> UpdateDlProgressBarEvent;
 
+        public static event EventHandler DownloadStartedEvent;
+
         public static event EventHandler<PageDownloadedEventArgs> PageDownloadedEvent;
 
         public static event EventHandler<ScanItem> ScanDownloadedEvent;
@@ -64,6 +66,7 @@ namespace ScanNetDownloader.Logic
                 return;
             }
 
+            OnDownloadStarted();
             await DownloadScans(scanItemsToDownload);
 
             if (CurrentSettings.ErrorPauseApp)
@@ -215,6 +218,14 @@ namespace ScanNetDownloader.Logic
             if (UpdateDlProgressBarEvent != null)
             {
                 UpdateDlProgressBarEvent(null, percentageDone);
+            }
+        }
+
+        public static void OnDownloadStarted()
+        {
+            if (DownloadStartedEvent != null)
+            {
+                DownloadStartedEvent(null, EventArgs.Empty);
             }
         }
 

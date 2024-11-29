@@ -1,6 +1,7 @@
 ﻿using ScanNetDownloader.Logic;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,6 +22,14 @@ namespace ScanNetDownloader.View.CustomControls
     /// </summary>
     public partial class DownloadItem : UserControl
     {
+        private ObservableCollection<Border> _downloadEventItems;
+
+        public ObservableCollection<Border> DownloadEventItems
+        {
+            get { return _downloadEventItems; }
+            set { _downloadEventItems = value; }
+        }
+
         public ScanItem linkedScanItem { get; private set; }
 
         public string BookName { get; private set; }
@@ -40,7 +49,11 @@ namespace ScanNetDownloader.View.CustomControls
 
         public DownloadItem(ScanItem _scanItem)
         {
+            DownloadEventItems = new ObservableCollection<Border>();
+
             InitializeComponent();
+
+            DataContext = this;
 
             linkedScanItem = _scanItem;
 
@@ -53,6 +66,7 @@ namespace ScanNetDownloader.View.CustomControls
             txtBlockItemHeader.Text = $"{BookName} - Chapter {ChapterId} ({PagesCount} pages)";
 
             ShowDownloadDetails(false);
+            SetShowDetailsBtnVisibility();
         }
 
         private void btnShowDetails_Click(object sender, RoutedEventArgs e)
@@ -81,28 +95,65 @@ namespace ScanNetDownloader.View.CustomControls
             }
         }
 
+        public void PrepareForDownload()
+        {
+            progrBarItemDownload.Visibility = Visibility.Visible;
+            progrBarItemDownload.Value = 0;
+            txtBlockDlStatus.Text = $"Waiting for download start...";
+        }
+
         public void PageDownloaded(int pageIndex)
         {
-            bool isEven = pageIndex % 2 == 0;
+            Border pageItem = CreateNewDownloadEvent(pageIndex);
+            int countBeforeAdd = DownloadEventItems.Count;
+            DownloadEventItems.Add(pageItem);
+            if (countBeforeAdd == 0) SetShowDetailsBtnVisibility();
 
-            Border pageItem = new Border();
-            pageItem.Height = 30;
-            pageItem.Background = isEven ? Brushes.Bisque : Brushes.White;
+            int pageNumber = pageIndex + 1;
+            int nextPageNumber = pageIndex + 2;
 
-            TextBlock info = new TextBlock();
-            info.Text = $"Page {pageIndex} successfully downloaded !";
-            info.VerticalAlignment = VerticalAlignment.Center;
-            info.Margin = new Thickness(5, 0, 0, 0);
-
-            pageItem.Child = info;
-
-            stPanelDetails.Children.Add(pageItem);
+            progrBarItemDownload.Value = ((float)pageNumber / PagesCount) * 100;
+            txtBlockDlStatus.Text = $"Downloading page {nextPageNumber}...";
         }
 
         public void ScanDownloaded()
         {
             gridDlStatus.Background = Brushes.Green;
             txtBlockDlStatus.Text = "Downloaded";
+        }
+
+        public Border CreateNewDownloadEvent(int pageIndex)
+        {
+            Border newDlEventItem = new Border();
+
+            newDlEventItem.Height = 20;
+            newDlEventItem.Background = Brushes.LightGreen;
+            newDlEventItem.BorderThickness = new Thickness(0, 0, 0, 1);
+            newDlEventItem.BorderBrush = Brushes.Black;
+            newDlEventItem.Margin = new Thickness(10,0,0,0);
+
+            TextBlock info = new TextBlock();
+            info.Text = $"Page {pageIndex} successfully downloaded !";
+            info.VerticalAlignment = VerticalAlignment.Center;
+            info.Margin = new Thickness(5, 0, 0, 0);
+
+            newDlEventItem.Child = info;
+
+            return newDlEventItem;
+        }
+
+        public void SetShowDetailsBtnVisibility()
+        {
+            if(DownloadEventItems.Count > 0) //&& btnShowDetails.Visibility != Visibility.Visible)
+            {
+                btnShowDetails.IsEnabled = true;
+                //btnShowDetails.Visibility = Visibility.Visible;
+            }
+            else //if(btnShowDetails.Visibility != Visibility.Collapsed)
+            {
+                btnShowDetails.IsEnabled = false;
+                //btnShowDetails.Visibility = Visibility.Collapsed;
+            }
         }
     }
 }

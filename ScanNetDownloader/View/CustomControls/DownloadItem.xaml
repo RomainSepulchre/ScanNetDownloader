@@ -6,11 +6,15 @@
              xmlns:local="clr-namespace:ScanNetDownloader.View.CustomControls"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="1200">
+    <UserControl.Resources>
+        <CollectionViewSource x:Key="DownloadEventItemsSource" Source="{Binding DownloadEventItems}">
+        </CollectionViewSource>
+    </UserControl.Resources>
     <Grid Background="White">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="30"/>
-            <ColumnDefinition Width="0.4*"/>
-            <ColumnDefinition Width="0.6*"/>
+            <ColumnDefinition Width="0.35*"/>
+            <ColumnDefinition Width="0.65*"/>
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
@@ -19,29 +23,27 @@
         </Grid.RowDefinitions>
 
         <!--Main Row-->
-        <Button Name="btnShowDetails" Content="˅" Click="btnShowDetails_Click"/>
+        <Button Name="btnShowDetails" Content="˅" Click="btnShowDetails_Click" Height="25" Width="25"/>
 
-        <StackPanel Orientation="Horizontal" Grid.Column="1">
-            <Border>
-                <TextBlock Name="txtBlockItemHeader"  Text="Jujutsu Kaisen - Chapter 15 (10 pages)" VerticalAlignment="Center" Margin="5 0 0 0"/>
-            </Border>
-        </StackPanel>
+        <Border Grid.Column="1">
+            <TextBlock Name="txtBlockItemHeader"  Text="Jujutsu Kaisen - Chapter 15 (10 pages)" VerticalAlignment="Center" Margin="5 0 0 0"/>
+        </Border>
 
-        <Grid Name="gridDlStatus" Grid.Column="2" Background="Orange">
+        <Grid Grid.Column="2" Name="gridDlStatus" Background="Orange">
+            <ProgressBar Name="progrBarItemDownload" Minimum="0" Maximum="100" Height="20" Margin="10 0 10 0" Visibility="Collapsed"/>
             <Border Height="20" Margin="10 0 10 0">
                 <TextBlock Name="txtBlockDlStatus" Text="Ready for download..." VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </Border>
         </Grid>
 
-        <Grid Grid.Column="1" Background="Blue" Visibility="Collapsed">
-            <ProgressBar Height="20" Margin="10 0 10 0"/>
-            <Border Height="20" Margin="10 0 10 0">
-                <TextBlock Text="Downloading..." VerticalAlignment="Center" HorizontalAlignment="Center"/>
-            </Border>
-        </Grid>
-        
         <!--Details-->
-        <StackPanel Grid.Row="1" Grid.ColumnSpan="3" Name="stPanelDetails" Orientation="Vertical" Background="Aqua" Visibility="Collapsed">
-        </StackPanel>
+        <ItemsControl Name="stPanelDetails" Grid.Row="1" Grid.ColumnSpan="3"  ItemsSource="{Binding Source={StaticResource DownloadEventItemsSource}}" Visibility="Collapsed">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Vertical" IsItemsHost="True">
+                    </StackPanel>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
     </Grid>
 </UserControl>

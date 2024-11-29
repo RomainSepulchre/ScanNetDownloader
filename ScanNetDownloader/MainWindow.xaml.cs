@@ -48,42 +48,13 @@ namespace ScanNetDownloader
             }
         }
 
-        private ObservableCollection<DownloadItem> _downloadItems;
-
-        public ObservableCollection<DownloadItem> DownloadItems
-        {
-            get { return _downloadItems; }
-            set { _downloadItems = value; }
-        }
-
-
-        private string _dlInfo;
-
-        public string DlInfo
-        {
-            get { return _dlInfo; }
-            set
-            {
-                _dlInfo = value;
-                scrollVwDownloadInfo?.ScrollToBottom();
-                OnPropertyChanged();
-            }
-        }
-
         public event PropertyChangedEventHandler? PropertyChanged;
 
         public MainWindow()
         {
             DataContext = this;
             ScanListItems = new ObservableCollection<ScanItem>();
-            DownloadItems = new ObservableCollection<DownloadItem>();
-
-            // Download Events
-            Downloader.DlInfoWriteLineEvent += new EventHandler<string>(WriteDlInfoLine);
-            Downloader.UpdateDlProgressBarEvent += new EventHandler<float>(UpdateDownloadProgress);
-            Downloader.ScanDownloadedEvent += new EventHandler<ScanItem>(ScanDownloaded);
-            Downloader.PageDownloadedEvent += new EventHandler<PageDownloadedEventArgs>(PageDownloaded);
-
+            
             // Load Settings
             Settings.InitializeAppSettings();
 
@@ -102,10 +73,8 @@ namespace ScanNetDownloader
             gridStatusBar.Visibility = Visibility.Collapsed;
             gridMainContent.RowDefinitions[1].Height = new GridLength(0);
             gridMainContent.RowDefinitions[2].Height = new GridLength(0);
-            scrollVwDownloadInfo.Visibility = Visibility.Collapsed;
-            gridDlInfo.RowDefinitions[0].Height = new GridLength(0);
-            gridDlInfo.RowDefinitions[1].Height = new GridLength(0);
 #endif
+
         }
 
         private void OnPropertyChanged([CallerMemberName]string property=null)
@@ -139,7 +108,7 @@ namespace ScanNetDownloader
                     previousTabSelected = tabDownload;
 
                     List<ScanItem> scanItemsToDownload = ScanListItems.GetScanItemsSelectedForDownload();
-                    RefreshDownloadView(scanItemsToDownload);
+                    downloadVw.RefreshDownloadView(scanItemsToDownload);
                 }
                 else if (tabCtrlNavigation.SelectedItem == tabOptions)
                 {
@@ -157,13 +126,8 @@ namespace ScanNetDownloader
         {
             tabCtrlNavigation.SelectedItem = tabDownload; // Switch to download tab
 
-            DlInfo = ""; // Clear download info
-
-            List<ScanItem> scanItemsToDownload = ScanListItems.GetScanItemsSelectedForDownload();     
-
-            RefreshDownloadView(scanItemsToDownload);
-
-            Downloader.StartDownloader(scanItemsToDownload);
+            List<ScanItem> scanItemsToDownload = ScanListItems.GetScanItemsSelectedForDownload();
+            downloadVw.StartDownload(scanItemsToDownload);
         }
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
@@ -244,62 +208,6 @@ namespace ScanNetDownloader
         }
 
         #endregion
-
-        #region Events Handler
-        public void WriteDlInfoLine(object sender, string lineToAdd)
-        {
-            DlInfo += $"{lineToAdd}\n";
-        }
-
-        public void UpdateDownloadProgress(object sender, float percentageDone)
-        {
-            // TODO: Add bindings ?
-            progrBarDownload.Value = percentageDone;
-        }
-
-        public void PageDownloaded(object sender, PageDownloadedEventArgs args)
-        {
-            ScanItem scanItem = args.ScanItem;
-            int pageIndex = args.PageIndex;
-
-            DownloadItem dlItem = DownloadItems.First(x => x.linkedScanItem == scanItem);
-
-            dlItem.PageDownloaded(pageIndex);
-        }
-
-        public void ScanDownloaded(object sender, ScanItem downloadedScan) // This happens when the Scan download finish
-        {
-            downloadedScan.IsSelectedForDownload = false; // Disable download selection since we just downloaded
-
-            bool fileSuccessfullyDownloaded = FileManagement.AreScanFilesDownloaded(downloadedScan.linkedScanData);
-            bool cbzCreated = FileManagement.IsCbzArchiveCreated(downloadedScan.linkedScanData);
-            downloadedScan.IsDownloaded = fileSuccessfullyDownloaded;
-            downloadedScan.CbzArchiveCreated = cbzCreated;
-
-            DownloadItem dlItem = DownloadItems.First(x => x.linkedScanItem == downloadedScan);
-            dlItem.ScanDownloaded();
-
-        }
-        #endregion
-
-        private void RefreshDownloadView(List<ScanItem> scanItemsToDownload)
-        {
-            DownloadItems.Clear();
-            //TextBlock txtView = new TextBlock();
-            //Binding txtBinding = new Binding(nameof(DlInfo));
-            //txtBinding.Source = this;
-            //txtView.SetBinding(TextBlock.TextProperty, txtBinding);
-            //txtView.Height = 300;
-            //txtView.Background = Brushes.Aquamarine;
-            //txtView.Margin = new Thickness(5);
-            //stPanelDownloadInfo.Children.Add(txtView);
-
-            foreach (var item in scanItemsToDownload)
-            {
-                DownloadItem downloadItem = new DownloadItem(item);
-                DownloadItems.Add(downloadItem);
-            }
-        }
 
         private void RefreshScanListView()
         {
