@@ -86,7 +86,7 @@
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>
-                                    <GridViewColumn Header="Options" Width="275">
+                                    <GridViewColumn Header="Options" Width="250">
                                         <!--I would love to understand why scanItem is displayed in this column and how to do it with a cell template to make it more clear
                                         but I can't find how to assign the source scanItem as the template scanItem-->
                                     </GridViewColumn>

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ScanNetDownloader.View.CustomControls;
 
 namespace ScanNetDownloader.Logic
 {
@@ -13,8 +14,17 @@ namespace ScanNetDownloader.Logic
     /// </summary>
     class CbzCreator
     {
-        public static void BuildCbzArchive(ScanData scanData, string downloadPath)
+        public static event EventHandler<ScanItem> OnCbzCreationStartEvent;
+
+        public static event EventHandler<ScanItem> OnCbzCreatedEvent;
+
+        public static event EventHandler<CbzErrorEventArgs> OnCbzCreationFailedErrorEvent;
+
+        public static void BuildCbzArchive(ScanItem scanItem, string downloadPath)
         {
+            OnCbzCreationStart(scanItem);
+
+            ScanData scanData = scanItem.linkedScanData;
             Downloader.WriteDlInfoLine($"=> Create .CBZ for {scanData.BookName}-{scanData.ChapterId}...");
 
             string bookName = scanData.BookName;
@@ -31,6 +41,7 @@ namespace ScanNetDownloader.Logic
 
             if (File.Exists(cbzFilePath) == false)
             {
+                
                 try
                 {
                     ZipFile.CreateFromDirectory(folderToArchive, cbzFilePath);
@@ -39,6 +50,7 @@ namespace ScanNetDownloader.Logic
                 catch (IOException ex)
                 {
                     Error.FailedCbzCreation(ex, scanData, Settings.Instance.DeleteImagesAfterCbzCreation);
+                    OnCbzCreationFailedError(scanItem, "Error while creating new cbz archive", ex);
                     return;
                 }
             }
@@ -59,6 +71,7 @@ namespace ScanNetDownloader.Logic
                     catch (IOException ex)
                     {
                         Error.FailedToReplaceEmptyCbz(ex, scanData, Settings.Instance.DeleteImagesAfterCbzCreation);
+                        OnCbzCreationFailedError(scanItem, "Error while replacing empty cbz archive", ex);
                         return;
                     }
                 }
@@ -68,6 +81,46 @@ namespace ScanNetDownloader.Logic
             {
                 if (Directory.Exists(downloadPath)) Directory.Delete(downloadPath, true);
             }
+
+            OnCbzCreated(scanItem);
         }
+
+        #region Events
+        private static void OnCbzCreationStart(ScanItem scanItem)
+        {
+            if (OnCbzCreationStartEvent != null)
+            {
+                OnCbzCreationStartEvent(null, scanItem);
+            }
+        }
+
+        private static void OnCbzCreated(ScanItem scanItem)
+        {
+            if (OnCbzCreatedEvent != null)
+            {
+                OnCbzCreatedEvent(null, scanItem);
+            }
+        }
+
+        private static void OnCbzCreationFailedError(ScanItem scanItem, string errorMsg, Exception ex)
+        {
+            if (OnCbzCreationFailedErrorEvent != null)
+            {
+                CbzErrorEventArgs args = new CbzErrorEventArgs();
+                args.ScanItem = scanItem;
+                args.ErrorMessage = errorMsg;
+                args.Exception = ex;
+
+                OnCbzCreationFailedErrorEvent(null, args);
+            }
+        }
+        #endregion
+    }
+
+    public class CbzErrorEventArgs : EventArgs
+    {
+        public ScanItem ScanItem { get; set; }
+        public string ErrorMessage { get; set; }
+        public Exception Exception { get; set; }
     }
 }

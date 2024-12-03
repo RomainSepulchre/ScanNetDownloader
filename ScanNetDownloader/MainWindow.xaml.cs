@@ -188,7 +188,7 @@ namespace ScanNetDownloader
                     if (result == MessageBoxResult.Yes)
                     {
                         string chapterPath = FileManagement.GetChapterDirectoryPath(item.linkedScanData);
-                        CbzCreator.BuildCbzArchive(item.linkedScanData, chapterPath);
+                        CbzCreator.BuildCbzArchive(item, chapterPath);
 
                         bool cbzSuccessfullyCreated = FileManagement.IsCbzArchiveCreated(item.linkedScanData);
                         item.CbzArchiveCreated = cbzSuccessfullyCreated;

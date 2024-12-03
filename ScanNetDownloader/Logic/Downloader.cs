@@ -24,11 +24,15 @@ namespace ScanNetDownloader.Logic
 
         public static event EventHandler<float> UpdateDlProgressBarEvent;
 
-        public static event EventHandler DownloadStartedEvent;
+        public static event EventHandler OnDownloadStartedEvent;
 
-        public static event EventHandler<PageDownloadedEventArgs> PageDownloadedEvent;
+        public static event EventHandler<PageEventArgs> OnPageDownloadedEvent;
 
-        public static event EventHandler<ScanItem> ScanDownloadedEvent;
+        public static event EventHandler<ScanItem> OnScanDownloadedEvent;
+
+        public static event EventHandler<PageErrorEventArgs> OnPageDownloadErrorEvent;
+
+        public static event EventHandler<PageErrorEventArgs> OnPageFileSavingErrorEvent;
 
         public static async void StartDownloader(List<ScanItem> scanItemsToDownload)
         {
@@ -139,7 +143,6 @@ namespace ScanNetDownloader.Logic
                     string imgName = $"{bookName}_{chapterNumber}-{pageId.ToString("D3")}{fileExtension}";
                     string downloadFile = Path.Combine(downloadPath, imgName);
 
-
                     try
                     {
                         WriteDlInfoLine($"\nDownloading {imgName} from {imgUrl}");
@@ -159,43 +162,22 @@ namespace ScanNetDownloader.Logic
                     }
                     catch (HttpRequestException ex)
                     {
+                        OnPageDownloadError(scanItem, pageIndex, ex);
                         Error.FailedImageDownload(ex, imgUrl);
                     }
                     catch (IOException ex)
                     {
+                        OnPageFileSavingError(scanItem, pageIndex, ex);
                         //TODO : Manage IO Eception
                     }
 
-
-                    //using (WebClient client = new WebClient())
-                    //{
-                    //try
-                    //{
-                    //    WriteDlInfoLine($"\nDownloading {imgName} from {imgUrl}");
-                    //    WriteDlInfoLine($"...");
-
-                    //    if (File.Exists(downloadFile) == true && File.ReadAllBytes(downloadFile).Length > 0 == true)
-                    //    {
-                    //        WriteDlInfoLine($"File already downloaded!\n");
-                    //    }
-                    //    else
-                    //    {
-                    //        await client.DownloadFileTaskAsync(new Uri(imgUrl), downloadFile);
-                    //        WriteDlInfoLine($"Sucessfully downloaded!\n");
-                    //    }
-                    //}
-                    //catch (WebException ex)
-                    //{
-                    //    Error.FailedImageDownload(ex, imgUrl);
-                    //}
-                    //}
                     pageId++;
                 }
 
 
                 if (CurrentSettings.CreateCbzArchive)
                 {
-                    CbzCreator.BuildCbzArchive(scanData, downloadPath);
+                    CbzCreator.BuildCbzArchive(scanItem, downloadPath);
                 }
 
                 // Deselect since we just downloaded it
@@ -213,7 +195,7 @@ namespace ScanNetDownloader.Logic
             }
         }
 
-        public static void UpdateDownloadProgress(float percentageDone)
+        private static void UpdateDownloadProgress(float percentageDone)
         {
             if (UpdateDlProgressBarEvent != null)
             {
@@ -221,39 +203,72 @@ namespace ScanNetDownloader.Logic
             }
         }
 
-        public static void OnDownloadStarted()
+        private static void OnDownloadStarted()
         {
-            if (DownloadStartedEvent != null)
+            if (OnDownloadStartedEvent != null)
             {
-                DownloadStartedEvent(null, EventArgs.Empty);
+                OnDownloadStartedEvent(null, EventArgs.Empty);
             }
         }
 
-        public static void OnPageDownloaded(ScanItem scanItem, int pageIndex)
+        private static void OnPageDownloaded(ScanItem scanItem, int pageIndex)
         {
-            if (PageDownloadedEvent != null)
+            if (OnPageDownloadedEvent != null)
             {
-                PageDownloadedEventArgs args = new PageDownloadedEventArgs();
+                PageEventArgs args = new PageEventArgs();
                 args.ScanItem = scanItem;
                 args.PageIndex = pageIndex;
 
-                PageDownloadedEvent(null, args);
+                OnPageDownloadedEvent(null, args);
             }
         }
 
-        public static void OnScanDownloaded(ScanItem scanDownloaded)
+        private static void OnScanDownloaded(ScanItem scanDownloaded)
         {
-            if (ScanDownloadedEvent != null)
+            if (OnScanDownloadedEvent != null)
             {
-                ScanDownloadedEvent(null, scanDownloaded);
+                OnScanDownloadedEvent(null, scanDownloaded);
+            }
+        }
+
+        private static void OnPageDownloadError(ScanItem scanItem, int pageIndex, Exception ex)
+        {
+            if (OnPageDownloadErrorEvent != null)
+            {
+                PageErrorEventArgs args = new PageErrorEventArgs();
+                args.ScanItem = scanItem;
+                args.PageIndex = pageIndex;
+                args.Exception = ex;
+
+                OnPageDownloadErrorEvent(null, args);
+            }
+        }
+
+        private static void OnPageFileSavingError(ScanItem scanItem, int pageIndex, Exception ex)
+        {
+            if (OnPageFileSavingErrorEvent != null)
+            {
+                PageErrorEventArgs args = new PageErrorEventArgs();
+                args.ScanItem = scanItem;
+                args.PageIndex = pageIndex;
+                args.Exception = ex;
+
+                OnPageFileSavingErrorEvent(null, args);
             }
         }
         #endregion
     }
 
-    public class PageDownloadedEventArgs : EventArgs
+    public class PageEventArgs : EventArgs
     {
         public ScanItem ScanItem { get; set; }
         public int PageIndex { get; set; }
+    }
+
+    public class PageErrorEventArgs : EventArgs
+    {
+        public ScanItem ScanItem { get; set; }
+        public int PageIndex { get; set; }
+        public Exception Exception { get; set; }
     }
 }

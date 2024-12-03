@@ -55,9 +55,14 @@ namespace ScanNetDownloader.View.CustomControls
             // Download Events
             Downloader.DlInfoWriteLineEvent += new EventHandler<string>(WriteDlInfoLine);
             Downloader.UpdateDlProgressBarEvent += new EventHandler<float>(UpdateDownloadProgress);
-            Downloader.DownloadStartedEvent += new EventHandler(OnDownloadStarted);
-            Downloader.ScanDownloadedEvent += new EventHandler<ScanItem>(ScanDownloaded);
-            Downloader.PageDownloadedEvent += new EventHandler<PageDownloadedEventArgs>(PageDownloaded);
+            Downloader.OnDownloadStartedEvent += new EventHandler(OnDownloadStarted);
+            Downloader.OnScanDownloadedEvent += new EventHandler<ScanItem>(OnScanDownloaded);
+            Downloader.OnPageDownloadedEvent += new EventHandler<PageEventArgs>(OnPageDownloaded);
+            Downloader.OnPageDownloadErrorEvent += new EventHandler<PageErrorEventArgs>(OnPageDownloadError);
+            Downloader.OnPageFileSavingErrorEvent += new EventHandler<PageErrorEventArgs>(OnPageFileSavingError);
+            CbzCreator.OnCbzCreationStartEvent += new EventHandler<ScanItem>(OnCbzCreationStart);
+            CbzCreator.OnCbzCreatedEvent += new EventHandler<ScanItem>(OnCbzCreated);
+            CbzCreator.OnCbzCreationFailedErrorEvent += new EventHandler<CbzErrorEventArgs>(OnCbzCreationFailedError);
 
             InitializeComponent();
 
@@ -95,9 +100,9 @@ namespace ScanNetDownloader.View.CustomControls
             }
         }
 
-        public void PageDownloaded(object sender, PageDownloadedEventArgs args)
+        public void OnPageDownloaded(object sender, PageEventArgs args)
         {
-            Debug.WriteLine($"Page {args.PageIndex} Downloaded");
+            Debug.WriteLine($"Page {args.PageIndex} of {args.ScanItem.BookName}-{args.ScanItem.ChapterId} downloaded.");
             ScanItem scanItem = args.ScanItem;
             int pageNumber = args.PageIndex + 1;
 
@@ -106,7 +111,7 @@ namespace ScanNetDownloader.View.CustomControls
             dlItem.PageDownloaded(pageNumber);
         }
 
-        public void ScanDownloaded(object sender, ScanItem downloadedScan) // This happens when the Scan download finish
+        public void OnScanDownloaded(object sender, ScanItem downloadedScan) // This happens when the Scan download finish
         {
             downloadedScan.IsSelectedForDownload = false; // Disable download selection since we just downloaded
 
@@ -117,8 +122,50 @@ namespace ScanNetDownloader.View.CustomControls
 
             DownloadItem dlItem = DownloadItems.First(x => x.linkedScanItem == downloadedScan);
             dlItem.ScanDownloaded();
-
         }
+
+        
+        public void OnPageDownloadError(object sender, PageErrorEventArgs args)
+        {
+            Debug.WriteLine($"Error while downloading page {args.PageIndex} of {args.ScanItem.BookName}-{args.ScanItem.ChapterId}");
+            ScanItem scanItem = args.ScanItem;
+            int pageNumber = args.PageIndex + 1;
+
+            DownloadItem dlItem = DownloadItems.First(x => x.linkedScanItem == scanItem);
+
+            dlItem.PageDownloadError(pageNumber, args.Exception);
+        }
+
+        public void OnPageFileSavingError(object sender, PageErrorEventArgs args)
+        {
+            Debug.WriteLine($"Error while saving file for page {args.PageIndex} of {args.ScanItem.BookName}-{args.ScanItem.ChapterId}");
+            ScanItem scanItem = args.ScanItem;
+            int pageNumber = args.PageIndex + 1;
+
+            DownloadItem dlItem = DownloadItems.First(x => x.linkedScanItem == scanItem);
+
+            dlItem.PageFileSavingError(pageNumber, args.Exception);
+        }
+
+        public void OnCbzCreationStart(object sender, ScanItem cbzScan)
+        {
+            DownloadItem dlItem = DownloadItems.First(x => x.linkedScanItem == cbzScan);
+            dlItem.CbzCreationStarted();
+        }
+
+        public void OnCbzCreated(object sender, ScanItem cbzScan)
+        {
+            DownloadItem dlItem = DownloadItems.First(x => x.linkedScanItem == cbzScan);
+            dlItem.CbzCreated();
+        }
+
+        public void OnCbzCreationFailedError(object sender, CbzErrorEventArgs args)
+        {
+            ScanItem cbzScan = args.ScanItem;
+            DownloadItem dlItem = DownloadItems.First(x => x.linkedScanItem == cbzScan);
+            dlItem.CbzCreationFailed(args.ErrorMessage, args.Exception);
+        }
+
         #endregion
 
         public void StartDownload(List<ScanItem> scanItemsToDownload)
