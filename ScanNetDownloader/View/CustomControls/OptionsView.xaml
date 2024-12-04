@@ -18,9 +18,13 @@
 
             <StackPanel Orientation="Vertical" Margin="5 -5 0 0">
                 <Label Content="Download location" Margin=" -5 0 0 0" />
-                <StackPanel Orientation="Horizontal" Margin="0 0 0 7">
+                <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
                     <TextBox Name="txtBoxOutputDir" Text="{Binding OutputDirectoryPath, UpdateSourceTrigger=PropertyChanged}"  Width="400" Height="30" VerticalContentAlignment="Center"/>
                     <Button Name="btnChooseOutputDir" Content="Choose..." Click="btnChooseOutputDir_Click"  Width="80" Height="30" Margin="5 0 0 0"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0 0 0 10">
+                    <Button Name="btnOpenOutputDir" Content="Open download directory" Click="btnOpenOutputDir_Click" Width="160" Height="30"/>
+                    <TextBlock Name="txtBlockOpenDirError" Text="{Binding OpenOutputDirectoryText}" Foreground="Red" Margin="5 0 0 0" VerticalAlignment="Center"/>
                 </StackPanel>
                 <CheckBox Name="chBoxOpenOutputDir" Content="Open output directory after download" IsChecked="{Binding OpenOutputDirAfterDownload, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5"/>
                 <CheckBox Name="chBoxErrorPauseApp" Content="Error pause the download (Pop-up to acknowledge)" IsChecked="{Binding ErrorPauseApp, UpdateSourceTrigger=PropertyChanged}" Margin="0 0 0 5"/>

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -91,6 +92,18 @@ namespace ScanNetDownloader.View.CustomControls
             }
         }
 
+        private string _openOutputDirectoryText;
+
+        public string OpenOutputDirectoryText
+        {
+            get { return _openOutputDirectoryText; }
+            set {
+                _openOutputDirectoryText = value;
+                OnPropertyChanged();
+            }
+        }
+
+
         public event PropertyChangedEventHandler? PropertyChanged;
 
         public OptionsView()
@@ -121,13 +134,28 @@ namespace ScanNetDownloader.View.CustomControls
             if (success == true)
             {
                 txtBoxOutputDir.Text = fileDialog.FolderName;
-                // TODO: Do I save here or wait for Clicking on Save ?
-                //SaveSettings();
+                OpenOutputDirectoryText = string.Empty;
+
+                SaveSettings();
+            }
+        }
+
+        private void btnOpenOutputDir_Click(object sender, RoutedEventArgs e)
+        {
+            if (Directory.Exists(Settings.Instance.OutputDirectory))
+            {
+                OpenOutputDirectoryText = string.Empty;
+                FileManagement.OpenFolder(Settings.Instance.OutputDirectory);
+            }
+            else
+            {
+                OpenOutputDirectoryText = "Directory doesn't exist, impossible to open it";
             }
         }
 
         private void btnSaveOptions_Click(object sender, RoutedEventArgs e)
         {
+            OpenOutputDirectoryText = string.Empty;
             SaveSettings();
         }
 
@@ -177,7 +205,7 @@ namespace ScanNetDownloader.View.CustomControls
         {
             if (Settings.Instance == null) return false; // To prevent XAML compilation error
 
-            // TODO: A bit overkilled and not ideal but fastes way for now
+            // TODO: A bit overkilled and not ideal but fastest way for now
             Settings settings = Settings.Instance;
 
             if (OutputDirectoryPath != settings.OutputDirectory) return true;
