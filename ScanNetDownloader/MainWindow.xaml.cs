@@ -61,6 +61,8 @@ namespace ScanNetDownloader
             // Load ScansLocalData
             ScansLocalData.InitializeScansData();
 
+            App.OnApplicationExitEvent += new EventHandler(OnApplicationExit);
+
             // Initialize Window
             InitializeComponent();
 
@@ -92,10 +94,7 @@ namespace ScanNetDownloader
                 {
                     if (previousTabSelected == tabOptions && optionsVw.OptionsChangesNotSaved)
                     {
-                        string mBoxMessage = "Do you want to save your options changes ?";
-                        string mBoxCaption = "Save Options";
-                        MessageBoxResult result = MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.YesNo, MessageBoxImage.Question);
-                        if (result == MessageBoxResult.Yes) optionsVw.SaveSettings();
+                        AskToSaveSettings();
                     }
                 }
 
@@ -207,6 +206,22 @@ namespace ScanNetDownloader
             }
         }
 
+        private void downloadVw_OnDownloadCompleted(object sender, RoutedEventArgs e)
+        {
+            // Save the scans local data
+            ScansLocalData.Update(ScanDatas);
+        }
+
+        private void OnApplicationExit(object sender, EventArgs e)
+        {
+            // Save the scans local data
+            ScansLocalData.Update(ScanDatas);
+
+            if(tabCtrlNavigation.SelectedItem == tabOptions && optionsVw.OptionsChangesNotSaved)
+            {
+                AskToSaveSettings();
+            }
+        }
         #endregion
 
         private void RefreshScanListView()
@@ -263,6 +278,14 @@ namespace ScanNetDownloader
 
             // Remove item from list view
             ScanListItems.Remove(itemToDelete);
+        }
+
+        private void AskToSaveSettings()
+        {
+            string mBoxMessage = "Do you want to save your options changes ?";
+            string mBoxCaption = "Save Options";
+            MessageBoxResult result = MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes) optionsVw.SaveSettings();
         }
 
         #region Debug Tab

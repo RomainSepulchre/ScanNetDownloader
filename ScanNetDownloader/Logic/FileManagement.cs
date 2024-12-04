@@ -30,14 +30,12 @@ namespace ScanNetDownloader.Logic
 
                 string mBoxMessage = $"\"{OutputDirectory}\" does not exist, do you want to create the directory?";
                 string mBoxCaption = "Continue ?";
-                Downloader.WriteDlInfoLine(mBoxMessage);
                 // TODO: Create a window with CreateDirectory, Choose another directory, Cancel
                 MessageBoxResult resultCreateDir = MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.YesNo, MessageBoxImage.Question);
 
                 if (resultCreateDir == MessageBoxResult.Yes)
                 {
                     Directory.CreateDirectory(OutputDirectory);
-                    Downloader.WriteDlInfoLine($"\"{OutputDirectory}\" sucessfully created. Ready to download!");
                     return true;
                 }
                 else
@@ -65,7 +63,6 @@ namespace ScanNetDownloader.Logic
                         {
                             mBoxMessage = "Please modify the download directory in the Settings, it must be a valid directory.";
                             mBoxCaption = "Invalid download directory";
-                            Downloader.WriteDlInfoLine(mBoxMessage);
                             MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Warning);
                             // TODO: Find a cleaner way to do that
                             MainWindow mainWindow = Application.Current.MainWindow as MainWindow;
@@ -77,7 +74,6 @@ namespace ScanNetDownloader.Logic
                     {
                         mBoxMessage = "Please modify the download directory in the Settings, it must be a valid directory.";
                         mBoxCaption = "Invalid download directory";
-                        Downloader.WriteDlInfoLine(mBoxMessage);
                         MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Warning);
                         // TODO: Find a cleaner way to do that
                         MainWindow mainWindow = Application.Current.MainWindow as MainWindow;

@@ -18,14 +18,15 @@ namespace ScanNetDownloader.Logic
 
         public static event EventHandler<ScanItem> OnCbzCreatedEvent;
 
-        public static event EventHandler<CbzErrorEventArgs> OnCbzCreationFailedErrorEvent;
+        public static event EventHandler<ScanItem> OnCbzAlreadyCreatedEvent;
+
+        public static event EventHandler<CbzErrorEventArgs> OnCbzCreationErrorEvent;
 
         public static void BuildCbzArchive(ScanItem scanItem, string downloadPath)
         {
             OnCbzCreationStart(scanItem);
 
             ScanData scanData = scanItem.linkedScanData;
-            Downloader.WriteDlInfoLine($"=> Create .CBZ for {scanData.BookName}-{scanData.ChapterId}...");
 
             string bookName = scanData.BookName;
             string chapterNumber = scanData.ChapterId.ToString();
@@ -35,22 +36,22 @@ namespace ScanNetDownloader.Logic
 
             if (Directory.EnumerateFileSystemEntries(folderToArchive).Any() == false)
             {
-                Downloader.WriteDlInfoLine($"=> No images downloaded for {bookName}-{chapterNumber}, CBZ creation will be skipped!\n");
+                Exception noImgEx = new Exception($"No images downloaded for {bookName}-{chapterNumber}, CBZ creation will be skipped!");
+                OnCbzCreationError(scanItem, "Error while creating new cbz archive", noImgEx);
                 return;
             }
 
             if (File.Exists(cbzFilePath) == false)
-            {
-                
+            {   
                 try
                 {
                     ZipFile.CreateFromDirectory(folderToArchive, cbzFilePath);
-                    Downloader.WriteDlInfoLine($"=> {bookName}-{chapterNumber} .CBZ successfully created!\n");
+                    OnCbzCreated(scanItem);
                 }
                 catch (IOException ex)
                 {
                     Error.FailedCbzCreation(ex, scanData, Settings.Instance.DeleteImagesAfterCbzCreation);
-                    OnCbzCreationFailedError(scanItem, "Error while creating new cbz archive", ex);
+                    OnCbzCreationError(scanItem, "Error while creating new cbz archive", ex);
                     return;
                 }
             }
@@ -58,7 +59,7 @@ namespace ScanNetDownloader.Logic
             {
                 if (File.ReadAllBytes(cbzFilePath).Length > 0)
                 {
-                    Downloader.WriteDlInfoLine($"=> .CBZ already created!\n");
+                    OnCbzAlreadyCreated(scanItem);
                 }
                 else // Replace empty Cbz
                 {
@@ -66,12 +67,12 @@ namespace ScanNetDownloader.Logic
                     {
                         File.Delete(cbzFilePath);
                         ZipFile.CreateFromDirectory(folderToArchive, cbzFilePath);
-                        Downloader.WriteDlInfoLine($"=> {bookName}-{chapterNumber} .CBZ successfully created!\n");
+                        OnCbzCreated(scanItem);
                     }
                     catch (IOException ex)
                     {
                         Error.FailedToReplaceEmptyCbz(ex, scanData, Settings.Instance.DeleteImagesAfterCbzCreation);
-                        OnCbzCreationFailedError(scanItem, "Error while replacing empty cbz archive", ex);
+                        OnCbzCreationError(scanItem, "Error while replacing empty cbz archive", ex);
                         return;
                     }
                 }
@@ -81,8 +82,6 @@ namespace ScanNetDownloader.Logic
             {
                 if (Directory.Exists(downloadPath)) Directory.Delete(downloadPath, true);
             }
-
-            OnCbzCreated(scanItem);
         }
 
         #region Events
@@ -102,16 +101,24 @@ namespace ScanNetDownloader.Logic
             }
         }
 
-        private static void OnCbzCreationFailedError(ScanItem scanItem, string errorMsg, Exception ex)
+        private static void OnCbzAlreadyCreated(ScanItem scanItem)
         {
-            if (OnCbzCreationFailedErrorEvent != null)
+            if (OnCbzAlreadyCreatedEvent != null)
+            {
+                OnCbzAlreadyCreatedEvent(null, scanItem);
+            }
+        }
+
+        private static void OnCbzCreationError(ScanItem scanItem, string errorMsg, Exception ex)
+        {
+            if (OnCbzCreationErrorEvent != null)
             {
                 CbzErrorEventArgs args = new CbzErrorEventArgs();
                 args.ScanItem = scanItem;
                 args.ErrorMessage = errorMsg;
                 args.Exception = ex;
 
-                OnCbzCreationFailedErrorEvent(null, args);
+                OnCbzCreationErrorEvent(null, args);
             }
         }
         #endregion

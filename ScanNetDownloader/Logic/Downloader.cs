@@ -20,83 +20,60 @@ namespace ScanNetDownloader.Logic
         private static Settings CurrentSettings => Settings.Instance;
 
         // Events
-        public static event EventHandler<string> DlInfoWriteLineEvent;
-
         public static event EventHandler<float> UpdateDlProgressBarEvent;
 
         public static event EventHandler OnDownloadStartedEvent;
 
+        public static event EventHandler OnDownloadStoppedEvent;
+
         public static event EventHandler<PageEventArgs> OnPageDownloadedEvent;
 
+        public static event EventHandler<PageEventArgs> OnPageAlreadyDownloadedEvent;
+
         public static event EventHandler<ScanItem> OnScanDownloadedEvent;
+
+        public static event EventHandler<ScanErrorEventArgs> OnScanDownloadErrorEvent;
 
         public static event EventHandler<PageErrorEventArgs> OnPageDownloadErrorEvent;
 
         public static event EventHandler<PageErrorEventArgs> OnPageFileSavingErrorEvent;
 
+        public static event EventHandler OnDownloadsFinishedEvent;
+
         public static async void StartDownloader(List<ScanItem> scanItemsToDownload)
         {
             List<ScanData> scansToDownload = scanItemsToDownload.ToScanDataList();
-            if (scanItemsToDownload.Count == 0)
-            {
-                // TODO: Prevent to click on start button if no scan are selected even before clicking calling this
-                WriteDlInfoLine($"No scans have been selected, select at least a scan to start the download");
-                return;
-            }
 
-            WriteDlInfoLine($"Here is the list of scans you are going to download:");
-            foreach (ScanItem item in scanItemsToDownload)
-            {
-                WriteDlInfoLine($"-> {item.BookName} - {item.ChapterId} (source:{item.Url})");
-            }
-
-            WriteDlInfoLine($"The files will be downloaded in {Settings.Instance.OutputDirectory}, a folder will automatically be created for each title and chapters");
             if (FileManagement.OutputDirectoryIsValid() == false)
             {
-                WriteDlInfoLine("\nDOWNLOAD STOPPED");
+                OnDownloadStopped();
                 return;
             }
 
-            string mBoxMessage = "Do you to start the download ?";
+            string mBoxMessage = $"The files will be downloaded in {Settings.Instance.OutputDirectory}.\n\nDo you want to start the download ?";
             string mBoxCaption = "Continue ?";
-            WriteDlInfoLine($"{mBoxMessage}");
             MessageBoxResult result = MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-            WriteDlInfoLine($" YESNO RESULT = {result}");
 
             if (result == MessageBoxResult.No)
             {
-                WriteDlInfoLine("DOWNLOAD STOPPED");
+                OnDownloadStopped();
                 return;
             }
 
-            OnDownloadStarted();
             await DownloadScans(scanItemsToDownload);
-
-            if (CurrentSettings.ErrorPauseApp)
-            {
-                mBoxMessage = "Finished, press any key to close...";
-                mBoxCaption = "Finished";
-                WriteDlInfoLine($"{mBoxMessage}");
-                MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.None);
-            }
-            else
-            {
-                Error.ShowDownloadErrors();
-                mBoxMessage = "Finished with error, press any key to close...";
-                mBoxCaption = "Finished";
-                WriteDlInfoLine($"{mBoxMessage}");
-                MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.None);
-            }
 
             if (CurrentSettings.OpenOutputDirectoryAfterDownload)
             {
                 FileManagement.OpenRelevantFolder(scansToDownload);
             }
+
+            OnDownloadsFinished();
         }
 
         static async Task DownloadScans(List<ScanItem> scanItemsToDownload)
         {
+            OnDownloadStarted();
+
             int NumberOfImagesToDownload = scanItemsToDownload.GetTotalOfScanPages();
             float progress = 0;
             float minProgress = 0;
@@ -109,13 +86,13 @@ namespace ScanNetDownloader.Logic
                 ScanData scanData = scanItem.linkedScanData;
                 if (scanData.IsTemporaryData)
                 {
-                    WriteDlInfoLine($"Nothing can be downloaded from a temporary scan data, it should not be possible to add a temporary scan to the download list");
+                    Exception tempDataEx= new Exception("Nothing can be downloaded from a temporary scan data, it should not be possible to add a temporary scan to the download list");
+                    OnScanDownloadError(scanItem, tempDataEx);
                     continue;
                 }
 
                 minProgress = maxProgress;
                 maxProgress = minProgress + ((((float)scanData.PagesCount) / (NumberOfImagesToDownload)) * 100);
-
 
                 string url = scanData.Url;
                 string bookName = scanData.BookName;
@@ -123,9 +100,13 @@ namespace ScanNetDownloader.Logic
 
                 string header = $"Download {bookName} - chapter {chapterNumber} from {url}";
 
-                WriteDlInfoLine($"\nLook for images url for {bookName}-{chapterNumber} at {url}...");
                 List<string> imgsToDownload = scanData.PagesUrl;
-                if (imgsToDownload.Count == 0) { continue; } // if list is empty (in case of error while getting html content) skip directly to the next url
+                if (imgsToDownload.Count == 0) // if list is empty skip directly to the next scan
+                {
+                    Exception NoImgUrlEx = new Exception("No image url has been found for this scan");
+                    OnScanDownloadError(scanItem, NoImgUrlEx);
+                    continue;
+                } 
 
                 // Create output folder if necessary
                 string downloadPath = FileManagement.CreateChapterDirectory(bookName, chapterNumber);
@@ -145,20 +126,16 @@ namespace ScanNetDownloader.Logic
 
                     try
                     {
-                        WriteDlInfoLine($"\nDownloading {imgName} from {imgUrl}");
-                        WriteDlInfoLine($"...");
-
                         if (File.Exists(downloadFile) == true && File.ReadAllBytes(downloadFile).Length > 0 == true)
                         {
-                            WriteDlInfoLine($"File already downloaded!\n");
+                            OnPageAlreadyDownloaded(scanItem, pageIndex);
                         }
                         else
                         {
                             byte[] img = await client.GetByteArrayAsync(imgUrl);
                             File.WriteAllBytes(downloadFile, img);
-                            WriteDlInfoLine($"Sucessfully downloaded!\n");
-                        }
-                        OnPageDownloaded(scanItem, pageIndex);
+                            OnPageDownloaded(scanItem, pageIndex);
+                        }    
                     }
                     catch (HttpRequestException ex)
                     {
@@ -186,14 +163,6 @@ namespace ScanNetDownloader.Logic
         }
 
         #region Events
-        public static void WriteDlInfoLine(string lineToAdd) // TODO: Do better than this ? Class decicated to eventsHandler that anyone can call ? Status/DlInfo class ?
-        {
-            Debug.WriteLine(lineToAdd);
-            if (DlInfoWriteLineEvent != null)
-            {
-                DlInfoWriteLineEvent(null, lineToAdd);
-            }
-        }
 
         private static void UpdateDownloadProgress(float percentageDone)
         {
@@ -211,6 +180,14 @@ namespace ScanNetDownloader.Logic
             }
         }
 
+        private static void OnDownloadStopped()
+        {
+            if (OnDownloadStoppedEvent != null)
+            {
+                OnDownloadStoppedEvent(null, EventArgs.Empty);
+            }
+        }
+
         private static void OnPageDownloaded(ScanItem scanItem, int pageIndex)
         {
             if (OnPageDownloadedEvent != null)
@@ -223,11 +200,35 @@ namespace ScanNetDownloader.Logic
             }
         }
 
+        private static void OnPageAlreadyDownloaded(ScanItem scanItem, int pageIndex)
+        {
+            if(OnPageAlreadyDownloadedEvent != null)
+            {
+                PageEventArgs args = new PageEventArgs();
+                args.ScanItem = scanItem;
+                args.PageIndex = pageIndex;
+
+                OnPageAlreadyDownloadedEvent(null, args);
+            }
+        }
+
         private static void OnScanDownloaded(ScanItem scanDownloaded)
         {
             if (OnScanDownloadedEvent != null)
             {
                 OnScanDownloadedEvent(null, scanDownloaded);
+            }
+        }
+
+        private static void OnScanDownloadError(ScanItem scanWithError, Exception ex)
+        {
+            if (OnScanDownloadErrorEvent != null)
+            {
+                ScanErrorEventArgs args = new ScanErrorEventArgs();
+                args.ScanItem = scanWithError;
+                args.Exception = ex;
+
+                OnScanDownloadErrorEvent(null, args);
             }
         }
 
@@ -256,7 +257,21 @@ namespace ScanNetDownloader.Logic
                 OnPageFileSavingErrorEvent(null, args);
             }
         }
+
+        private static void OnDownloadsFinished()
+        {
+            if(OnDownloadsFinishedEvent != null)
+            {
+                OnDownloadsFinishedEvent(null, EventArgs.Empty);
+            }
+        }
         #endregion
+    }
+
+    public class ScanErrorEventArgs : EventArgs
+    {
+        public ScanItem ScanItem { get; set; }
+        public Exception Exception { get; set; }
     }
 
     public class PageEventArgs : EventArgs

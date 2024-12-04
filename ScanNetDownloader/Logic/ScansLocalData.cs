@@ -74,7 +74,7 @@ namespace ScanNetDownloader.Logic
             }
             else // Missing Settings.json
             {
-                // TODO: Error Manamegement missing scan data json file
+                // TODO: Error Management missing scan data json file
                 //Error.MissingSettingsJson(jsonPath);
                 loadedData = ClearLocalData();
                 return loadedData;

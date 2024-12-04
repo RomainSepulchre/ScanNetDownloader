@@ -106,7 +106,7 @@
             
             <!--Scan Download-->
             <TabItem Name="tabDownload" Header="Download">
-                <customControls:DownloadView x:Name="downloadVw"/>
+                <customControls:DownloadView x:Name="downloadVw" OnDownloadCompleted="downloadVw_OnDownloadCompleted"/>
                 <!--<Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
