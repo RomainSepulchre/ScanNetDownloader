@@ -104,8 +104,9 @@ namespace ScanNetDownloader.View.CustomControls
             {
                 btnNext.IsEnabled = true;
             }
+            else if (btnNext != null && btnNext.IsEnabled) btnNext.IsEnabled = false;
 
-            if(txtBoxUrlInput.Background == Brushes.IndianRed) txtBoxUrlInput.ClearValue(Control.BackgroundProperty);
+            if (txtBoxUrlInput.Background == Brushes.IndianRed) txtBoxUrlInput.ClearValue(Control.BackgroundProperty);
         }
 
         private async void btnNext_Click(object sender, RoutedEventArgs e)

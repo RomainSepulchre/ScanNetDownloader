@@ -15,7 +15,7 @@
         <TextBlock Name="txtBlockInfos"  Text="{Binding SelectUrlInfos}" VerticalAlignment="Center" Margin="30" TextWrapping="Wrap"/>
         <StackPanel Grid.Row="1" Margin="10 0 10 0">
             <Label Content="Enter the URL here"/>
-            <TextBox Name="txtBoxUrlInput" Text="{Binding UrlInput}" TextChanged="txtBoxUrlInput_TextChanged" VerticalContentAlignment="Center" Height="30" Background="Beige"/>
+            <TextBox Name="txtBoxUrlInput" Text="{Binding UrlInput, UpdateSourceTrigger=PropertyChanged}" TextChanged="txtBoxUrlInput_TextChanged" VerticalContentAlignment="Center" Height="30" Background="Beige"/>
             <Label Name="lbUrlError" Content="{Binding ErrorMessage}" Foreground="Red"/>
         </StackPanel>
         <Button Grid.Row="2" Name="btnNext" Content="Next" Click="btnNext_Click"/>

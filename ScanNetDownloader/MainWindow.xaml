@@ -22,7 +22,7 @@
         <TabControl Name="tabCtrlNavigation" SelectionChanged="tabCtrlNavigation_SelectionChanged" >
             
             <!--Scan Management-->
-            <TabItem Name="tabMain" Header="Main">
+            <TabItem Name="tabScanManager" Header="Scan manager">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition/>
@@ -95,11 +95,15 @@
                             </ListView.View>
                         </ListView>
                     </Border>
+                    <StackPanel Name="stPanelNoScans" VerticalAlignment="Center">
+                        <TextBlock Text="No scans added yet. Add a new scan url to get the scan information and download it." VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 20 0 10"/>
+                        <Button Content="＋" Click="btnAdd_Click" Width="50" Height="50" FontSize="25"/>
+                    </StackPanel>
+                    
 
                     <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
                         <Button Name="btnAdd" Content="Add" Click="btnAdd_Click" Height="40" Width="100" Margin="5"/>
                         <Button Name="btnStart" Content="Start" Click="btnStart_Click" Height="40" Width="100" Margin="5"/>
-
                     </StackPanel>
                 </Grid>
             </TabItem>

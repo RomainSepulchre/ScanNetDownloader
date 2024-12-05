@@ -70,6 +70,9 @@ namespace ScanNetDownloader
             RefreshScanListView(); // Populate listView based on the local data
                                    // Note: Settings are refreshed at OptionsView Initialization
 
+            if (ScanListItems.Count == 0) stPanelNoScans.Visibility = Visibility.Visible;
+            else stPanelNoScans.Visibility=Visibility.Collapsed;
+
 #if !DEBUG
             tabDebug.Visibility = Visibility.Collapsed;
             gridStatusBar.Visibility = Visibility.Collapsed;
@@ -98,9 +101,9 @@ namespace ScanNetDownloader
                     }
                 }
 
-                if (tabCtrlNavigation.SelectedItem == tabMain)
+                if (tabCtrlNavigation.SelectedItem == tabScanManager)
                 {
-                    previousTabSelected = tabMain;
+                    previousTabSelected = tabScanManager;
                 }
                 else if (tabCtrlNavigation.SelectedItem == tabDownload)
                 {
@@ -245,7 +248,6 @@ namespace ScanNetDownloader
 
         private void AddScanItems(List<ScanData> newScansToAdd) // TODO: Replace the refresh by a add function to prevent recreating the whole view everytime
         {
-
             // TODO: Check for duplicated ScanData (Same BookName, chapter and url)
 
             // Add in saved data
@@ -266,6 +268,11 @@ namespace ScanNetDownloader
                 item.CreateCbzBtnPressed += ScanItem_CreateCbzBtnPressed;               
                 ScanListItems.Add(item);
             }
+
+            if (ScanListItems.Count != 0 && stPanelNoScans.Visibility == Visibility.Visible)
+            {
+                stPanelNoScans.Visibility = Visibility.Collapsed;
+            }
         }
 
         private void DeleteScanItem(ScanItem itemToDelete)
@@ -278,6 +285,11 @@ namespace ScanNetDownloader
 
             // Remove item from list view
             ScanListItems.Remove(itemToDelete);
+
+            if (ScanListItems.Count == 0 && stPanelNoScans.Visibility != Visibility.Visible)
+            {
+                stPanelNoScans.Visibility = Visibility.Visible;
+            }
         }
 
         private void AskToSaveSettings()
