@@ -17,8 +17,8 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="0.25*"/>
-            <RowDefinition Height="0.45*"/>
-            <RowDefinition Height="0.3*"/>
+            <RowDefinition Height="0.25*"/>
+            <RowDefinition Height="0.5*"/>
             <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
         <TextBlock Name="txtBlockSelectChapterInfo" Text="{Binding SelectChapterInfos}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="30 0 30 0" TextWrapping="Wrap"/>
@@ -35,20 +35,48 @@
             </StackPanel>
             <TextBlock Name="txtBlockChapterError" Text="{Binding ErrorMessage}" Foreground="Red" TextWrapping="Wrap"/>
         </StackPanel>
-        <StackPanel Grid.Row="2">
+        <Grid Grid.Row="2" Margin="100 0 100 0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="25"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            
+            <Label Content="Chapters selected" FontWeight="Bold"/>
+            <Border Grid.Row="1" Margin="0 5 0 10" BorderBrush="Gray" BorderThickness="1">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <ItemsControl Name="chapterSelectedPanel" ItemsSource="{Binding Source={StaticResource ChapterItemsSource}}" VerticalAlignment="Center">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" IsItemsHost="True" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            </WrapPanel>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+        
+        
+        <!--<StackPanel Grid.Row="2">
             <Label Content="Chapters selected" FontWeight="Bold"/>
             <ItemsControl Name="chapterSelectedPanel" ItemsSource="{Binding Source={StaticResource ChapterItemsSource}}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <WrapPanel   Orientation="Horizontal" IsItemsHost="True"/>
+                        <WrapPanel Orientation="Horizontal" IsItemsHost="True" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        </WrapPanel>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
-        </StackPanel>
-        
-        <StackPanel Grid.Row="3" Orientation="Horizontal">
-            <Button Name="btnBackToUrlSelection" Content="Back" Click="btnBackToUrlSelection_Click" Width="150"/>
-            <Button Name="btnConfirmChapters" Content="Next" Click="btnConfirmChapters_Click" IsEnabled="False" Width="350"/>
-        </StackPanel>
+        </StackPanel>-->
+
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.25*"/>
+                <ColumnDefinition Width="0.75*"/>
+            </Grid.ColumnDefinitions>
+
+            <Button Name="btnBackToUrlSelection" Content="Back" Click="btnBackToUrlSelection_Click"/>
+            <Button Grid.Column="1" Name="btnConfirmChapters" Content="Next" Click="btnConfirmChapters_Click" IsEnabled="False"/>
+        </Grid>
     </Grid>
 </UserControl>

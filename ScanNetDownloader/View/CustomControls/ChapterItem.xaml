@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:ScanNetDownloader.View.CustomControls"
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="250">
-    <Border Background="White" BorderBrush="DimGray" BorderThickness="2" Height="25" Width="100">
+    <Border Background="White" BorderBrush="DimGray" BorderThickness="2" Height="25" Width="100" Margin="0 0 0 5">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
