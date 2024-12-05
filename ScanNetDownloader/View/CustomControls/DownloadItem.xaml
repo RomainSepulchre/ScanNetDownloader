@@ -37,13 +37,15 @@
         </Grid>
 
         <!--Details-->
-        <ItemsControl Name="stPanelDetails" Grid.Row="1" Grid.ColumnSpan="3"  ItemsSource="{Binding Source={StaticResource DownloadEventItemsSource}}" Visibility="Collapsed">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <StackPanel Orientation="Vertical" IsItemsHost="True">
-                    </StackPanel>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-        </ItemsControl>
+        <Border Name="downloadDetailsVw" Grid.Row="1" Grid.ColumnSpan="3" BorderThickness="0 0 0 5" BorderBrush="White" Visibility="Collapsed">
+            <ItemsControl ItemsSource="{Binding Source={StaticResource DownloadEventItemsSource}}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Vertical" IsItemsHost="True">
+                        </StackPanel>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </Border>
     </Grid>
 </UserControl>

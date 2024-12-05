@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
@@ -22,9 +23,9 @@ namespace ScanNetDownloader.View.CustomControls
     /// </summary>
     public partial class DownloadItem : UserControl
     {
-        private ObservableCollection<Border> _downloadEventItems;
+        private ObservableCollection<DownloadEventItem> _downloadEventItems;
 
-        public ObservableCollection<Border> DownloadEventItems
+        public ObservableCollection<DownloadEventItem> DownloadEventItems
         {
             get { return _downloadEventItems; }
             set { _downloadEventItems = value; }
@@ -53,7 +54,7 @@ namespace ScanNetDownloader.View.CustomControls
 
         public DownloadItem(ScanItem _scanItem)
         {
-            DownloadEventItems = new ObservableCollection<Border>();
+            DownloadEventItems = new ObservableCollection<DownloadEventItem>();
 
             InitializeComponent();
 
@@ -75,7 +76,7 @@ namespace ScanNetDownloader.View.CustomControls
 
         private void btnShowDetails_Click(object sender, RoutedEventArgs e)
         {
-            if (stPanelDetails.Visibility == Visibility.Visible)
+            if (downloadDetailsVw.Visibility == Visibility.Visible)
             {
                 ShowDownloadDetails(false);
             }
@@ -89,12 +90,12 @@ namespace ScanNetDownloader.View.CustomControls
         {
             if (!showDetails)
             {
-                stPanelDetails.Visibility = Visibility.Collapsed;
+                downloadDetailsVw.Visibility = Visibility.Collapsed;
                 btnShowDetails.Content = "˅";
             }
             else
             {
-                stPanelDetails.Visibility = Visibility.Visible;
+                downloadDetailsVw.Visibility = Visibility.Visible;
                 btnShowDetails.Content = "˃";
             }
         }
@@ -109,7 +110,7 @@ namespace ScanNetDownloader.View.CustomControls
         public void PageDownloaded(int pageNumber)
         {
             string msg = $"Page {pageNumber} successfully downloaded !";
-            Border pageItem = CreateNewPageDownloadEventItem(msg);
+            DownloadEventItem pageItem = new DownloadEventItem(msg, Brushes.LightGreen);
             int countBeforeAdd = DownloadEventItems.Count;
             DownloadEventItems.Add(pageItem);
             if (countBeforeAdd == 0) SetShowDetailsBtnVisibility();
@@ -123,7 +124,7 @@ namespace ScanNetDownloader.View.CustomControls
         public void PageAlreadyDownloaded(int pageNumber)
         {
             string msg = $"Page {pageNumber} already downloaded !";
-            Border pageItem = CreateNewPageDownloadEventItem(msg);
+            DownloadEventItem pageItem = new DownloadEventItem(msg, Brushes.LightGreen);
             int countBeforeAdd = DownloadEventItems.Count;
             DownloadEventItems.Add(pageItem);
             if (countBeforeAdd == 0) SetShowDetailsBtnVisibility();
@@ -138,7 +139,7 @@ namespace ScanNetDownloader.View.CustomControls
         {
             ErrorCount++;
             string errorMsg = $"Error while downloading page {pageNumber}: {ex.Message}";
-            Border pageItem = CreateNewPageDownloadEventItem(errorMsg, ex);
+            DownloadEventItem pageItem = new DownloadEventItem(errorMsg, Brushes.Red);
             int countBeforeAdd = DownloadEventItems.Count;
             DownloadEventItems.Add(pageItem);
             if (countBeforeAdd == 0) SetShowDetailsBtnVisibility();
@@ -148,7 +149,7 @@ namespace ScanNetDownloader.View.CustomControls
         {
             ErrorCount++;
             string errorMsg = $"Error while saving file for page {pageNumber}: {ex.Message}";
-            Border pageItem = CreateNewPageDownloadEventItem(errorMsg, ex);
+            DownloadEventItem pageItem = new DownloadEventItem(errorMsg, Brushes.Red);
             int countBeforeAdd = DownloadEventItems.Count;
             DownloadEventItems.Add(pageItem);
             if (countBeforeAdd == 0) SetShowDetailsBtnVisibility();
@@ -160,7 +161,7 @@ namespace ScanNetDownloader.View.CustomControls
             txtBlockDlStatus.Text = "An error happened while downloading the scan, see download details";
 
             string errorMsg = $"Error while downloading scan {BookName}-{ChapterId}: {ex.Message}";
-            Border pageItem = CreateNewScanDownloadEvent(errorMsg, ex);
+            DownloadEventItem pageItem = new DownloadEventItem(errorMsg, Brushes.Red);
             int countBeforeAdd = DownloadEventItems.Count;
             DownloadEventItems.Add(pageItem);
             if (countBeforeAdd == 0) SetShowDetailsBtnVisibility();
@@ -215,7 +216,7 @@ namespace ScanNetDownloader.View.CustomControls
         public void CbzCreated()
         {
             string msg = $"Cbz archive for {BookName}-{ChapterId} successfully created ";
-            Border pageItem = CreateCbzEventItem(msg);
+            DownloadEventItem pageItem = new DownloadEventItem(msg, Brushes.LightGreen);
             int countBeforeAdd = DownloadEventItems.Count;
             DownloadEventItems.Add(pageItem);
             if (countBeforeAdd == 0) SetShowDetailsBtnVisibility();
@@ -224,7 +225,7 @@ namespace ScanNetDownloader.View.CustomControls
         public void CbzAlreadyCreated()
         {
             string msg = $"Cbz archive for {BookName}-{ChapterId} already created";
-            Border pageItem = CreateCbzEventItem(msg);
+            DownloadEventItem pageItem = new DownloadEventItem(msg, Brushes.LightGreen);
             int countBeforeAdd = DownloadEventItems.Count;
             DownloadEventItems.Add(pageItem);
             if (countBeforeAdd == 0) SetShowDetailsBtnVisibility();
@@ -235,110 +236,10 @@ namespace ScanNetDownloader.View.CustomControls
             CbzCreationError = true;
 
             string errorMsg = $"{msg} for {BookName}-{ChapterId}: {ex.Message}";
-            Border pageItem = CreateCbzEventItem(errorMsg, ex);
+            DownloadEventItem pageItem = new DownloadEventItem(errorMsg, Brushes.Red);
             int countBeforeAdd = DownloadEventItems.Count;
             DownloadEventItems.Add(pageItem);
             if (countBeforeAdd == 0) SetShowDetailsBtnVisibility();
-        }
-
-        public Border CreateNewScanDownloadEvent(string errorMsg, Exception ex)
-        {
-            Border newDlEventItem = new Border();
-
-            newDlEventItem.Height = 20;
-            newDlEventItem.Background = Brushes.Red;
-            newDlEventItem.BorderThickness = new Thickness(0, 0, 0, 1);
-            newDlEventItem.BorderBrush = Brushes.Black;
-            newDlEventItem.Margin = new Thickness(10, 0, 0, 0);
-
-            TextBlock info = new TextBlock();
-            info.Text = errorMsg;
-            info.VerticalAlignment = VerticalAlignment.Center;
-            info.Margin = new Thickness(5, 0, 0, 0);
-
-            newDlEventItem.Child = info;
-
-            return newDlEventItem;
-        }
-
-        public Border CreateNewPageDownloadEventItem(string msg)
-        {
-            Border newDlEventItem = new Border();
-
-            newDlEventItem.Height = 20;
-            newDlEventItem.Background = Brushes.LightGreen;
-            newDlEventItem.BorderThickness = new Thickness(0, 0, 0, 1);
-            newDlEventItem.BorderBrush = Brushes.Black;
-            newDlEventItem.Margin = new Thickness(10,0,0,0);
-
-            TextBlock info = new TextBlock();
-            info.Text = msg;
-            info.VerticalAlignment = VerticalAlignment.Center;
-            info.Margin = new Thickness(5, 0, 0, 0);
-
-            newDlEventItem.Child = info;
-
-            return newDlEventItem;
-        }
-
-        public Border CreateNewPageDownloadEventItem(string errorMsg, Exception ex)
-        {
-            Border newDlEventItem = new Border();
-
-            newDlEventItem.Height = 20;
-            newDlEventItem.Background = Brushes.Red;
-            newDlEventItem.BorderThickness = new Thickness(0, 0, 0, 1);
-            newDlEventItem.BorderBrush = Brushes.Black;
-            newDlEventItem.Margin = new Thickness(10, 0, 0, 0);
-
-            TextBlock info = new TextBlock();
-            info.Text = errorMsg;
-            info.VerticalAlignment = VerticalAlignment.Center;
-            info.Margin = new Thickness(5, 0, 0, 0);
-
-            newDlEventItem.Child = info;
-
-            return newDlEventItem;
-        }
-
-        public Border CreateCbzEventItem(string msg)
-        {
-            Border newDlEventItem = new Border();
-
-            newDlEventItem.Height = 20;
-            newDlEventItem.Background = Brushes.LightGreen;
-            newDlEventItem.BorderThickness = new Thickness(0, 0, 0, 1);
-            newDlEventItem.BorderBrush = Brushes.Black;
-            newDlEventItem.Margin = new Thickness(10, 0, 0, 0);
-
-            TextBlock info = new TextBlock();
-            info.Text = msg;
-            info.VerticalAlignment = VerticalAlignment.Center;
-            info.Margin = new Thickness(5, 0, 0, 0);
-
-            newDlEventItem.Child = info;
-
-            return newDlEventItem;
-        }
-
-        public Border CreateCbzEventItem(string errorMsg, Exception ex)
-        {
-            Border newDlEventItem = new Border();
-
-            newDlEventItem.Height = 20;
-            newDlEventItem.Background = Brushes.Red;
-            newDlEventItem.BorderThickness = new Thickness(0, 0, 0, 1);
-            newDlEventItem.BorderBrush = Brushes.Black;
-            newDlEventItem.Margin = new Thickness(10, 0, 0, 0);
-
-            TextBlock info = new TextBlock();
-            info.Text = errorMsg;
-            info.VerticalAlignment = VerticalAlignment.Center;
-            info.Margin = new Thickness(5, 0, 0, 0);
-
-            newDlEventItem.Child = info;
-
-            return newDlEventItem;
         }
 
         public void SetShowDetailsBtnVisibility()
