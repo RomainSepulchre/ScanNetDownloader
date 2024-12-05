@@ -17,6 +17,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ScanNetDownloader.Logic;
+using ScanNetDownloader.Logic.Helpers;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ScanNetDownloader.View.CustomControls

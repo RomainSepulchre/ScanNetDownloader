@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Net.Http;
+using ScanNetDownloader.Logic.Helpers;
 
 namespace ScanNetDownloader.Logic
 {

@@ -53,11 +53,17 @@ namespace ScanNetDownloader.View.CustomControls
             }
         }
 
-
         public bool IsDownloading { get; private set; } = false;
 
-
         public event PropertyChangedEventHandler? PropertyChanged;
+
+        public static RoutedEvent OnDownloadCompletedEvent = EventManager.RegisterRoutedEvent(nameof(OnDownloadCompleted), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ScanItem));
+
+        public event RoutedEventHandler OnDownloadCompleted
+        {
+            add { AddHandler(OnDownloadCompletedEvent, value); }
+            remove { RemoveHandler(OnDownloadCompletedEvent, value); }
+        }
 
         public DownloadView()
         {
@@ -88,14 +94,6 @@ namespace ScanNetDownloader.View.CustomControls
         private void OnPropertyChanged([CallerMemberName] string property = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
-        }
-
-        public static RoutedEvent OnDownloadCompletedEvent = EventManager.RegisterRoutedEvent(nameof(OnDownloadCompleted), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ScanItem));
-
-        public event RoutedEventHandler OnDownloadCompleted
-        {
-            add { AddHandler(OnDownloadCompletedEvent, value); }
-            remove { RemoveHandler(OnDownloadCompletedEvent, value); }
         }
 
         public void StartDownload(List<ScanItem> scanItemsToDownload)

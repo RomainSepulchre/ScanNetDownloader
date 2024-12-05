@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using ScanNetDownloader.Logic;
+using ScanNetDownloader.Logic.Helpers;
 using ScanNetDownloader.View;
 using ScanNetDownloader.View.CustomControls;
 using System;
@@ -30,30 +31,17 @@ namespace ScanNetDownloader
     // TODO: Manage weird image format from anime-same by cropping image automatically
     // TODO: Scrap a list of all the books available and create a search engine
 
-    public partial class MainWindow : Window, INotifyPropertyChanged
+    public partial class MainWindow : Window
     {
 
         private TabItem previousTabSelected = null;
 
         private List<ScanData> ScanDatas => ScansLocalData.Instance.ScanDataList;
 
-        private ObservableCollection<ScanItem> _scanListItems;
-
-        public ObservableCollection<ScanItem> ScanListItems
-        {
-            get { return _scanListItems; }
-            set
-            {
-                _scanListItems = value;
-            }
-        }
-
-        public event PropertyChangedEventHandler? PropertyChanged;
-
         public MainWindow()
         {
             DataContext = this;
-            ScanListItems = new ObservableCollection<ScanItem>();
+            
             
             // Load Settings
             Settings.InitializeAppSettings();
@@ -64,14 +52,7 @@ namespace ScanNetDownloader
             App.OnApplicationExitEvent += new EventHandler(OnApplicationExit);
 
             // Initialize Window
-            InitializeComponent();
-
-            // Setup Ui
-            RefreshScanListView(); // Populate listView based on the local data
-                                   // Note: Settings are refreshed at OptionsView Initialization
-
-            if (ScanListItems.Count == 0) stPanelNoScans.Visibility = Visibility.Visible;
-            else stPanelNoScans.Visibility=Visibility.Collapsed;
+            InitializeComponent();      
 
 #if !DEBUG
             tabDebug.Visibility = Visibility.Collapsed;
@@ -80,11 +61,6 @@ namespace ScanNetDownloader
             gridMainContent.RowDefinitions[2].Height = new GridLength(0);
 #endif
 
-        }
-
-        private void OnPropertyChanged([CallerMemberName]string property=null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
 
         #region Ui Routed Events    
@@ -108,8 +84,8 @@ namespace ScanNetDownloader
                 else if (tabCtrlNavigation.SelectedItem == tabDownload)
                 {
                     previousTabSelected = tabDownload;
-
-                    List<ScanItem> scanItemsToDownload = ScanListItems.GetScanItemsSelectedForDownload();
+  
+                    List<ScanItem> scanItemsToDownload = scanManagerVw.ScanListItems.GetScanItemsSelectedForDownload();
                     downloadVw.RefreshDownloadView(scanItemsToDownload);
                 }
                 else if (tabCtrlNavigation.SelectedItem == tabOptions)
@@ -123,90 +99,17 @@ namespace ScanNetDownloader
                 }
             }
         }
-
-        private void btnStart_Click(object sender, RoutedEventArgs e)
-        {
-            tabCtrlNavigation.SelectedItem = tabDownload; // Switch to download tab
-
-            List<ScanItem> scanItemsToDownload = ScanListItems.GetScanItemsSelectedForDownload();
-            downloadVw.StartDownload(scanItemsToDownload);
-        }
-
-        private void btnAdd_Click(object sender, RoutedEventArgs e)
-        {
-            AddScanWindow addWindow = new AddScanWindow(this);
-            Opacity = 0.4;
-            addWindow.ShowDialog();
-            Opacity = 1;
-
-            if(addWindow.Success) // TODO: Clean this
-            {
-                string urlInput = addWindow.UrlInput;
-                List<ScanData> newScansToAdd = addWindow.NewScanDatas;                
-
-                if (newScansToAdd == null || newScansToAdd.Count == 0)
-                {
-                    string mBoxMessage = $"No scan data to add for {urlInput}, make sure you used a valid url";
-                    string mBoxCaption = "No scan data";
-                    MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
-                else
-                {
-                    AddScanItems(newScansToAdd);
-                }             
-            }
-        }
-
+        
         private void btnOpenStatusBar_Click(object sender, RoutedEventArgs e)
         {
             // TODO: Open a scrollable list view that allow to see all status
         }
 
-        private void ScanItem_DeleteBtnPressed(object sender, RoutedEventArgs e)
+        private void scanManagerVw_StartDownload(object sender, RoutedEventArgs e)
         {
-            ScanItem item = e.Source as ScanItem;
-            if (item != null)
-            {
-                DeleteScanItem(item);
-            }
-        }
-
-        private void ScanItem_CreateCbzBtnPressed(object sender, RoutedEventArgs e)
-        {
-            ScanItem item = e.Source as ScanItem;
-            if (item != null)
-            {
-                // Verify if cbz is created
-                bool cbzCreated = FileManagement.IsCbzArchiveCreated(item.linkedScanData);
-                item.CbzArchiveCreated = cbzCreated;
-                Debug.WriteLine($"CBZ CREATION BUTTON: Item={item.BookName}-{item.ChapterId}");
-
-                if (cbzCreated == false)
-                {
-                    // TODO: Propose to build cbz
-                    string mBoxMessage = $"Do you want to create a .cbz for {item.BookName} - Chapter {item.ChapterId} ?";
-                    string mBoxCaption = "CBZ Archive creation";
-                    MessageBoxResult result = MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.YesNo, MessageBoxImage.Question);
-                    if (result == MessageBoxResult.Yes)
-                    {
-                        string chapterPath = FileManagement.GetChapterDirectoryPath(item.linkedScanData);
-                        CbzCreator.BuildCbzArchive(item, chapterPath);
-
-                        bool cbzSuccessfullyCreated = FileManagement.IsCbzArchiveCreated(item.linkedScanData);
-                        item.CbzArchiveCreated = cbzSuccessfullyCreated;
-                    }
-                }
-            }
-        }
-
-        private void ScanItem_StatusBtnPressed(object sender, RoutedEventArgs e)
-        {
-            ScanItem item = e.Source as ScanItem;
-            if (item != null)
-            {
-                bool fileDownloaded = FileManagement.AreScanFilesDownloaded(item.linkedScanData);
-                item.IsDownloaded = fileDownloaded;
-            }
+            tabCtrlNavigation.SelectedItem = tabDownload; // Switch to download tab
+            List<ScanItem> scanItemsToDownload = scanManagerVw.ScanListItems.GetScanItemsSelectedForDownload();
+            downloadVw.StartDownload(scanItemsToDownload);
         }
 
         private void downloadVw_OnDownloadCompleted(object sender, RoutedEventArgs e)
@@ -226,71 +129,6 @@ namespace ScanNetDownloader
             }
         }
         #endregion
-
-        private void RefreshScanListView()
-        {
-            // TODO: Why is it so long with a lot of items ? Way to optiomize this ?
-            Debug.WriteLine("REFRESH SCAN LIST");
-            ScanListItems.Clear();
-
-            foreach (ScanData scanData in ScanDatas)
-            {
-                bool filesAlreadyDownloaded = FileManagement.AreScanFilesDownloaded(scanData);
-                bool cbzAlreadyCreated = FileManagement.IsCbzArchiveCreated(scanData);
-
-                ScanItem item = new ScanItem(scanData, filesAlreadyDownloaded, cbzAlreadyCreated);
-                item.DeleteScanBtnPressed += ScanItem_DeleteBtnPressed;
-                item.CreateCbzBtnPressed += ScanItem_CreateCbzBtnPressed;
-                item.StatusBtnPressed += ScanItem_StatusBtnPressed;
-                ScanListItems.Add(item);
-            }
-        }
-
-        private void AddScanItems(List<ScanData> newScansToAdd) // TODO: Replace the refresh by a add function to prevent recreating the whole view everytime
-        {
-            // TODO: Check for duplicated ScanData (Same BookName, chapter and url)
-
-            // Add in saved data
-            ScanDatas.AddRange(newScansToAdd);
-
-            // Save the scans local data
-            ScansLocalData.Update(ScanDatas);
-
-            // Add item in list view
-            foreach (ScanData scanData in newScansToAdd)
-            {
-                // TODO: Add a check to prevent a double entry of the same chapter on the same website, maybe check before caliing AddScanItems ?
-                bool filesAlreadyDownloaded = FileManagement.AreScanFilesDownloaded(scanData); 
-                bool cbzAlreadyCreated = FileManagement.IsCbzArchiveCreated(scanData);
-
-                ScanItem item = new ScanItem(scanData, filesAlreadyDownloaded, cbzAlreadyCreated);
-                item.DeleteScanBtnPressed += ScanItem_DeleteBtnPressed;
-                item.CreateCbzBtnPressed += ScanItem_CreateCbzBtnPressed;               
-                ScanListItems.Add(item);
-            }
-
-            if (ScanListItems.Count != 0 && stPanelNoScans.Visibility == Visibility.Visible)
-            {
-                stPanelNoScans.Visibility = Visibility.Collapsed;
-            }
-        }
-
-        private void DeleteScanItem(ScanItem itemToDelete)
-        {
-            // Remove from saved data
-            ScanDatas.Remove(itemToDelete.linkedScanData);
-
-            // Save the scans local data
-            ScansLocalData.Update(ScanDatas);
-
-            // Remove item from list view
-            ScanListItems.Remove(itemToDelete);
-
-            if (ScanListItems.Count == 0 && stPanelNoScans.Visibility != Visibility.Visible)
-            {
-                stPanelNoScans.Visibility = Visibility.Visible;
-            }
-        }
 
         private void AskToSaveSettings()
         {
@@ -432,5 +270,6 @@ namespace ScanNetDownloader
             FileManagement.OpenFolder(Settings.Instance.OutputDirectory);
         }
         #endregion
+
     }
 }

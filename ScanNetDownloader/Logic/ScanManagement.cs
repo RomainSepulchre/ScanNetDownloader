@@ -1,4 +1,5 @@
 ﻿using ScanNetDownloader.View;
+using ScanNetDownloader.Logic.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

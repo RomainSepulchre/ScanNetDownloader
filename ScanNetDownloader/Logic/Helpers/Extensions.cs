@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Windows.Documents;
 
-namespace ScanNetDownloader.Logic
+namespace ScanNetDownloader.Logic.Helpers
 {
     public static class Extensions
     {
