@@ -36,12 +36,9 @@ namespace ScanNetDownloader
 
         private TabItem previousTabSelected = null;
 
-        private List<ScanData> ScanDatas => ScansLocalData.Instance.ScanDataList;
-
         public MainWindow()
         {
-            DataContext = this;
-            
+            DataContext = this;         
             
             // Load Settings
             Settings.InitializeAppSettings();
