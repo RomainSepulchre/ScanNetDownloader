@@ -95,6 +95,7 @@ namespace ScanNetDownloader.Logic
         #endregion
 
         #region Download Images
+        
         public async Task<List<string>> GetScanImagesUrl()
         {
             ThrowExceptionIfTemporaryData();
@@ -135,7 +136,7 @@ namespace ScanNetDownloader.Logic
             }
             catch (HttpRequestException ex)
             {
-                // Check ex.StatusCode to know act depending on the type of error
+                //TODO: Check ex.StatusCode to know act depending on the type of error
                 Debug.WriteLine(ex);
                 Error.FailedHtmlDownload(ex, Url);
                 result.Success = false;

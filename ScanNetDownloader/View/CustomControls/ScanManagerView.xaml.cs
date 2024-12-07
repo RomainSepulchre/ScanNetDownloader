@@ -151,7 +151,7 @@ namespace ScanNetDownloader.View.CustomControls
             ScanDatas.AddRange(newScansToAdd);
 
             // Save the scans local data
-            ScansLocalData.Update(ScanDatas);
+            ScansLocalData.Save();
 
             // Add item in list view
             foreach (ScanData scanData in newScansToAdd)
@@ -178,7 +178,7 @@ namespace ScanNetDownloader.View.CustomControls
             ScanDatas.Remove(itemToDelete.linkedScanData);
 
             // Save the scans local data
-            ScansLocalData.Update(ScanDatas);
+            ScansLocalData.Save();
 
             // Remove item from list view
             ScanListItems.Remove(itemToDelete);

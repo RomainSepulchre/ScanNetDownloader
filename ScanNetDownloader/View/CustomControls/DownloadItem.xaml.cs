@@ -169,6 +169,7 @@ namespace ScanNetDownloader.View.CustomControls
 
         public void ScanDownloaded()
         {
+            // TODO: add the possibility to retry the download of the item when error happened
             if(ErrorCount == 0)
             {
                 if (CbzCreationError)

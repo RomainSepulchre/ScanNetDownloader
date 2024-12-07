@@ -22,7 +22,6 @@ namespace ScanNetDownloader.Logic
 
         public static bool OutputDirectoryIsValid()
         {
-            // TODO: Redo Error Manamgement to fit with WPF
             // TODO: If no custom directory set ask if the user want to select a new one or if he's ok with the one selected
 
             if (Directory.Exists(OutputDirectory) == false)

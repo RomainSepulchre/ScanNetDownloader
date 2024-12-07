@@ -115,13 +115,13 @@ namespace ScanNetDownloader
         private void downloadVw_OnDownloadCompleted(object sender, RoutedEventArgs e)
         {
             // Save the scans local data
-            ScansLocalData.Update(ScanDatas);
+            ScansLocalData.Save();
         }
 
         private void OnApplicationExit(object sender, EventArgs e)
         {
             // Save the scans local data
-            ScansLocalData.Update(ScanDatas);
+            ScansLocalData.Save();
 
             if(tabCtrlNavigation.SelectedItem == tabOptions && optionsVw.OptionsChangesNotSaved)
             {
@@ -143,7 +143,7 @@ namespace ScanNetDownloader
         private void btnDbgSave_Click(object sender, RoutedEventArgs e)
         {
             // Save the scans local data
-            ScansLocalData.Update(ScanDatas);
+            ScansLocalData.Save();
         }
 
         private void btnDbgOpenDataJson_Click(object sender, RoutedEventArgs e)

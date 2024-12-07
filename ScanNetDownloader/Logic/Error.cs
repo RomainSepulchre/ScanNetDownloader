@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using ScanNetDownloader.Logic.Helpers;
+using System.Diagnostics;
 using System.Windows;
 
 namespace ScanNetDownloader.Logic
@@ -9,18 +10,23 @@ namespace ScanNetDownloader.Logic
         public enum ErrorType
         {
             None = 0,
-            NoScansUrl = 1, // TODO: Is it still usefull ?
-            UnknownScanWebDomain = 2,
-            NoOutputDirectory = 3,
-            FailedHtmlDownload = 4,
-            FailedImageDownload = 5,
-            FailedCbzCreation = 6,
-            FailedToReplaceEmptyCbz = 7,
-            FailedToParseChapterEnteredByUser = 8,
-            ChapterDoesntExist = 9,
-            MissingSettingsJson = 10,
-            FailedToLoadSettingsJson = 11,
-            FailedToSaveSettingsJson = 12
+            UnknownScanWebDomain = 1, // ScanData Creation
+            NoOutputDirectory = 2, // Download
+            FailedHtmlDownload = 3, // ScanData Creation
+            FailedImageDownload = 4, // Download
+            FailedCbzCreation = 5, // Download
+            FailedToReplaceEmptyCbz = 6, // Download
+            ChapterDoesntExist = 7, // ScanData Creation
+            MissingSettingsJson = 8, // Local File
+            FailedToLoadSettingsJson = 9, // Local File
+            FailedToSaveSettingsJson = 10, // Local File
+            FailedToLoadScansLocalData = 11, // Local File
+            FailedToSaveScansLocalData = 12 // Local File
+        }
+
+        public DateTime Time
+        {
+            get; private set;
         }
 
         public string Message
@@ -33,9 +39,15 @@ namespace ScanNetDownloader.Logic
             get; private set;
         }
 
-        public Exception Exception
+        public Exception? Exception
         {
             get; private set;
+        }
+
+        public Error()
+        {
+            Time = DateTime.Now;
+            errorList.Add(this);
         }
 
         public Error(string errorMessage, ErrorType errorType, Exception ex = null)
@@ -43,175 +55,133 @@ namespace ScanNetDownloader.Logic
             Message = errorMessage;
             Type = errorType;
             Exception = ex;
+            Time = DateTime.Now;
+
+            errorList.Add(this);
         }
 
         public static List<Error> errorList = new List<Error>();
 
-        public static void ShowDownloadErrors()
+        public static Error UnknownScanWebDomain(string url, Exception ex, bool showPopUp=false)
         {
-            Debug.WriteLine("Finished, some error happened during downloading:\n");
-
-            foreach (var error in errorList)
-            {
-                switch (error.Type)
-                {
-                    case ErrorType.None:
-                    case ErrorType.NoScansUrl:
-                    case ErrorType.UnknownScanWebDomain:
-                    case ErrorType.NoOutputDirectory:
-                    case ErrorType.FailedToParseChapterEnteredByUser:
-                    case ErrorType.MissingSettingsJson:
-                    case ErrorType.FailedToLoadSettingsJson:
-                    case ErrorType.FailedToSaveSettingsJson:
-                    default:
-                        break;
-
-                    case ErrorType.FailedHtmlDownload:
-                    case ErrorType.FailedImageDownload:
-                    case ErrorType.FailedCbzCreation:
-                    case ErrorType.FailedToReplaceEmptyCbz:
-                    case ErrorType.ChapterDoesntExist:
-                        Debug.WriteLine($"-{error.Type} | {error.Message}");
-                        break;
-                }
-            }
-
-        }
-
-        public static void UnknownScanWebDomain(string url)
-        {
-            errorList.Add(new Error($"{url} | Unknown web domain, impossible to download scan from here", ErrorType.UnknownScanWebDomain));
+            Error error = new Error();
+            error.Message = $"{url} | Unknown web domain, impossible to download scan from here";
+            error.Type = ErrorType.UnknownScanWebDomain;
+            error.Exception = ex;
 
             string mBoxMessage = $"Unknown web domain: {url}, the possibility to download scan from this website has not been implemented yet.";
             string mBoxCaption = "Error";
             Debug.WriteLine($"{mBoxMessage}\n");
-            MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Information);
+            if (showPopUp) MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Information);
 
+            return error;
         }
 
-        public static void NoOutputDirectory()
+        public static Error NoOutputDirectory()
         {
-            errorList.Add(new Error("The output directory doesn't exist", ErrorType.NoOutputDirectory));
+            Error error = new Error();
+            error.Message = "The output directory doesn't exist";
+            error.Type = ErrorType.NoOutputDirectory;
 
             Debug.WriteLine("\nError, impossible to find the expected download directory.\n");
+
+            return error;
         }
 
-        public static void FailedHtmlDownload(Exception ex, string htmlUrl)
+        public static Error FailedHtmlDownload(Exception ex, string htmlUrl)
         {
-            errorList.Add(new Error($"{htmlUrl} | Failed to download html content", ErrorType.FailedHtmlDownload, ex));
+            Error error = new Error();
+            error.Message = $"{htmlUrl} | Failed to download html content";
+            error.Type = ErrorType.FailedHtmlDownload;
+            error.Exception = ex;
 
-            string mBoxMessage = $"Error while loading {htmlUrl} content, this scan won't be downloaded.";
+            string mBoxMessage = $"Error while loading {htmlUrl} content, this scan won't be downloaded : {ex}";
             string mBoxCaption = "Error";
 
             Debug.WriteLine($"\n{mBoxMessage}");
             Debug.WriteLine($"Verify you entered a correct scan url.\n");
-
             Debug.WriteLine($"Exception: {ex}\n");
 
             if (Settings.Instance.ErrorPauseApp)
             {               
                 MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Error);
             }
+
+            return error;
         }
 
-        public static void FailedImageDownload(Exception ex, string imgUrl)
+        public static Error FailedImageDownload(Exception ex, string imgUrl)
         {
-            errorList.Add(new Error($"{imgUrl} | Failed to download image", ErrorType.FailedImageDownload, ex));
+            Error error = new Error();
+            error.Message = $"{imgUrl} | Failed to download image";
+            error.Type = ErrorType.FailedImageDownload;
+            error.Exception = ex;
 
-            string mBoxMessage = $"Download failed for {imgUrl}!";
-            string mBoxCaption = "Error";
-
-            Debug.WriteLine($"\n{mBoxMessage}");
+            Debug.WriteLine($"\nDownload failed for {imgUrl}!");
             Debug.WriteLine($"Verify the image URL is working in a web browser.\n");
-
             Debug.WriteLine($"Exception: {ex}\n");
 
-            if (Settings.Instance.ErrorPauseApp)
-            {
-                
-                MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            return error;
         }
 
-        public static void FailedCbzCreation(Exception ex, ScanData scanData, bool deleteImagesAfterCbzCreation)
+        public static Error FailedCbzCreation(Exception ex, ScanData scanData, bool deleteImagesAfterCbzCreation)
         {
-            errorList.Add(new Error($"{scanData.BookName}-{scanData.ChapterId} | Failed to create cbz archive", ErrorType.FailedCbzCreation, ex));
+            Error error = new Error();
+            error.Message = $"{scanData.BookName}-{scanData.ChapterId} | Failed to create cbz archive";
+            error.Type = ErrorType.FailedCbzCreation;
+            error.Exception = ex;
 
-            string mBoxMessage = $"=> An error occured while creating the CBZ archive for {scanData.BookName}-{scanData.ChapterId}!";
-            string mBoxCaption = "Error";
+            Debug.WriteLine($"An error occured while creating the CBZ archive for {scanData.BookName}-{scanData.ChapterId}: {ex}");
+            Debug.WriteLine($"Exception: {ex}\n");
 
-            Debug.WriteLine(mBoxMessage);
-            if (deleteImagesAfterCbzCreation)
-            {
-                Debug.WriteLine($"=> The scan images won't be deleted so you can create the CBZ manually.\n");
-            }
-            else
-            {
-                Debug.Write('\n');
-            }
+            return error;
+        }
 
+        public static Error FailedToReplaceEmptyCbz(Exception ex, ScanData scanData, bool deleteImagesAfterCbzCreation)
+        {
+            Error error = new Error();
+            error.Message = $"{scanData.BookName}-{scanData.ChapterId} | Failed to replace empty cbz archive";
+            error.Type = ErrorType.FailedToReplaceEmptyCbz;
+            error.Exception = ex;
+
+            Debug.WriteLine($"An error occured while replacing an empty CBZ archive for {scanData.BookName}-{scanData.ChapterId}!");
             Debug.WriteLine($"=> Exception: {ex}\n");
 
-            if (Settings.Instance.ErrorPauseApp)
-            { 
-                MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            return error;
         }
 
-        public static void FailedToReplaceEmptyCbz(Exception ex, ScanData scanData, bool deleteImagesAfterCbzCreation)
+        [Obsolete]
+        public static Error FailedToParseChapterEnteredByUser(ScanData scanData, string chapterEnteredByUser)
         {
-            errorList.Add(new Error($"{scanData.BookName}-{scanData.ChapterId} | Failed to replace empty cbz archive", ErrorType.FailedToReplaceEmptyCbz, ex));
-
-            string mBoxMessage = $"=> An error occured while replacing an empty CBZ archive for {scanData.BookName}-{scanData.ChapterId}!";
-            string mBoxCaption = "Error";
-
-            Debug.WriteLine(mBoxMessage);
-            if (deleteImagesAfterCbzCreation)
-            {
-                Debug.WriteLine($"=> The scan images won't be deleted so you can create the CBZ manually.\n");
-            }
-            else
-            {
-                Debug.Write('\n');
-            }
-
-            Debug.WriteLine($"=> Exception: {ex}\n");
-
-            if (Settings.Instance.ErrorPauseApp)
-            {               
-                MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        public static void FailedToParseChapterEnteredByUser(ScanData scanData, string chapterEnteredByUser)
-        {
-            errorList.Add(new Error($"{scanData.BookName} | Error when parsing chapter {chapterEnteredByUser}", ErrorType.FailedToParseChapterEnteredByUser));
+            Error error = new Error();
+            error.Message = $"{scanData.BookName} | Error when parsing chapter {chapterEnteredByUser}";
 
             Debug.WriteLine($" -> Failed to parse \"{chapterEnteredByUser}\" to int, this is not a valid number. \"{chapterEnteredByUser}\" will not be added to the chapter list for {scanData.BookName}!");
 
             string mBoxMessage = $"Cannot parse \"{chapterEnteredByUser}\" to int => invalid chapter number. Entry will not be added to the chapter list for {scanData.BookName} ({scanData.Url})";
             string mBoxCaption = "Error";
             MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Information);
+
+            return error;
         }
 
-        public static void ChapterDoesntExist(ScanData scanData, string chapterUrl)
+        public static Error ChapterDoesntExist(ScanData scanData, string chapterUrl)
         {
-            errorList.Add(new Error($"{scanData.BookName}-{scanData.ChapterId} | {chapterUrl} doesn't exist on the website", ErrorType.ChapterDoesntExist));
+            Error error = new Error();
+            error.Message = $"{scanData.BookName}-{scanData.ChapterId} | {chapterUrl} doesn't exist on the website";
+            error.Type = ErrorType.ChapterDoesntExist;
 
-            string mBoxMessage = $"{scanData.BookName} chapter {scanData.ChapterId} doesn't exist on the website ({chapterUrl}). Make sure this chapter really exist.";
-            string mBoxCaption = "Error";
-            Debug.WriteLine($"\n{mBoxMessage}\n");
+            Debug.WriteLine($"\n{scanData.BookName} chapter {scanData.ChapterId} doesn't exist on the website ({chapterUrl}). Make sure this chapter really exist.\n");
 
-            if (Settings.Instance.ErrorPauseApp)
-            {
-                Debug.WriteLine($"Press any key to continue...\n");
-                MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            return error;
         }
 
-        public static void MissingSettingsJson(string jsonPath)
+        public static Error MissingSettingsJson(string jsonPath)
         {
-            errorList.Add(new Error($"The settings.json file ({jsonPath}) is missing", ErrorType.MissingSettingsJson));
+            Error error = new Error();
+            error.Message = $"The settings.json file ({jsonPath}) is missing";
+            error.Type = ErrorType.MissingSettingsJson;
+            error.Exception = Exceptions.MissingSettingsJson(jsonPath);
 
             string mBoxMessage = $"The settings.json file ({jsonPath}) is missing, a new json file will be created with the default settings.";
             string mBoxCaption = "Error - missing json file";
@@ -220,20 +190,29 @@ namespace ScanNetDownloader.Logic
             // TODO: Proper management of error pop-up
             
             MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Warning);
+
+            return error;
         }
 
-        public static void FailedToLoadSettingsJson(string jsonPath, Exception ex)
+        public static Error FailedToLoadSettingsJson(string jsonPath, Exception ex)
         {
-            errorList.Add(new Error($"Failed to load the settings json ({jsonPath}), an error happened during json deserialization", ErrorType.FailedToLoadSettingsJson, ex));
+            Error error = new Error();
+            error.Message = $"Failed to load the settings json ({jsonPath}), an error happened during json deserialization";
+            error.Type = ErrorType.FailedToLoadSettingsJson;
+            error.Exception = ex;
 
             Debug.WriteLine($"\nImpossible to load the settings from the json ({jsonPath}), an error happened during json deserialization\n");
             Debug.WriteLine($"Exception: {ex}\n");
 
+            return error;
         }
 
-        public static void FailedToSaveSettingsJson(string jsonPath, Exception ex)
+        public static Error FailedToSaveSettingsJson(string jsonPath, Exception ex)
         {
-            errorList.Add(new Error($"Failed to save the settings in the json ({jsonPath}), an error happened.", ErrorType.FailedToSaveSettingsJson, ex));
+            Error error = new Error();
+            error.Message = $"Failed to save the settings in the json ({jsonPath}), an error happened.";
+            error.Type = ErrorType.FailedToSaveSettingsJson;
+            error.Exception = ex;
 
             string mBoxMessage = $"Impossible to save the settings in the json ({jsonPath}), the changes you made will be reverted after an app restart.";
             string mBoxCaption = "Error";
@@ -242,6 +221,39 @@ namespace ScanNetDownloader.Logic
             Debug.WriteLine($"Exception: {ex}\n");
 
             MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Error);
+
+            return error;
+        }
+
+        public static Error FailedToLoadScansLocalData(string jsonPath, Exception ex)
+        {
+            Error error = new Error();
+            error.Message = $"Failed to load the scans data json ({jsonPath}), an error happened during json deserialization";
+            error.Type = ErrorType.FailedToLoadScansLocalData;
+            error.Exception = ex;
+
+            Debug.WriteLine($"\nImpossible to load the scans data from the json ({jsonPath}), an error happened during json deserialization\n");
+            Debug.WriteLine($"Exception: {ex}\n");
+
+            return error;
+        }
+
+        public static Error FailedToSaveScansLocalData(string jsonPath, Exception ex)
+        {
+            Error error = new Error();
+            error.Message = $"Failed to save the scans data in the json ({jsonPath}), an error happened.";
+            error.Type = ErrorType.FailedToSaveScansLocalData;
+            error.Exception = ex;
+
+            string mBoxMessage = $"Impossible to save the scans data in the json ({jsonPath}), the changes you made will be reverted after an app restart.";
+            string mBoxCaption = "Error";
+
+            Debug.WriteLine($"\n{mBoxMessage}\n");
+            Debug.WriteLine($"Exception: {ex}\n");
+
+            MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Error);
+
+            return error;
         }
     }
 }

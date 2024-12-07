@@ -27,8 +27,9 @@ namespace ScanNetDownloader.Logic
                     return await AnimeSamaFrScanData.IsUrlValid(url);
 
                 default:
-                    Error.UnknownScanWebDomain(url);
-                    string invalidityReason = "This website is not compatible with ScanNetDownloader";
+                    NotImplementedException exception = Exceptions.UnknownWebDomain(url);
+                    Error.UnknownScanWebDomain(url, exception);
+                    string invalidityReason = exception.Message;
                     return new UrlValidityResult(url, false, invalidityReason);
             }            
         }
@@ -44,14 +45,14 @@ namespace ScanNetDownloader.Logic
                     return new AnimeSamaFrScanData(url);
 
                 default: // Default, unknown domain name
-                    Error.UnknownScanWebDomain(url);
+                    NotImplementedException exception = Exceptions.UnknownWebDomain(url);
+                    Error.UnknownScanWebDomain(url, exception, true); // Show pop-up because this should not happened at this point
                     return null;
             }
         }
 
         public static async Task<ScanDataInitResult> CreateNewScanData(string url, int chapterSelected)
         {
-
             switch (url)
             {
                 case string s when s.Contains(Constants.SCANVF_DOMAIN_NAME):
@@ -63,14 +64,16 @@ namespace ScanNetDownloader.Logic
                     return await animeSamaData.InitScanData();
 
                 default: // Default, unknown domain name
-                    Error.UnknownScanWebDomain(url);
+                    NotImplementedException exception = Exceptions.UnknownWebDomain(url);
+                    Error.UnknownScanWebDomain(url, exception, true);
                     ScanDataInitResult result = new ScanDataInitResult(null);
                     result.Success = false;
-                    result.Exception = new NotImplementedException("Unknown Scan Web Domain, this domain is not compatible with ScanNetDownloader");
+                    result.Exception = exception;
                     return result;
             }
         }
 
+        // Obsolete ?
         public static async Task<List<ScanData>> CreateNewScanDatas(string url, List<int> chaptersSelected)
         {
             bool errorOccured = false;
@@ -102,7 +105,8 @@ namespace ScanNetDownloader.Logic
 
                 default: // Default, unknown domain name
                     errorOccured = true;
-                    Error.UnknownScanWebDomain(url);
+                    NotImplementedException exception = Exceptions.UnknownWebDomain(url);
+                    Error.UnknownScanWebDomain(url, exception, true);
                     break;
             }
 
@@ -178,7 +182,8 @@ namespace ScanNetDownloader.Logic
 
                 default: // Default, unknown domain name
                     errorOccured = true;
-                    Error.UnknownScanWebDomain(urlEntered);
+                    NotImplementedException exception = Exceptions.UnknownWebDomain(urlEntered);
+                    Error.UnknownScanWebDomain(urlEntered, exception, true);
                     break;
             }
 

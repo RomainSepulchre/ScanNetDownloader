@@ -51,7 +51,9 @@ namespace ScanNetDownloader.Logic
                 catch (IOException ex)
                 {
                     Error.FailedCbzCreation(ex, scanData, Settings.Instance.DeleteImagesAfterCbzCreation);
-                    OnCbzCreationError(scanItem, "Error while creating new cbz archive", ex);
+                    string errorMsg = "Error while creating new cbz archive";
+                    if (Settings.Instance.DeleteImagesAfterCbzCreation) errorMsg += ", the scan images won't be deleted so you can create the CBZ manually";
+                    OnCbzCreationError(scanItem, errorMsg, ex);
                     return;
                 }
             }
@@ -72,7 +74,9 @@ namespace ScanNetDownloader.Logic
                     catch (IOException ex)
                     {
                         Error.FailedToReplaceEmptyCbz(ex, scanData, Settings.Instance.DeleteImagesAfterCbzCreation);
-                        OnCbzCreationError(scanItem, "Error while replacing empty cbz archive", ex);
+                        string errorMsg = "Error while replacing empty cbz archive";
+                        if (Settings.Instance.DeleteImagesAfterCbzCreation) errorMsg += ", the scan images won't be deleted so you can create the CBZ manually";
+                        OnCbzCreationError(scanItem, errorMsg, ex);
                         return;
                     }
                 }

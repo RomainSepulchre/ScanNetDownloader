@@ -44,8 +44,7 @@ namespace ScanNetDownloader.Logic
                 }
                 catch (Exception ex)
                 {
-                    // TODO: Error Manamegement while loading scan data
-                    //Error.FailedToLoadScansLocalData(jsonPath, ex);
+                    Error.FailedToLoadScansLocalData(jsonPath, ex);
 
                     // TODO: Redo error management to fit with WPF version
                     string mBoxMessage = $"Error while loading scan local data, do you want to clear the data ?";
@@ -81,15 +80,17 @@ namespace ScanNetDownloader.Logic
             }
         }
 
-        public static void Update(List<ScanData> newScansDataList)
+        public static void Save(ScansLocalData newScanLocalData=null)
         {
-            // TODO: Delete Update and do the same change done with Settings on Save()
-            Instance.ScanDataList = newScansDataList; // TODO: Create a function for this ? Check reference Equals -> no need to assign if ref equals + help to know when instance is replaced  ?
-            Save(Instance); // Save the scans local data 
-        }
+            // If we specify newScanLocalData, they replace the instance otherwise we save our ScansLocalData instance
+            if (newScanLocalData != null)
+            {
+                if (ReferenceEquals(Instance, newScanLocalData) == false) // Make sure we didn't provide a reference of instance as argument
+                {
+                    Instance = newScanLocalData;
+                }
+            }
 
-        private static void Save(ScansLocalData newScanLocalData)
-        {
             // TODO: Delete Update and do the same change done with Settings on Save()
             JsonSerializerSettings serializerSettings = new JsonSerializerSettings
             {
@@ -97,21 +98,13 @@ namespace ScanNetDownloader.Logic
                 Formatting = Formatting.Indented
             };
 
-            // TODO: Should I replace only if reference is different so I know when I replace the initial instance ?
-            //if(ReferenceEquals(Instance, newSettings) == false) 
-            //{
-            //    Instance = newSettings;
-            //}
-
-            Instance = newScanLocalData;
-
             try
             {
                 File.WriteAllText(Constants.SCANSLOCALDATA_JSON_PATH, JsonConvert.SerializeObject(Instance, serializerSettings));
             }
             catch (Exception ex)
             {
-                Error.FailedToSaveSettingsJson(Constants.SCANSLOCALDATA_JSON_PATH, ex);
+                Error.FailedToSaveScansLocalData(Constants.SCANSLOCALDATA_JSON_PATH, ex);
             }
         }
 
