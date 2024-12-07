@@ -150,21 +150,6 @@ namespace ScanNetDownloader.Logic
             return error;
         }
 
-        [Obsolete]
-        public static Error FailedToParseChapterEnteredByUser(ScanData scanData, string chapterEnteredByUser)
-        {
-            Error error = new Error();
-            error.Message = $"{scanData.BookName} | Error when parsing chapter {chapterEnteredByUser}";
-
-            Debug.WriteLine($" -> Failed to parse \"{chapterEnteredByUser}\" to int, this is not a valid number. \"{chapterEnteredByUser}\" will not be added to the chapter list for {scanData.BookName}!");
-
-            string mBoxMessage = $"Cannot parse \"{chapterEnteredByUser}\" to int => invalid chapter number. Entry will not be added to the chapter list for {scanData.BookName} ({scanData.Url})";
-            string mBoxCaption = "Error";
-            MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Information);
-
-            return error;
-        }
-
         public static Error ChapterDoesntExist(ScanData scanData, string chapterUrl)
         {
             Error error = new Error();
