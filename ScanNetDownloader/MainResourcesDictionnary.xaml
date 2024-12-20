@@ -1,0 +1,10 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+    <!--Images-->
+    <BitmapImage x:Key="plusIconWhite" UriSource="/Images/plusIcon_White.png"></BitmapImage>
+    <BitmapImage x:Key="plusIconBlack" UriSource="/Images/plusIcon_Black.png"></BitmapImage>
+    <BitmapImage x:Key="startIconWhite" UriSource="/Images/startIcon_White.png"></BitmapImage>
+    <BitmapImage x:Key="startIconBlack" UriSource="/Images/startIcon_Black.png"></BitmapImage>
+    
+</ResourceDictionary>

@@ -49,14 +49,15 @@ namespace ScanNetDownloader
             App.OnApplicationExitEvent += new EventHandler(OnApplicationExit);
 
             // Initialize Window
-            InitializeComponent();      
+            InitializeComponent();
 
 #if !DEBUG
-            tabDebug.Visibility = Visibility.Collapsed;
+            tabDebug.Visibility = Visibility.Collapsed;       
+#endif
+            // Hide status bar that is not used yet
             gridStatusBar.Visibility = Visibility.Collapsed;
             gridMainContent.RowDefinitions[1].Height = new GridLength(0);
             gridMainContent.RowDefinitions[2].Height = new GridLength(0);
-#endif
 
         }
 

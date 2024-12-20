@@ -5,19 +5,42 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ScanNetDownloader.View.CustomControls"
              mc:Ignorable="d" 
-             d:DesignHeight="720" d:DesignWidth="1280">
+             d:DesignHeight="660" d:DesignWidth="1280">
     <UserControl.Resources>
-        <CollectionViewSource x:Key="ScanItemsSource" Source="{Binding ScanListItems}">
-        </CollectionViewSource>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="..\..\MainResourcesDictionnary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <CollectionViewSource x:Key="ScanItemsSource" Source="{Binding ScanListItems}">
+            </CollectionViewSource>
+        </ResourceDictionary>
     </UserControl.Resources>
-    <Grid>
+    <Grid Margin="20 0 20 20">
         <Grid.RowDefinitions>
+            <RowDefinition Height="43"/>
             <RowDefinition/>
-            <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
 
+        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0 8 0 5">
+            <Button Name="btnAdd" Click="btnAdd_Click" Height="30" Width="150" Margin="0 0 5 0" Foreground="White" Background="Black" BorderThickness="0">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal" Margin="-5 0 0 0">
+                        <Image Source="{StaticResource plusIconWhite}" Height="30" Width="30" VerticalAlignment="Center" Margin="0 0 2 0"/>
+                        <TextBlock Text="Add new scan" VerticalAlignment="Center" FontSize="16" FontWeight="Bold"></TextBlock>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+            <Button Name="btnStart" Click="btnStart_Click" Height="30" Width="163" Margin="0 0 5 0" Foreground="White" Background="Black" BorderThickness="0">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal" Margin="-5 0 0 0">
+                        <Image Source="{StaticResource startIconWhite}" Height="30" Width="30" VerticalAlignment="Center" Margin="0 0 2 0"/>
+                        <TextBlock Text="Start download" VerticalAlignment="Center" FontSize="16" FontWeight="Bold"></TextBlock>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+        </StackPanel>
 
-        <Border Margin="10 10 10 0">
+        <Border Grid.Row="1" >
             <!--<DataGrid Name="listVwScans" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" ItemsSource="{Binding Source={StaticResource ScanItemsSource}, UpdateSourceTrigger=PropertyChanged}">
             <DataGrid.Columns>
                 <DataGridCheckBoxColumn Header="Download" Binding="{Binding Path=IsSelectedForDownload}"/>
@@ -84,15 +107,16 @@
                 </ListView.View>
             </ListView>
         </Border>
-        <StackPanel Name="stPanelNoScans" VerticalAlignment="Center">
-            <TextBlock Text="No scans added yet. Add a new scan url to get the scan information and download it." VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 20 0 10"/>
-            <Button Content="＋" Click="btnAdd_Click" Width="50" Height="50" FontSize="25"/>
-        </StackPanel>
-
-
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
-            <Button Name="btnAdd" Content="Add" Click="btnAdd_Click" Height="40" Width="100" Margin="5"/>
-            <Button Name="btnStart" Content="Start" Click="btnStart_Click" Height="40" Width="100" Margin="5"/>
+        <StackPanel Grid.Row="1" Name="stPanelNoScans" VerticalAlignment="Center">
+            <TextBlock Text="No scans added yet. Add a new scan url to get the scan information and download it." VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 20 0 10" FontSize="16"/>
+            <Button Click="btnAdd_Click" Height="30" Width="150" Margin="0 0 5 0" Foreground="White" Background="Black" BorderThickness="0">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal" Margin="-5 0 0 0">
+                        <Image Source="{StaticResource plusIconWhite}" Height="30" Width="30" VerticalAlignment="Center" Margin="0 0 2 0"/>
+                        <TextBlock Text="Add new scan" VerticalAlignment="Center" FontSize="16" FontWeight="Bold"></TextBlock>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
         </StackPanel>
     </Grid>
 </UserControl>

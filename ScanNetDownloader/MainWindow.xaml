@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:ScanNetDownloader"
         xmlns:customControls="clr-namespace:ScanNetDownloader.View.CustomControls"
         mc:Ignorable="d"
-        Title="ScanNetDownloader" Height="720" Width="1280">
+        Title="ScanNetDownloader" Height="720" Width="1280"
+        ResizeMode="NoResize">
     <Grid x:Name="gridMainContent">
 
         <Grid.RowDefinitions>
@@ -18,12 +19,22 @@
         <TabControl Name="tabCtrlNavigation" SelectionChanged="tabCtrlNavigation_SelectionChanged" >
             
             <!--Scan Management-->
-            <TabItem Name="tabScanManager" Header="Scan manager">
+            <TabItem Name="tabScanManager" Height="60">
+                <TabItem.Header>
+                    <Border Margin="10 0 10 0">
+                        <TextBlock Text="SCAN MANAGER" FontSize="24" HorizontalAlignment="Center"/>
+                    </Border>
+                </TabItem.Header>
                 <customControls:ScanManagerView x:Name="scanManagerVw" StartDownload="scanManagerVw_StartDownload"/>
             </TabItem>
             
             <!--Scan Download-->
-            <TabItem Name="tabDownload" Header="Download">
+            <TabItem Name="tabDownload" Height="60">
+                <TabItem.Header>
+                    <Border Margin="10 0 10 0">
+                        <TextBlock Text="DOWNLOAD" FontSize="24" HorizontalAlignment="Center"/>
+                    </Border>
+                </TabItem.Header>
                 <customControls:DownloadView x:Name="downloadVw" OnDownloadCompleted="downloadVw_OnDownloadCompleted"/>
                 <!--<Grid>
                     <Grid.RowDefinitions>
@@ -70,22 +81,32 @@
             </TabItem>
             
             <!--Options-->
-            <TabItem Name="tabOptions" Header="Options">
+            <TabItem Name="tabOptions" Height="60">
+                <TabItem.Header>
+                    <Border Margin="10 0 10 0">
+                        <TextBlock Text="OPTIONS" FontSize="24" HorizontalAlignment="Center"/>
+                    </Border>
+                </TabItem.Header>
                 <customControls:OptionsView x:Name="optionsVw"/> 
             </TabItem>
 
             <!--Debug-->
-            <TabItem Name="tabDebug" Header="Debug">
+            <TabItem Name="tabDebug" Height="60"  >
+                <TabItem.Header>
+                    <Border Margin="10 0 10 0">
+                        <TextBlock Text="DEBUG" FontSize="24" HorizontalAlignment="Center"/>
+                    </Border>
+                </TabItem.Header>
                 <WrapPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0 20 0 0">
-                    <Button Name="btnDbgSave" Content="Force Save Scan Data" Click="btnDbgSave_Click" Background="Orchid" Height="50" Width="200" Margin="10"/>
-                    <Button Name="btnDbgOpenDataJson" Content="Open Scan Data Json" Click="btnDbgOpenDataJson_Click"  Background="Orchid" Height="50" Width="200" Margin="10"/>
-                    <Button Name="btnDbgOpenSettingsJson" Content="Open Settings Json" Click="btnDbgOpenSettingsJson_Click"  Background="Orchid" Height="50" Width="200" Margin="10"/>
-                    <Button Name="btnDbg1" Content="Save html Files" Click="btnDbg1_Click" Width="200" Height="50" Margin="10"/>
-                    <Button Name="btnDbg2" Content="Test HttpClient" Width="200" Click="btnDbg2_Click" Height="50" Margin="10"/>
-                    <Button Name="btnDbg3" Content="Test Dl img" Width="200" Click="btnDbg3_Click" Height="50" Margin="10"/>
-                    <Button Name="btnDbg4" Content="AnimeSama VA test" Width="200" Click="btnDbg4_Click" Height="50" Margin="10"/>
-                    <Button Name="btnDbg5" Content="" Width="200" Click="btnDbg5_Click" Height="50" Margin="10"/>
-                    <Button Name="btnDbg6" Content="" Width="200" Click="btnDbg6_Click" Height="50" Margin="10"/>
+                    <Button Name="btnDbgSave" Content="Force Save Scan Data" Click="btnDbgSave_Click" Background="Orchid" Height="50" Width="200" Margin="10" FontSize="12"/>
+                    <Button Name="btnDbgOpenDataJson" Content="Open Scan Data Json" Click="btnDbgOpenDataJson_Click"  Background="Orchid" Height="50" Width="200" Margin="10" FontSize="12"/>
+                    <Button Name="btnDbgOpenSettingsJson" Content="Open Settings Json" Click="btnDbgOpenSettingsJson_Click"  Background="Orchid" Height="50" Width="200" Margin="10" FontSize="12"/>
+                    <Button Name="btnDbg1" Content="Save html Files" Click="btnDbg1_Click" Width="200" Height="50" Margin="10" FontSize="12"/>
+                    <Button Name="btnDbg2" Content="Test HttpClient" Width="200" Click="btnDbg2_Click" Height="50" Margin="10" FontSize="12"/>
+                    <Button Name="btnDbg3" Content="Test Dl img" Width="200" Click="btnDbg3_Click" Height="50" Margin="10" FontSize="12"/>
+                    <Button Name="btnDbg4" Content="AnimeSama VA test" Width="200" Click="btnDbg4_Click" Height="50" Margin="10" FontSize="12"/>
+                    <Button Name="btnDbg5" Content="" Width="200" Click="btnDbg5_Click" Height="50" Margin="10" FontSize="12"/>
+                    <Button Name="btnDbg6" Content="" Width="200" Click="btnDbg6_Click" Height="50" Margin="10" FontSize="12"/>
                 </WrapPanel>
             </TabItem>        
         </TabControl>
