@@ -1,10 +1,27 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     
+    <!--Colors-->
+    <SolidColorBrush x:Key="Colors.Black" Color="#000000"/>
+    <SolidColorBrush x:Key="Colors.White" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="Colors.LightGrey" Color="#EFEFEF"/>
+    <SolidColorBrush x:Key="Colors.MediumGrey" Color="#CCCCCC"/>
+    <SolidColorBrush x:Key="Colors.Blue" Color="#20A4FC"/>
+    <SolidColorBrush x:Key="Colors.DarkBlue" Color="#282040"/>
+    <SolidColorBrush x:Key="Colors.Red" Color="#FC3E3E"/>
+    <SolidColorBrush x:Key="Colors.Orange" Color="#F1B255"/>
+    <SolidColorBrush x:Key="Colors.Green" Color="#10BC77"/>
+
+
     <!--Images-->
-    <BitmapImage x:Key="plusIconWhite" UriSource="/Images/plusIcon_White.png"></BitmapImage>
-    <BitmapImage x:Key="plusIconBlack" UriSource="/Images/plusIcon_Black.png"></BitmapImage>
-    <BitmapImage x:Key="startIconWhite" UriSource="/Images/startIcon_White.png"></BitmapImage>
-    <BitmapImage x:Key="startIconBlack" UriSource="/Images/startIcon_Black.png"></BitmapImage>
+    <BitmapImage x:Key="Img.plusIconWhite" UriSource="/Images/plusIcon_White.png"></BitmapImage>
+    <BitmapImage x:Key="Img.plusIconBlack" UriSource="/Images/plusIcon_Black.png"></BitmapImage>
+    <BitmapImage x:Key="Img.startIconWhite" UriSource="/Images/startIcon_White.png"></BitmapImage>
+    <BitmapImage x:Key="Img.startIconBlack" UriSource="/Images/startIcon_Black.png"></BitmapImage>
+    <BitmapImage x:Key="Img.stopIcon" UriSource="/Images/stopIcon.png"></BitmapImage>
+    <BitmapImage x:Key="Img.moreDetailsClosed" UriSource="/Images/moreDetailsIcon_Closed.png"></BitmapImage>
+    <BitmapImage x:Key="Img.moreDetailsOppened" UriSource="/Images/moreDetailsIcon_Oppened.png"></BitmapImage>
+    <BitmapImage x:Key="Img.checkboxWhiteEmpty" UriSource="/Images/checkboxIcon_White_Empty.png"></BitmapImage>
+    <BitmapImage x:Key="Img.checkboxBlackEmpty" UriSource="/Images/checkboxIcon_Black_Empty.png"></BitmapImage>
     
 </ResourceDictionary>

@@ -33,12 +33,12 @@ namespace ScanNetDownloader.View.CustomControls
             }
         }
 
-        private SolidColorBrush _backgroundColor;
-        public SolidColorBrush BackgroundColor
+        private SolidColorBrush _circleColor;
+        public SolidColorBrush CircleColor
         {
-            get { return _backgroundColor; }
+            get { return _circleColor; }
             set {
-                _backgroundColor = value;
+                _circleColor = value;
                 OnPropertyChanged();
             }
         }
@@ -48,7 +48,7 @@ namespace ScanNetDownloader.View.CustomControls
         public DownloadEventItem(string msg, SolidColorBrush backgroundColor)
         {
             MsgText = msg;
-            BackgroundColor = backgroundColor;
+            CircleColor = backgroundColor;
 
             InitializeComponent();
 

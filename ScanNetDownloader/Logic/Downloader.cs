@@ -31,6 +31,8 @@ namespace ScanNetDownloader.Logic
 
         public static event EventHandler<PageEventArgs> OnPageAlreadyDownloadedEvent;
 
+        public static event EventHandler<ScanItem> OnScanDownloadStartedEvent;
+
         public static event EventHandler<ScanItem> OnScanDownloadedEvent;
 
         public static event EventHandler<ScanErrorEventArgs> OnScanDownloadErrorEvent;
@@ -113,6 +115,8 @@ namespace ScanNetDownloader.Logic
                 string downloadPath = FileManagement.CreateChapterDirectory(bookName, chapterNumber);
 
                 int pageId = 1;
+
+                OnScanDownloadStarted(scanItem);
 
                 foreach (string imgUrl in imgsToDownload)
                 {
@@ -210,6 +214,14 @@ namespace ScanNetDownloader.Logic
                 args.PageIndex = pageIndex;
 
                 OnPageAlreadyDownloadedEvent(null, args);
+            }
+        }
+
+        private static void OnScanDownloadStarted(ScanItem scanDownloaded)
+        {
+            if (OnScanDownloadStartedEvent != null)
+            {
+                OnScanDownloadStartedEvent(null, scanDownloaded);
             }
         }
 

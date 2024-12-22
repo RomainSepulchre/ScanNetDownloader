@@ -91,32 +91,38 @@ namespace ScanNetDownloader.View.CustomControls
             if (!showDetails)
             {
                 downloadDetailsVw.Visibility = Visibility.Collapsed;
-                btnShowDetails.Content = "˅";
+                Image img = (Image)btnShowDetails.Content; 
+                img.Source = (BitmapImage)FindResource("Img.moreDetailsClosed");
             }
             else
             {
                 downloadDetailsVw.Visibility = Visibility.Visible;
-                btnShowDetails.Content = "˃";
+                Image img = (Image)btnShowDetails.Content;
+                img.Source = (BitmapImage)FindResource("Img.moreDetailsOppened");
             }
         }
 
         public void PrepareForDownload()
         {
+            txtBlockDlStatus.Text = $"Waiting for download start...";
+        }
+
+        public void ScanDownloadStarted()
+        {
             progrBarItemDownload.Visibility = Visibility.Visible;
             progrBarItemDownload.Value = 0;
-            txtBlockDlStatus.Text = $"Waiting for download start...";
+            txtBlockDlStatus.Text = $"Downloading page 1...";
         }
 
         public void PageDownloaded(int pageNumber)
         {
             string msg = $"Page {pageNumber} successfully downloaded !";
-            DownloadEventItem pageItem = new DownloadEventItem(msg, Brushes.LightGreen);
+            DownloadEventItem eventItem = new DownloadEventItem(msg, (SolidColorBrush)FindResource("Colors.Green"));
             int countBeforeAdd = DownloadEventItems.Count;
-            DownloadEventItems.Add(pageItem);
+            DownloadEventItems.Add(eventItem);
             if (countBeforeAdd == 0) SetShowDetailsBtnVisibility();
 
             int nextPageNumber = pageNumber + 1;
-
             progrBarItemDownload.Value = ((float)pageNumber / PagesCount) * 100;
             if (pageNumber != PagesCount) txtBlockDlStatus.Text = $"Downloading page {nextPageNumber}...";
         }
@@ -124,13 +130,12 @@ namespace ScanNetDownloader.View.CustomControls
         public void PageAlreadyDownloaded(int pageNumber)
         {
             string msg = $"Page {pageNumber} already downloaded !";
-            DownloadEventItem pageItem = new DownloadEventItem(msg, Brushes.LightGreen);
+            DownloadEventItem eventItem = new DownloadEventItem(msg, (SolidColorBrush)FindResource("Colors.Green"));
             int countBeforeAdd = DownloadEventItems.Count;
-            DownloadEventItems.Add(pageItem);
+            DownloadEventItems.Add(eventItem);
             if (countBeforeAdd == 0) SetShowDetailsBtnVisibility();
 
             int nextPageNumber = pageNumber + 1;
-
             progrBarItemDownload.Value = ((float)pageNumber / PagesCount) * 100;
             if (pageNumber != PagesCount) txtBlockDlStatus.Text = $"Downloading page {nextPageNumber}...";
         }
@@ -139,53 +144,63 @@ namespace ScanNetDownloader.View.CustomControls
         {
             ErrorCount++;
             string errorMsg = $"Error while downloading page {pageNumber}: {ex.Message}";
-            DownloadEventItem pageItem = new DownloadEventItem(errorMsg, Brushes.Red);
+            DownloadEventItem eventItem = new DownloadEventItem(errorMsg, (SolidColorBrush)FindResource("Colors.Red"));
             int countBeforeAdd = DownloadEventItems.Count;
-            DownloadEventItems.Add(pageItem);
+            DownloadEventItems.Add(eventItem);
             if (countBeforeAdd == 0) SetShowDetailsBtnVisibility();
+
+            int nextPageNumber = pageNumber + 1;
+            progrBarItemDownload.Value = ((float)pageNumber / PagesCount) * 100;
+            if (pageNumber != PagesCount) txtBlockDlStatus.Text = $"Downloading page {nextPageNumber}...";
         }
 
         public void PageFileSavingError(int pageNumber, Exception ex)
         {
             ErrorCount++;
             string errorMsg = $"Error while saving file for page {pageNumber}: {ex.Message}";
-            DownloadEventItem pageItem = new DownloadEventItem(errorMsg, Brushes.Red);
+            DownloadEventItem eventItem = new DownloadEventItem(errorMsg, (SolidColorBrush)FindResource("Colors.Red"));
             int countBeforeAdd = DownloadEventItems.Count;
-            DownloadEventItems.Add(pageItem);
+            DownloadEventItems.Add(eventItem);
             if (countBeforeAdd == 0) SetShowDetailsBtnVisibility();
+
+            int nextPageNumber = pageNumber + 1;
+            progrBarItemDownload.Value = ((float)pageNumber / PagesCount) * 100;
+            if (pageNumber != PagesCount) txtBlockDlStatus.Text = $"Downloading page {nextPageNumber}...";
         }
 
         public void ScanDownloadError(Exception ex)
         {
-            gridDlStatus.Background = Brushes.DarkRed;
+            gridDlStatus.Background = (SolidColorBrush)FindResource("Colors.Red");
             txtBlockDlStatus.Text = "An error happened while downloading the scan, see download details";
 
             string errorMsg = $"Error while downloading scan {BookName}-{ChapterId}: {ex.Message}";
-            DownloadEventItem pageItem = new DownloadEventItem(errorMsg, Brushes.Red);
+            DownloadEventItem eventItem = new DownloadEventItem(errorMsg, (SolidColorBrush)FindResource("Colors.Red"));
             int countBeforeAdd = DownloadEventItems.Count;
-            DownloadEventItems.Add(pageItem);
+            DownloadEventItems.Add(eventItem);
             if (countBeforeAdd == 0) SetShowDetailsBtnVisibility();
         }
 
         public void ScanDownloaded()
         {
+            progrBarItemDownload.Visibility = Visibility.Collapsed;
+
             // TODO: add the possibility to retry the download of the item when error happened
-            if(ErrorCount == 0)
+            if (ErrorCount == 0)
             {
                 if (CbzCreationError)
                 {
-                    gridDlStatus.Background = Brushes.Orange;
+                    gridDlStatus.Background = (SolidColorBrush)FindResource("Colors.Orange");
                     txtBlockDlStatus.Text = "Successfully downloaded but cbz archive creation failed";
                 }
                 else
                 {
-                    gridDlStatus.Background = Brushes.Green;
+                    gridDlStatus.Background = (SolidColorBrush)FindResource("Colors.Green");
                     txtBlockDlStatus.Text = "Successfully downloaded";
                 }
             }
             else if (ErrorCount >= 1 && ErrorCount <= (PagesCount*0.1f)) // Less than 10% of error
             {
-                gridDlStatus.Background = Brushes.Orange;
+                gridDlStatus.Background = (SolidColorBrush)FindResource("Colors.Orange");
                 if (CbzCreationError)
                 {
                     txtBlockDlStatus.Text = "Scan downloaded but some pages download and cbz archive creation failed, see download details";
@@ -197,10 +212,12 @@ namespace ScanNetDownloader.View.CustomControls
             }
             else // Too many download error
             {
-                gridDlStatus.Background = Brushes.DarkRed;
-                if(CbzCreationError)
+                gridDlStatus.Background = (SolidColorBrush)FindResource("Colors.Red");
+                txtBlockDlStatus.Foreground = (SolidColorBrush)FindResource("Colors.White");
+                if (CbzCreationError)
                 {
                     txtBlockDlStatus.Text = "Errors while downloading scan pages and creating cbz archive, see download details";
+                    
                 }
                 else
                 {
@@ -217,18 +234,18 @@ namespace ScanNetDownloader.View.CustomControls
         public void CbzCreated()
         {
             string msg = $"Cbz archive for {BookName}-{ChapterId} successfully created ";
-            DownloadEventItem pageItem = new DownloadEventItem(msg, Brushes.LightGreen);
+            DownloadEventItem eventItem = new DownloadEventItem(msg, (SolidColorBrush)FindResource("Colors.Green"));
             int countBeforeAdd = DownloadEventItems.Count;
-            DownloadEventItems.Add(pageItem);
+            DownloadEventItems.Add(eventItem);
             if (countBeforeAdd == 0) SetShowDetailsBtnVisibility();
         }
 
         public void CbzAlreadyCreated()
         {
             string msg = $"Cbz archive for {BookName}-{ChapterId} already created";
-            DownloadEventItem pageItem = new DownloadEventItem(msg, Brushes.LightGreen);
+            DownloadEventItem eventItem = new DownloadEventItem(msg, (SolidColorBrush)FindResource("Colors.Green"));
             int countBeforeAdd = DownloadEventItems.Count;
-            DownloadEventItems.Add(pageItem);
+            DownloadEventItems.Add(eventItem);
             if (countBeforeAdd == 0) SetShowDetailsBtnVisibility();
         }
 
@@ -237,9 +254,9 @@ namespace ScanNetDownloader.View.CustomControls
             CbzCreationError = true;
 
             string errorMsg = $"{msg} for {BookName}-{ChapterId}: {ex.Message}";
-            DownloadEventItem pageItem = new DownloadEventItem(errorMsg, Brushes.Red);
+            DownloadEventItem eventItem = new DownloadEventItem(errorMsg, (SolidColorBrush)FindResource("Colors.Red"));
             int countBeforeAdd = DownloadEventItems.Count;
-            DownloadEventItems.Add(pageItem);
+            DownloadEventItems.Add(eventItem);
             if (countBeforeAdd == 0) SetShowDetailsBtnVisibility();
         }
 

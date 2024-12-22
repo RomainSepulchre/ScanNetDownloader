@@ -9,7 +9,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="..\..\MainResourcesDictionnary.xaml"/>
+                <ResourceDictionary Source="../../MainResourcesDictionnary.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <CollectionViewSource x:Key="ScanItemsSource" Source="{Binding ScanListItems}">
             </CollectionViewSource>
@@ -22,18 +22,18 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0 8 0 5">
-            <Button Name="btnAdd" Click="btnAdd_Click" Height="30" Width="150" Margin="0 0 5 0" Foreground="White" Background="Black" BorderThickness="0">
+            <Button Name="btnAdd" Click="btnAdd_Click" Height="30" Width="150" Margin="0 0 5 0" Foreground="White" Background="{StaticResource Colors.Black}" BorderThickness="0">
                 <Button.Content>
                     <StackPanel Orientation="Horizontal" Margin="-5 0 0 0">
-                        <Image Source="{StaticResource plusIconWhite}" Height="30" Width="30" VerticalAlignment="Center" Margin="0 0 2 0"/>
+                        <Image Source="{StaticResource Img.plusIconWhite}" Height="30" Width="30" VerticalAlignment="Center" Margin="0 0 2 0"/>
                         <TextBlock Text="Add new scan" VerticalAlignment="Center" FontSize="16" FontWeight="Bold"></TextBlock>
                     </StackPanel>
                 </Button.Content>
             </Button>
-            <Button Name="btnStart" Click="btnStart_Click" Height="30" Width="163" Margin="0 0 5 0" Foreground="White" Background="Black" BorderThickness="0">
+            <Button Name="btnStart" Click="btnStart_Click" Height="30" Width="163" Margin="0 0 5 0" Foreground="White" Background="{StaticResource Colors.Black}" BorderThickness="0">
                 <Button.Content>
                     <StackPanel Orientation="Horizontal" Margin="-5 0 0 0">
-                        <Image Source="{StaticResource startIconWhite}" Height="30" Width="30" VerticalAlignment="Center" Margin="0 0 2 0"/>
+                        <Image Source="{StaticResource Img.startIconWhite}" Height="30" Width="30" VerticalAlignment="Center" Margin="0 0 2 0"/>
                         <TextBlock Text="Start download" VerticalAlignment="Center" FontSize="16" FontWeight="Bold"></TextBlock>
                     </StackPanel>
                 </Button.Content>
@@ -60,7 +60,7 @@
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>-->
-            <ListView Name="listVwScans" ItemsSource="{Binding Source={StaticResource ScanItemsSource}, UpdateSourceTrigger=PropertyChanged}" SelectionMode="Single" HorizontalContentAlignment="Stretch" Background="LightGray">
+            <ListView Name="listVwScans" ItemsSource="{Binding Source={StaticResource ScanItemsSource}, UpdateSourceTrigger=PropertyChanged}" SelectionMode="Single" HorizontalContentAlignment="Stretch" Background="{StaticResource Colors.LightGrey}">
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
                         <Setter Property="Background" Value="White"/>
@@ -69,14 +69,25 @@
                 </ListView.ItemContainerStyle>
                 <ListView.View>
                     <GridView AllowsColumnReorder="True">
-                        <GridViewColumn Header="Download" Width="60">
+                        <GridViewColumn Width="40">
+                            <GridViewColumn.Header>
+                                <StackPanel VerticalAlignment="Stretch" Background="Black">
+                                    <Image Source="{StaticResource Img.checkboxWhiteEmpty}" VerticalAlignment="Center" Margin="0 0 0 0" />
+                                </StackPanel>
+                            </GridViewColumn.Header>
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <CheckBox IsChecked="{Binding Path=IsSelectedForDownload}" ToolTip="Select this scan for download" HorizontalAlignment="Center"/>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="Book Name" DisplayMemberBinding="{Binding Path=BookName}" Width="450"/>
+                        <GridViewColumn  DisplayMemberBinding="{Binding Path=BookName}" Width="470">
+                            <GridViewColumn.Header>
+                                <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Black">
+                                    <TextBlock Text="Book Name" Foreground="White"/>
+                                </StackPanel>
+                            </GridViewColumn.Header>
+                        </GridViewColumn>
                         <GridViewColumn Header="Chapter" Width="100">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
@@ -84,7 +95,7 @@
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="Number of pages" Width="100">
+                        <GridViewColumn Header="Pages" Width="100">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Path=PagesCount}" TextAlignment="Center" VerticalAlignment="Center"/>
@@ -98,7 +109,7 @@
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="Options" Width="250">
+                        <GridViewColumn Header="Options" Width="230">
                             <!--I would love to understand why scanItem is displayed in this column and how to do it with a cell template to make it more clear
                         but I can't find how to assign the source scanItem as the template scanItem-->
                         </GridViewColumn>
@@ -109,10 +120,10 @@
         </Border>
         <StackPanel Grid.Row="1" Name="stPanelNoScans" VerticalAlignment="Center">
             <TextBlock Text="No scans added yet. Add a new scan url to get the scan information and download it." VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 20 0 10" FontSize="16"/>
-            <Button Click="btnAdd_Click" Height="30" Width="150" Margin="0 0 5 0" Foreground="White" Background="Black" BorderThickness="0">
+            <Button Click="btnAdd_Click" Height="30" Width="150" Margin="0 0 5 0" Foreground="White" Background="{StaticResource Colors.Black}" BorderThickness="0">
                 <Button.Content>
                     <StackPanel Orientation="Horizontal" Margin="-5 0 0 0">
-                        <Image Source="{StaticResource plusIconWhite}" Height="30" Width="30" VerticalAlignment="Center" Margin="0 0 2 0"/>
+                        <Image Source="{StaticResource Img.plusIconWhite}" Height="30" Width="30" VerticalAlignment="Center" Margin="0 0 2 0"/>
                         <TextBlock Text="Add new scan" VerticalAlignment="Center" FontSize="16" FontWeight="Bold"></TextBlock>
                     </StackPanel>
                 </Button.Content>

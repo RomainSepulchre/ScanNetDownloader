@@ -8,6 +8,13 @@
         mc:Ignorable="d"
         Title="ScanNetDownloader" Height="720" Width="1280"
         ResizeMode="NoResize">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="MainResourcesDictionnary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
     <Grid x:Name="gridMainContent">
 
         <Grid.RowDefinitions>
@@ -21,7 +28,7 @@
             <!--Scan Management-->
             <TabItem Name="tabScanManager" Height="60">
                 <TabItem.Header>
-                    <Border Margin="10 0 10 0">
+                    <Border Margin="14 0 10 0">
                         <TextBlock Text="SCAN MANAGER" FontSize="24" HorizontalAlignment="Center"/>
                     </Border>
                 </TabItem.Header>

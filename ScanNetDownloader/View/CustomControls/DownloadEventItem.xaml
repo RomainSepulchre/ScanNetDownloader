@@ -5,10 +5,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ScanNetDownloader.View.CustomControls"
              mc:Ignorable="d" 
-             d:DesignHeight="20" d:DesignWidth="1200">
+             d:DesignHeight="20" d:DesignWidth="1220">
     <Grid>
-        <Border Height="20" Background="{Binding BackgroundColor}" BorderThickness="0 1 0 0" BorderBrush="Transparent" Margin="10 0 0 0">
-            <TextBlock Text="{Binding MsgText}"  VerticalAlignment="Center" Margin="8 0 0 0"/>
-        </Border>
+        <StackPanel Orientation="Horizontal" Margin="20 0 0 0">
+            <Ellipse Height="8" Width="8" Fill="{Binding CircleColor}" />
+            <TextBlock Text="{Binding MsgText}"  VerticalAlignment="Center" Margin="5 0 0 0"/>
+        </StackPanel>      
     </Grid>
 </UserControl>

@@ -73,6 +73,7 @@ namespace ScanNetDownloader.View.CustomControls
             Downloader.UpdateDlProgressBarEvent += new EventHandler<float>(UpdateDownloadProgress);
             Downloader.OnDownloadStartedEvent += new EventHandler(OnDownloadStarted);
             Downloader.OnDownloadStoppedEvent += new EventHandler(OnDownloadStopped);
+            Downloader.OnScanDownloadStartedEvent += new EventHandler<ScanItem>(OnScanDownloadStarted);
             Downloader.OnScanDownloadedEvent += new EventHandler<ScanItem>(OnScanDownloaded);
             Downloader.OnScanDownloadErrorEvent += new EventHandler<ScanErrorEventArgs>(OnScanDownloadError);
             Downloader.OnPageDownloadedEvent += new EventHandler<PageEventArgs>(OnPageDownloaded);
@@ -124,7 +125,6 @@ namespace ScanNetDownloader.View.CustomControls
                     foreach (var item in scanItemsToDownload)
                     {
                         DownloadItem downloadItem = new DownloadItem(item);
-                        downloadItem.Margin = new Thickness(0, 0, 0, 3);
                         DownloadItems.Add(downloadItem);
                     }
                 }
@@ -144,6 +144,8 @@ namespace ScanNetDownloader.View.CustomControls
         {
             IsDownloading = true;
             DownloadLabelTxt = "Downloading...";
+            btnStartDl.Visibility = Visibility.Collapsed;
+            btnStopDl.Visibility = Visibility.Visible;
 
             foreach (var item in DownloadItems)
             {
@@ -158,6 +160,8 @@ namespace ScanNetDownloader.View.CustomControls
             IsDownloading = false;
             DownloadProgress = 0;
             DownloadLabelTxt = "Download stopped";
+            btnStartDl.Visibility = Visibility.Visible;
+            btnStopDl.Visibility = Visibility.Collapsed;
         }
 
         public void OnPageDownloaded(object sender, PageEventArgs args)
@@ -181,6 +185,12 @@ namespace ScanNetDownloader.View.CustomControls
             DownloadItem dlItem = DownloadItems.First(x => x.linkedScanItem == scanItem);
 
             dlItem.PageAlreadyDownloaded(pageNumber);
+        }
+
+        public void OnScanDownloadStarted(object sender, ScanItem scanInDownload)
+        {
+            DownloadItem dlItem = DownloadItems.First(x => x.linkedScanItem == scanInDownload);
+            dlItem.ScanDownloadStarted();
         }
 
         public void OnScanDownloaded(object sender, ScanItem downloadedScan) // This happens when the Scan download finish
@@ -229,6 +239,8 @@ namespace ScanNetDownloader.View.CustomControls
         {
             IsDownloading = false;
             DownloadLabelTxt = "Download finished";
+            btnStartDl.Visibility = Visibility.Visible;
+            btnStopDl.Visibility = Visibility.Collapsed;
             RaiseEvent(new RoutedEventArgs(OnDownloadCompletedEvent, this));
         }
 

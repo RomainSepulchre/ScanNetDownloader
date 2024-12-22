@@ -5,39 +5,49 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ScanNetDownloader.View.CustomControls"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="1200">
+             d:DesignHeight="300" d:DesignWidth="1240">
     <UserControl.Resources>
-        <CollectionViewSource x:Key="DownloadEventItemsSource" Source="{Binding DownloadEventItems}">
-        </CollectionViewSource>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../MainResourcesDictionnary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <CollectionViewSource x:Key="DownloadEventItemsSource" Source="{Binding DownloadEventItems}">
+            </CollectionViewSource>
+        </ResourceDictionary>
     </UserControl.Resources>
-    <Grid Background="White">
+    <Grid Background="{StaticResource Colors.LightGrey}">
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.52*"/>
+            <ColumnDefinition Width="0.48*"/>
             <ColumnDefinition Width="30"/>
-            <ColumnDefinition Width="0.35*"/>
-            <ColumnDefinition Width="0.65*"/>
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="3"/>
         </Grid.RowDefinitions>
 
         <!--Main Row-->
-        <Button Name="btnShowDetails" Content="˅" Click="btnShowDetails_Click" Height="25" Width="25"/>
-
-        <Border Grid.Column="1">
-            <TextBlock Name="txtBlockItemHeader"  Text="Jujutsu Kaisen - Chapter 15 (10 pages)" VerticalAlignment="Center" Margin="5 0 0 0"/>
+        <Border>
+            <TextBlock Name="txtBlockItemHeader"  Text="Jujutsu Kaisen - Chapter 15 (10 pages)" VerticalAlignment="Center" Margin="20 0 0 0" FontWeight="SemiBold"/>
         </Border>
 
-        <Grid Grid.Column="2" Name="gridDlStatus" Background="Orange">
-            <ProgressBar Name="progrBarItemDownload" Minimum="0" Maximum="100" Height="20" Margin="10 0 10 0" Visibility="Collapsed"/>
-            <Border Height="20" Margin="10 0 10 0">
+        <Grid Grid.Column="1" Name="gridDlStatus" Background="{StaticResource Colors.MediumGrey}">
+            <ProgressBar Name="progrBarItemDownload" Minimum="0" Maximum="100" Height="18" Margin="10 0 10 0" Visibility="Collapsed"  Background="{StaticResource Colors.LightGrey}" Foreground="{StaticResource Colors.Green}" BorderThickness="0"/>
+            <Border Height="18" Margin="10 0 10 1">
                 <TextBlock Name="txtBlockDlStatus" Text="Ready for download..." VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </Border>
         </Grid>
 
+        <Button Grid.Column="2" Name="btnShowDetails" Click="btnShowDetails_Click" Height="30" Width="30" BorderThickness="0" Background="{StaticResource Colors.Black}">
+            <Button.Content>
+                <Image Source="{StaticResource Img.moreDetailsClosed}"/>
+            </Button.Content>
+        </Button>
+
         <!--Details-->
-        <Border Name="downloadDetailsVw" Grid.Row="1" Grid.ColumnSpan="3" BorderThickness="0 0 0 5" BorderBrush="White" Visibility="Collapsed">
+        <Border Name="downloadDetailsVw" Grid.Row="1" Grid.ColumnSpan="3" Visibility="Collapsed"  Margin="0 0 0 5">
             <ItemsControl ItemsSource="{Binding Source={StaticResource DownloadEventItemsSource}}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -47,5 +57,7 @@
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
         </Border>
+
+        <Rectangle Grid.Row="2" Grid.ColumnSpan="3" Fill="{StaticResource Colors.White}"/>
     </Grid>
 </UserControl>
