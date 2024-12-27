@@ -7,13 +7,8 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="1240">
     <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="../../MainResourcesDictionnary.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-            <CollectionViewSource x:Key="DownloadEventItemsSource" Source="{Binding DownloadEventItems}">
-            </CollectionViewSource>
-        </ResourceDictionary>
+        <CollectionViewSource x:Key="DownloadEventItemsSource" Source="{Binding DownloadEventItems}">
+        </CollectionViewSource>
     </UserControl.Resources>
     <Grid Background="{StaticResource Colors.LightGrey}">
         <Grid.ColumnDefinitions>
@@ -40,7 +35,7 @@
             </Border>
         </Grid>
 
-        <Button Grid.Column="2" Name="btnShowDetails" Click="btnShowDetails_Click" Height="30" Width="30" BorderThickness="0" Background="{StaticResource Colors.Black}">
+        <Button Grid.Column="2" Name="btnShowDetails" Click="btnShowDetails_Click" Height="30" Width="30">
             <Button.Content>
                 <Image Source="{StaticResource Img.moreDetailsClosed}"/>
             </Button.Content>

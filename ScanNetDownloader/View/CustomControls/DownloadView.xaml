@@ -7,13 +7,8 @@
              mc:Ignorable="d" 
              d:DesignHeight="660" d:DesignWidth="1280">
     <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="../../MainResourcesDictionnary.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-            <CollectionViewSource x:Key="DownloadItemsSource" Source="{Binding DownloadItems}">
-            </CollectionViewSource>
-        </ResourceDictionary>
+        <CollectionViewSource x:Key="DownloadItemsSource" Source="{Binding DownloadItems}">
+        </CollectionViewSource>
     </UserControl.Resources>
     <Grid Margin="20 8 20 20">
         <Grid.RowDefinitions>
@@ -46,19 +41,19 @@
                 <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
 
-            <Button Name="btnStartDl" Background="Black" Foreground="White" >
-                <Button.Content>
+            <Button Name="btnStartDl" Height="40" FontSize="16" Style="{StaticResource startButton}" Content="Start Download">
+                <!--<Button.Content>
                     <StackPanel Orientation="Horizontal" Margin="-2 0 0 0">
                         <Image Source="{StaticResource Img.startIconWhite}" Height="40" Width="40" VerticalAlignment="Center" Margin="0 0 2 0"/>
-                        <TextBlock Text="Start Download" FontSize="16" FontWeight="Bold" VerticalAlignment="Center"/>
+                        <TextBlock Text="Start Download" FontSize="16" VerticalAlignment="Center"/>
                     </StackPanel>
-                </Button.Content>
+                </Button.Content>-->
             </Button>
-            <Button Name="btnStopDl" BorderThickness="0" Background="Black" Foreground="White" Visibility="Collapsed">
+            <Button Name="btnStopDl" Visibility="Collapsed">
                 <Button.Content>
                     <StackPanel Orientation="Horizontal" Margin="-2 0 0 0">
                         <Image Source="{StaticResource Img.stopIcon}"/>
-                        <TextBlock Text="Stop download" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" Margin="0 0 2 0"/>
+                        <TextBlock Text="Stop download" FontSize="16" VerticalAlignment="Center" Margin="0 0 2 0"/>
                     </StackPanel>
                 </Button.Content>
             </Button>
