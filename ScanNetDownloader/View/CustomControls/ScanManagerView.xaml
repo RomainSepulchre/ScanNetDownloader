@@ -17,18 +17,18 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0 8 0 5">
-            <Button Name="btnAdd" Click="btnAdd_Click" Height="30" Width="150" Margin="0 0 5 0">
+            <Button Name="btnAdd" Click="btnAdd_Click" Height="30" Width="150" Margin="0 0 5 0" Style="{StaticResource complexButton}">
                 <Button.Content>
-                    <StackPanel Orientation="Horizontal" Margin="-5 0 0 0">
-                        <Image Source="{StaticResource Img.plusIconWhite}" Height="30" Width="30" VerticalAlignment="Center" Margin="0 0 2 0"/>
+                    <StackPanel Orientation="Horizontal" Width="{Binding ElementName=btnAdd, Path=ActualWidth}">
+                        <Image Source="{StaticResource Img.plusIconWhite}" Height="30" Width="30" VerticalAlignment="Center" Margin="-5 0 2 0"/>
                         <TextBlock Text="Add new scan" VerticalAlignment="Center" FontSize="16"></TextBlock>
                     </StackPanel>
                 </Button.Content>
             </Button>
-        <Button Name="btnStart" Click="btnStart_Click" Height="30" Width="163" Margin="0 0 5 0" >
+            <Button Name="btnStart" Click="btnStart_Click" Height="30" Width="163" Margin="0 0 5 0" Style="{StaticResource complexButton}">
                 <Button.Content>
-                    <StackPanel Orientation="Horizontal" Margin="-5 0 0 0">
-                        <Image Source="{StaticResource Img.startIconWhite}" Height="30" Width="30" VerticalAlignment="Center" Margin="0 0 2 0"/>
+                    <StackPanel Orientation="Horizontal" Width="{Binding ElementName=btnStart, Path=ActualWidth}">
+                        <Image Source="{StaticResource Img.startIconWhite}" Height="30" Width="30" VerticalAlignment="Center" Margin="-5 0 2 0"/>
                         <TextBlock Text="Start download" VerticalAlignment="Center" FontSize="16"></TextBlock>
                     </StackPanel>
                 </Button.Content>
@@ -115,10 +115,10 @@
         </Border>
         <StackPanel Grid.Row="1" Name="stPanelNoScans" VerticalAlignment="Center">
             <TextBlock Text="No scans added yet. Add a new scan url to get the scan information and download it." VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 20 0 10" FontSize="16"/>
-            <Button Click="btnAdd_Click" Height="30" Width="150" Margin="0 0 5 0">
+            <Button x:Name="btnAdd2" Click="btnAdd_Click" Height="30" Width="150" Margin="0 0 5 0" Style="{StaticResource complexButton}">
                 <Button.Content>
-                    <StackPanel Orientation="Horizontal" Margin="-5 0 0 0">
-                        <Image Source="{StaticResource Img.plusIconWhite}" Height="30" Width="30" VerticalAlignment="Center" Margin="0 0 2 0"/>
+                    <StackPanel Orientation="Horizontal" Width="{Binding ElementName=btnAdd2, Path=ActualWidth}">
+                        <Image Source="{StaticResource Img.plusIconWhite}" Height="30" Width="30" VerticalAlignment="Center" Margin="-5 0 2 0"/>
                         <TextBlock Text="Add new scan" VerticalAlignment="Center" FontSize="16"></TextBlock>
                     </StackPanel>
                 </Button.Content>
