@@ -23,13 +23,14 @@
                 <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
                     <TextBox Name="txtBoxOutputDir" Text="{Binding OutputDirectoryPath, UpdateSourceTrigger=PropertyChanged}"  Width="480" Height="30" VerticalContentAlignment="Center"/>
                     <Button Name="btnChooseOutputDir" Content="Choose download location..." Click="btnChooseOutputDir_Click"  Width="200" Height="30" Margin="5 0 0 0"/>
+                    <local:ErrorAlert x:Name="errorMsgChooseOutputDir" ErrorMsg="{Binding ChooseOutputDirectoryErrorMsg}" Visibility="Collapsed"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
                     <Button Name="btnOpenOutputDir" Content="Open download location" Click="btnOpenOutputDir_Click" Width="200" Height="30"/>
-                    <TextBlock Name="txtBlockOpenDirError" Text="{Binding OpenOutputDirectoryText}" Foreground="Red" Margin="5 0 0 0" VerticalAlignment="Center"/>
+                    <local:ErrorAlert x:Name="errorAlertOpenOutputDir" ErrorMsg="{Binding OpenOutputDirectoryErrorMsg}" Visibility="Collapsed"/>
                 </StackPanel>
                 <CheckBox Name="chBoxOpenOutputDir" Content="Open download location at the end of a download" IsChecked="{Binding OpenOutputDirAfterDownload, UpdateSourceTrigger=PropertyChanged}" Margin="0 10 0 0"/>
-                <CheckBox Name="chBoxErrorPauseApp" Content=" Download errors pause the download (pop-up to acknowledge)" IsChecked="{Binding ErrorPauseApp, UpdateSourceTrigger=PropertyChanged}" Margin="0 5 0 0"/>
+                <CheckBox Name="chBoxErrorPauseApp" Content="Download errors pause the download (pop-up to acknowledge)" IsChecked="{Binding ErrorPauseApp, UpdateSourceTrigger=PropertyChanged}" Margin="0 5 0 0"/>
             </StackPanel>
 
 

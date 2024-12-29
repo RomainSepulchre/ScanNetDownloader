@@ -92,13 +92,25 @@ namespace ScanNetDownloader.View.CustomControls
             }
         }
 
-        private string _openOutputDirectoryText;
+        private string _chooseOutputDirectoryErrorMsg;
 
-        public string OpenOutputDirectoryText
+        public string ChooseOutputDirectoryErrorMsg
         {
-            get { return _openOutputDirectoryText; }
+            get { return _chooseOutputDirectoryErrorMsg; }
+            set
+            {
+                _chooseOutputDirectoryErrorMsg = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _openOutputDirectoryErrorMsg;
+
+        public string OpenOutputDirectoryErrorMsg
+        {
+            get { return _openOutputDirectoryErrorMsg; }
             set {
-                _openOutputDirectoryText = value;
+                _openOutputDirectoryErrorMsg = value;
                 OnPropertyChanged();
             }
         }
@@ -133,8 +145,8 @@ namespace ScanNetDownloader.View.CustomControls
 
             if (success == true)
             {
-                txtBoxOutputDir.Text = fileDialog.FolderName;
-                OpenOutputDirectoryText = string.Empty;
+                OutputDirectoryPath = fileDialog.FolderName;
+                HideErrorMessages();
 
                 SaveSettings();
             }
@@ -144,24 +156,26 @@ namespace ScanNetDownloader.View.CustomControls
         {
             if (Directory.Exists(Settings.Instance.OutputDirectory))
             {
-                OpenOutputDirectoryText = string.Empty;
+                HideErrorMessages();
                 FileManagement.OpenFolder(Settings.Instance.OutputDirectory);
             }
             else
             {
-                OpenOutputDirectoryText = "Directory doesn't exist, impossible to open it";
+                OpenOutputDirectoryErrorMsg = "Directory doesn't exist, impossible to open it";
+                errorAlertOpenOutputDir.Visibility = Visibility.Visible;
             }
         }
 
         private void btnSaveOptions_Click(object sender, RoutedEventArgs e)
         {
-            OpenOutputDirectoryText = string.Empty;
             SaveSettings();
         }
 
         public void RefreshSettings()
         {
             Debug.WriteLine("REFRESH SETTINGS");
+
+            HideErrorMessages();
 
             Settings settings = Settings.Instance;
 
@@ -176,9 +190,19 @@ namespace ScanNetDownloader.View.CustomControls
 
         public void SaveSettings()
         {
-            // TODO: check if output directory is a valid directory before saving
+            bool saveOutpurDir = true;
+            if (OutputDirectoryPath != Settings.Instance.OutputDirectory && Directory.Exists(OutputDirectoryPath) == false)
+            {
+                errorMsgChooseOutputDir.Visibility = Visibility.Visible;
+                ChooseOutputDirectoryErrorMsg = "Directory doesn't exist, impossible to save it as a download location";
+                saveOutpurDir = false;
+            }
+            else
+            {
+                HideErrorMessages();
+            }
 
-            Settings.Instance.OutputDirectory = OutputDirectoryPath;
+            if (saveOutpurDir) Settings.Instance.OutputDirectory = OutputDirectoryPath;
             Settings.Instance.OpenOutputDirectoryAfterDownload = OpenOutputDirAfterDownload;
             Settings.Instance.ErrorPauseApp = ErrorPauseApp;
             Settings.Instance.CreateCbzArchive = CreateCbzAfterDownload;
@@ -215,6 +239,21 @@ namespace ScanNetDownloader.View.CustomControls
             if (DeleteImagesAfterCbzCreation != settings.DeleteImagesAfterCbzCreation) return true;
 
             return false;
+        }
+
+        private void HideErrorMessages()
+        {
+            if(errorAlertOpenOutputDir.Visibility == Visibility.Visible)
+            {
+                OpenOutputDirectoryErrorMsg = "";
+                errorAlertOpenOutputDir.Visibility = Visibility.Collapsed;
+            }
+
+            if (errorMsgChooseOutputDir.Visibility == Visibility.Visible)
+            {
+                ChooseOutputDirectoryErrorMsg = "";
+                errorMsgChooseOutputDir.Visibility = Visibility.Collapsed;
+            }
         }
     }
 }
