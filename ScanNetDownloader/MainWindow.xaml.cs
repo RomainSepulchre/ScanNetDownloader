@@ -107,7 +107,7 @@ namespace ScanNetDownloader
         {
             tabCtrlNavigation.SelectedItem = tabDownload; // Switch to download tab
             List<ScanItem> scanItemsToDownload = scanManagerVw.ScanListItems.GetScanItemsSelectedForDownload();
-            downloadVw.StartDownload(scanItemsToDownload);
+            downloadVw.StartDownloadFromMainView(scanItemsToDownload);
         }
 
         private void downloadVw_OnDownloadCompleted(object sender, RoutedEventArgs e)

@@ -99,7 +99,12 @@ namespace ScanNetDownloader.View.CustomControls
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
 
-        public void StartDownload(List<ScanItem> scanItemsToDownload)
+        private void StartDownload(List<ScanItem> scanItemsToDownload)
+        {
+            if (IsDownloading == false) Downloader.StartDownloader(CurrentScanItemSelection);
+        }
+
+        public void StartDownloadFromMainView(List<ScanItem> scanItemsToDownload)
         {
             if (IsDownloading == false)
             {
@@ -280,7 +285,7 @@ namespace ScanNetDownloader.View.CustomControls
         #region UI Events
         private void btnStartDl_Click(object sender, RoutedEventArgs e)
         {
-            if (IsDownloading == false) Downloader.StartDownloader(CurrentScanItemSelection);
+            StartDownload(CurrentScanItemSelection);
         }
 
         private void btnStopDl_Click(object sender, RoutedEventArgs e)
