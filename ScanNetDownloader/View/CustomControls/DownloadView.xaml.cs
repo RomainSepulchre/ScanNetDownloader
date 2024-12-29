@@ -53,6 +53,8 @@ namespace ScanNetDownloader.View.CustomControls
             }
         }
 
+        private List<ScanItem> CurrentScanItemSelection;
+
         public bool IsDownloading { get; private set; } = false;
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -110,17 +112,19 @@ namespace ScanNetDownloader.View.CustomControls
         {
             if (IsDownloading == false)
             {
+                CurrentScanItemSelection = scanItemsToDownload;
+
                 DownloadItems.Clear();
 
                 if (scanItemsToDownload.Count == 0)
                 {
                     txtBlockNoScanSelected.Visibility = Visibility.Visible;
-                    // TODO: Disable Start button
+                    btnStartDl.IsEnabled = false;
                 }
                 else
                 {
                     txtBlockNoScanSelected.Visibility = Visibility.Collapsed;
-                    // TODO: Enable Start button
+                    btnStartDl.IsEnabled = true;
 
                     foreach (var item in scanItemsToDownload)
                     {
@@ -269,8 +273,20 @@ namespace ScanNetDownloader.View.CustomControls
             dlItem.CbzCreationFailed(args.ErrorMessage, args.Exception);
         }
 
+
         #endregion
 
-        
+
+        #region UI Events
+        private void btnStartDl_Click(object sender, RoutedEventArgs e)
+        {
+            if (IsDownloading == false) Downloader.StartDownloader(CurrentScanItemSelection);
+        }
+
+        private void btnStopDl_Click(object sender, RoutedEventArgs e)
+        {
+
+        } 
+        #endregion
     }
 }
