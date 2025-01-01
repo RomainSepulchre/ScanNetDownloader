@@ -9,11 +9,8 @@
         Title="ScanNetDownloader" Height="720" Width="1280"
         ResizeMode="NoResize">
     <Window.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="MainResourcesDictionnary.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
+        
+        
     </Window.Resources>
     <Grid x:Name="gridMainContent">
 
@@ -23,23 +20,23 @@
             <RowDefinition Height="25"/>
         </Grid.RowDefinitions>
         
-        <TabControl Name="tabCtrlNavigation" SelectionChanged="tabCtrlNavigation_SelectionChanged" >
+        <TabControl Style="{DynamicResource TabControlStyle}" Name="tabCtrlNavigation" SelectionChanged="tabCtrlNavigation_SelectionChanged">
             
             <!--Scan Management-->
-            <TabItem Name="tabScanManager" Height="60">
+            <TabItem Style="{DynamicResource TabItemStyle}" Name="tabScanManager" Height="60">
                 <TabItem.Header>
-                    <Border Margin="14 0 10 0">
-                        <TextBlock Text="SCAN MANAGER" FontSize="24" HorizontalAlignment="Center"/>
+                    <Border Style="{StaticResource TabItemHeaderBorderStyle_FirstTab}">
+                        <TextBlock Text="SCAN MANAGER" FontSize="24" HorizontalAlignment="Center" Style="{StaticResource TabItemHeaderTextBlockStyle}"/>
                     </Border>
                 </TabItem.Header>
                 <customControls:ScanManagerView x:Name="scanManagerVw" StartDownload="scanManagerVw_StartDownload"/>
             </TabItem>
             
             <!--Scan Download-->
-            <TabItem Name="tabDownload" Height="60">
+            <TabItem Style="{DynamicResource TabItemStyle}" Name="tabDownload" Height="60">
                 <TabItem.Header>
-                    <Border Margin="10 0 10 0">
-                        <TextBlock Text="DOWNLOAD" FontSize="24" HorizontalAlignment="Center"/>
+                    <Border Style="{StaticResource TabItemHeaderBorderStyle}">
+                        <TextBlock Text="DOWNLOAD" FontSize="24" HorizontalAlignment="Center" Style="{StaticResource TabItemHeaderTextBlockStyle}"/>
                     </Border>
                 </TabItem.Header>
                 <customControls:DownloadView x:Name="downloadVw" OnDownloadCompleted="downloadVw_OnDownloadCompleted"/>
@@ -88,20 +85,20 @@
             </TabItem>
             
             <!--Options-->
-            <TabItem Name="tabOptions" Height="60">
+            <TabItem Style="{DynamicResource TabItemStyle}" Name="tabOptions" Height="60">
                 <TabItem.Header>
-                    <Border Margin="10 0 10 0">
-                        <TextBlock Text="OPTIONS" FontSize="24" HorizontalAlignment="Center"/>
+                    <Border Style="{StaticResource TabItemHeaderBorderStyle}">
+                        <TextBlock Text="OPTIONS" FontSize="24" HorizontalAlignment="Center" Style="{StaticResource TabItemHeaderTextBlockStyle}"/>
                     </Border>
                 </TabItem.Header>
                 <customControls:OptionsView x:Name="optionsVw"/> 
             </TabItem>
 
             <!--Debug-->
-            <TabItem Name="tabDebug" Height="60"  >
+            <TabItem Style="{DynamicResource TabItemStyle}" Name="tabDebug" Height="60">
                 <TabItem.Header>
-                    <Border Margin="10 0 10 0">
-                        <TextBlock Text="DEBUG" FontSize="24" HorizontalAlignment="Center"/>
+                    <Border Style="{StaticResource TabItemHeaderBorderStyle}">
+                        <TextBlock Text="DEBUG" FontSize="24" HorizontalAlignment="Center" Style="{StaticResource TabItemHeaderTextBlockStyle}"/>
                     </Border>
                 </TabItem.Header>
                 <WrapPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0 20 0 0">
