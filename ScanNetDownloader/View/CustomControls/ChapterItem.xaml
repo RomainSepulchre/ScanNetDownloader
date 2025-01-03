@@ -6,14 +6,18 @@
              xmlns:local="clr-namespace:ScanNetDownloader.View.CustomControls"
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="250">
-    <Border Background="White" BorderBrush="DimGray" BorderThickness="2" Height="25" Width="100" Margin="0 0 0 5">
+    <Border Background="{StaticResource Colors.White}" Height="30" Width="100" Margin="0 0 0 5">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
-                <ColumnDefinition Width="25"/>
+                <ColumnDefinition Width="30"/>
             </Grid.ColumnDefinitions>
-            <TextBlock Text="{Binding ChapterText}" VerticalAlignment="Center" TextAlignment="Center"/>
-            <Button Grid.Column="1" Name="btnDelete" Content="X" Click="btnDelete_Click"/>
+            <TextBlock Text="{Binding ChapterText}" VerticalAlignment="Center" TextAlignment="Center" FontWeight="Bold"/>
+            <Button Grid.Column="1" Name="btnDelete" Style="{StaticResource complexButton}" Click="btnDelete_Click">
+                <Button.Content>
+                    <Image Source="{StaticResource Img.crossWhite}"/>
+                </Button.Content>
+            </Button>
         </Grid>
     </Border>
     

@@ -36,14 +36,24 @@ namespace ScanNetDownloader.View
             chapterSelectionVw.Visibility = Visibility.Collapsed;
             scanDataCreationVw.Visibility = Visibility.Collapsed;
 
-            btnUrlView.IsEnabled = false;
-            btnUrlView.FontWeight = FontWeights.Bold;
+            headerUrlView.FontWeight = FontWeights.SemiBold;
+            headerUrlView.Foreground = (SolidColorBrush)FindResource("Colors.Black");
+            headerFirstSeparator.FontWeight = FontWeights.SemiBold;
+            headerFirstSeparator.Foreground = (SolidColorBrush)FindResource("Colors.Black");
+            //btnUrlView.IsEnabled = false;
+            //btnUrlView.FontWeight = FontWeights.Bold;
 
-            btnChapterView.IsEnabled = false;
-            btnChapterView.FontWeight = FontWeights.Normal;
+            headerChapterView.FontWeight = FontWeights.Light;
+            headerChapterView.Foreground = (SolidColorBrush)FindResource("Colors.DarkGrey");
+            headerSecondSeparator.FontWeight = FontWeights.Light;
+            headerSecondSeparator.Foreground = (SolidColorBrush)FindResource("Colors.DarkGrey");
+            //btnChapterView.IsEnabled = false;
+            //btnChapterView.FontWeight = FontWeights.Normal;
 
-            btnScanDataCreationView.IsEnabled = false;
-            btnScanDataCreationView.FontWeight = FontWeights.Normal;
+            headerScanDataCreationView.FontWeight = FontWeights.Light;
+            headerScanDataCreationView.Foreground = (SolidColorBrush)FindResource("Colors.DarkGrey");
+            //btnScanDataCreationView.IsEnabled = false;
+            //btnScanDataCreationView.FontWeight = FontWeights.Normal;
         }
 
         private void btnChapterView_Click(object sender, RoutedEventArgs e)
@@ -52,14 +62,24 @@ namespace ScanNetDownloader.View
             chapterSelectionVw.Visibility = Visibility.Visible;
             scanDataCreationVw.Visibility = Visibility.Collapsed;
 
-            btnUrlView.IsEnabled = true;
-            btnUrlView.FontWeight = FontWeights.Normal;
+            headerUrlView.FontWeight = FontWeights.Normal;
+            headerUrlView.Foreground = (SolidColorBrush)FindResource("Colors.Black");
+            headerFirstSeparator.FontWeight = FontWeights.Normal;
+            headerFirstSeparator.Foreground = (SolidColorBrush)FindResource("Colors.Black");
+            //btnUrlView.IsEnabled = true;
+            //btnUrlView.FontWeight = FontWeights.Normal;
 
-            btnChapterView.IsEnabled = false;
-            btnChapterView.FontWeight = FontWeights.Bold;
+            headerChapterView.FontWeight = FontWeights.SemiBold;
+            headerChapterView.Foreground = (SolidColorBrush)FindResource("Colors.Black");
+            headerSecondSeparator.FontWeight = FontWeights.SemiBold;
+            headerSecondSeparator.Foreground = (SolidColorBrush)FindResource("Colors.Black");
+            //btnChapterView.IsEnabled = false;
+            //btnChapterView.FontWeight = FontWeights.Bold;
 
-            btnScanDataCreationView.IsEnabled = false;
-            btnScanDataCreationView.FontWeight = FontWeights.Normal;
+            headerScanDataCreationView.FontWeight = FontWeights.Light;
+            headerScanDataCreationView.Foreground = (SolidColorBrush)FindResource("Colors.DarkGrey");
+            //btnScanDataCreationView.IsEnabled = false;
+            //btnScanDataCreationView.FontWeight = FontWeights.Normal;
         }
 
         private void btnClose_Click(object sender, RoutedEventArgs e)
@@ -82,11 +102,19 @@ namespace ScanNetDownloader.View
             urlSelectionVw.Visibility = Visibility.Collapsed;
             chapterSelectionVw.Visibility = Visibility.Visible;
 
-            btnUrlView.IsEnabled = true;
-            btnUrlView.FontWeight = FontWeights.Normal;
+            headerUrlView.FontWeight = FontWeights.Normal;
+            headerUrlView.Foreground = (SolidColorBrush)FindResource("Colors.Black");
+            headerFirstSeparator.FontWeight = FontWeights.Normal;
+            headerFirstSeparator.Foreground = (SolidColorBrush)FindResource("Colors.Black");
+            //btnUrlView.IsEnabled = true;
+            //btnUrlView.FontWeight = FontWeights.Normal;
 
-            btnChapterView.IsEnabled = false;
-            btnChapterView.FontWeight = FontWeights.Bold;
+            headerChapterView.FontWeight = FontWeights.SemiBold;
+            headerChapterView.Foreground = (SolidColorBrush)FindResource("Colors.Black");
+            headerSecondSeparator.FontWeight = FontWeights.SemiBold;
+            headerSecondSeparator.Foreground = (SolidColorBrush)FindResource("Colors.Black");
+            //btnChapterView.IsEnabled = false;
+            //btnChapterView.FontWeight = FontWeights.Bold;
         }
 
         private void chapterSelectionVw_BackBtnPressed(object sender, RoutedEventArgs e)
@@ -102,14 +130,24 @@ namespace ScanNetDownloader.View
             chapterSelectionVw.Visibility = Visibility.Collapsed;
             scanDataCreationVw.Visibility = Visibility.Visible;
 
-            btnUrlView.IsEnabled = false;
-            btnUrlView.FontWeight = FontWeights.Normal;
+            headerUrlView.FontWeight = FontWeights.Normal;
+            headerUrlView.Foreground = (SolidColorBrush)FindResource("Colors.Black");
+            headerFirstSeparator.FontWeight = FontWeights.Normal;
+            headerFirstSeparator.Foreground = (SolidColorBrush)FindResource("Colors.Black");
+            //btnUrlView.IsEnabled = false;
+            //btnUrlView.FontWeight = FontWeights.Normal;
 
-            btnChapterView.IsEnabled = false;
-            btnChapterView.FontWeight = FontWeights.Normal;
+            headerChapterView.FontWeight = FontWeights.Normal;
+            headerChapterView.Foreground = (SolidColorBrush)FindResource("Colors.Black");
+            headerSecondSeparator.FontWeight = FontWeights.Normal;
+            headerSecondSeparator.Foreground = (SolidColorBrush)FindResource("Colors.Black");
+            //btnChapterView.IsEnabled = false;
+            //btnChapterView.FontWeight = FontWeights.Normal;
 
-            btnScanDataCreationView.IsEnabled = false;
-            btnScanDataCreationView.FontWeight = FontWeights.Bold;
+            headerScanDataCreationView.FontWeight = FontWeights.SemiBold;
+            headerScanDataCreationView.Foreground = (SolidColorBrush)FindResource("Colors.Black");
+            //btnScanDataCreationView.IsEnabled = false;
+            //btnScanDataCreationView.FontWeight = FontWeights.Bold;
 
             // Create Scan Datas
             NewScanDatas = await scanDataCreationVw.CreateScanDatas(UrlInput, ChapterSelected, TempScanData);

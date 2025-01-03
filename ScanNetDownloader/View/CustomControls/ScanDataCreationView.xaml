@@ -5,13 +5,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ScanNetDownloader.View.CustomControls"
              mc:Ignorable="d" 
-             d:DesignHeight="500" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800">
     <Grid Grid.Row="1">
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition Height="30"/>
             <RowDefinition/>
-            <RowDefinition Height="30"/>
+            <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
         <Label Content="Scan Data Creation" FontWeight="Bold"/>
         <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center">
@@ -22,6 +22,6 @@
             <ListView Name="listVwCreationStatus" HorizontalContentAlignment="Stretch">
             </ListView>
         </ScrollViewer>
-        <Button Grid.Row="3" Name="btnFinish" Content="Finish" Click="btnFinish_Click" IsEnabled="False"/>
+        <Button Grid.Row="3" Name="btnFinish" Content="Finish" Click="btnFinish_Click" FontSize="22" IsEnabled="False"/>
     </Grid>
 </UserControl>

@@ -13,7 +13,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         
-        <Image Source="{StaticResource Img.error}" Height="22" Width="22" Margin="5 0 0 0"/>
-        <TextBlock Grid.Column="1" Text="{Binding ErrorMsg}" Foreground="{StaticResource Colors.Red}" VerticalAlignment="Center"/>
+        <Image Source="{StaticResource Img.error}" Height="22" Width="22"/>
+        <TextBlock Grid.Column="1" Text="{Binding ErrorMsg}" Foreground="{StaticResource Colors.Red}" VerticalAlignment="Center" TextWrapping="Wrap"/>
     </Grid>
 </UserControl>

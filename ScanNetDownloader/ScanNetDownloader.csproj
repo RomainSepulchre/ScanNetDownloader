@@ -14,6 +14,7 @@
     <None Remove="Images\CheckboxIcon_Black_Empty.png" />
     <None Remove="Images\CheckboxIcon_White_Empty.png" />
     <None Remove="Images\checkIcon.png" />
+    <None Remove="Images\crossIcon_White.png" />
     <None Remove="Images\errorIcon.png" />
     <None Remove="Images\moreDetailsIcon_Closed.png" />
     <None Remove="Images\moreDetailsIcon_Oppened.png" />
@@ -33,6 +34,7 @@
   <ItemGroup>
     <Resource Include="Images\CheckboxIcon_Black_Empty.png" />
     <Resource Include="Images\CheckboxIcon_White_Empty.png" />
+    <Resource Include="Images\crossIcon_White.png" />
     <Resource Include="Images\errorIcon.png" />
     <Resource Include="Images\moreDetailsIcon_Closed.png" />
     <Resource Include="Images\moreDetailsIcon_Oppened.png" />

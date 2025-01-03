@@ -39,8 +39,7 @@ namespace ScanNetDownloader.View.CustomControls
         }
 
 
-
-        private string _selectChapterInfos = "Choose some chapter...";
+        private string _selectChapterInfos = "Select chapters for...";
         public string SelectChapterInfos
         {
             get { return _selectChapterInfos; }
@@ -80,12 +79,23 @@ namespace ScanNetDownloader.View.CustomControls
             }
         }
 
-        private string _errorMessage;
-        public string ErrorMessage
+        private string _errorMessageSingle;
+        public string ErrorMessageSingle
         {
-            get { return _errorMessage; }
+            get { return _errorMessageSingle; }
             set {
-                _errorMessage = value;
+                _errorMessageSingle = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _errorMessageRange;
+        public string ErrorMessageRange
+        {
+            get { return _errorMessageRange; }
+            set
+            {
+                _errorMessageRange = value;
                 OnPropertyChanged();
             }
         }
@@ -142,14 +152,13 @@ namespace ScanNetDownloader.View.CustomControls
 
         private void SetUrlInfo(ScanData tempScanData)
         {
-            if (tempScanData.UrlContainsChapter())
-            {
-                SelectChapterInfos = $"Chapter {tempScanData.ChapterId} is already specified in {tempScanData.Url} but you can add additionnal chapter";
-            }
-            else
-            {
-                SelectChapterInfos = $"Choose chapters for {tempScanData.Url}";
-            }
+            SelectChapterInfos = $"Select chapters for {tempScanData.BookName}";
+
+            // TODO: Do I need to tell the user a chapter has already been added ?
+            //if (tempScanData.UrlContainsChapter())
+            //{
+            //    SelectChapterInfos = $"Chapter {tempScanData.ChapterId} is already specified in {tempScanData.Url} but you can add additionnal chapter";
+            //}
         }
         #endregion
 
@@ -161,8 +170,10 @@ namespace ScanNetDownloader.View.CustomControls
             {
                 if (ChapterAlreadyAdded(chapterToAdd))
                 {
-                    ErrorMessage = $"Chapter {chapterToAdd} is already added";
-                    txtBoxSingleChapter.Background = Brushes.IndianRed;
+                    ErrorMessageSingle = $"Chapter {chapterToAdd} is already added";
+                    txtBoxSingleChapter.BorderBrush = (SolidColorBrush)FindResource("Colors.Red");
+                    txtBoxSingleChapter.BorderThickness = new Thickness(2);
+                    ShowErrorAlert(true, errorAlertAddSingle);
                 }
                 else
                 {
@@ -172,12 +183,17 @@ namespace ScanNetDownloader.View.CustomControls
 
                     // Clear txt box
                     SingleChapterInput = "";
+
+                    // Clear potential error
+                    ShowErrorAlert(false, errorAlertAddSingle);
                 }
             }
             else // Invalid number entered
             {
-                ErrorMessage = $"\"{SingleChapterInput}\" is not a valid number";
-                txtBoxSingleChapter.Background = Brushes.IndianRed;
+                ErrorMessageSingle = $"\"{SingleChapterInput}\" is not a valid number";
+                txtBoxSingleChapter.BorderBrush = (SolidColorBrush)FindResource("Colors.Red");
+                txtBoxSingleChapter.BorderThickness = new Thickness(2);
+                ShowErrorAlert(true, errorAlertAddSingle);
             }
         }
 
@@ -196,9 +212,12 @@ namespace ScanNetDownloader.View.CustomControls
                 {
                     if (nonDuplicatedChapters.Count == 0)
                     {
-                        ErrorMessage = $"{startChapter}-{endChapter} all chapters in the range are already added";
-                        txtBoxEndChapter.Background = Brushes.IndianRed;
-                        txtBoxStartChapter.Background = Brushes.IndianRed;
+                        ErrorMessageRange = $"{startChapter}-{endChapter} all chapters in the range are already added";
+                        txtBoxEndChapter.BorderBrush = (SolidColorBrush)FindResource("Colors.Red");
+                        txtBoxEndChapter.BorderThickness = new Thickness(2);
+                        txtBoxStartChapter.BorderBrush = (SolidColorBrush)FindResource("Colors.Red");
+                        txtBoxStartChapter.BorderThickness = new Thickness(2);
+                        ShowErrorAlert(true, errorAlertAddRange);
                     }
                     else
                     {
@@ -251,8 +270,12 @@ namespace ScanNetDownloader.View.CustomControls
                             }
                         }
 
-                        string chaptersToShowInMsg= string.Join(',', chaptersForErrorMsg);
-                        ErrorMessage = $"Some chapters were already added, only chapters {chaptersToShowInMsg} have been added";
+                        if(chaptersForErrorMsg.Count > 0)
+                        {
+                            string chaptersToShowInMsg = string.Join(',', chaptersForErrorMsg);
+                            ErrorMessageRange = $"Some chapters were already added, only chapters {chaptersToShowInMsg} have been added";
+                            ShowErrorAlert(true, errorAlertAddRange);
+                        }
 
                         // Clear txt box
                         StartChapterInput = "";
@@ -266,26 +289,32 @@ namespace ScanNetDownloader.View.CustomControls
                     List<int> selectedChapters = Enumerable.Range(startChapter, (endChapter - startChapter) + 1).ToList();
                     AddToChaptersSelection(chapterKey, selectedChapters);
 
+                    // Clear potential error
+                    ShowErrorAlert(false, errorAlertAddRange);
+
                     // Clear txt box
                     StartChapterInput = "";
                     EndChapterInput = "";
                 }
             }
             else // Invalid number entered
-            {
+            {                          
                 string errorMessage = "";
                 if (validStartChapter == false)
                 {
                     errorMessage += $"\"{StartChapterInput}\"";
-                    txtBoxStartChapter.Background = Brushes.IndianRed;
+                    txtBoxStartChapter.BorderBrush = (SolidColorBrush)FindResource("Colors.Red");
+                    txtBoxStartChapter.BorderThickness = new Thickness(2);
                 }
                 if (validEndChapter == false)
                 {
                     errorMessage += string.IsNullOrEmpty(errorMessage) ? $"\"{EndChapterInput}\"" : $", \"{EndChapterInput}\"";
-                    txtBoxEndChapter.Background = Brushes.IndianRed;
+                    txtBoxEndChapter.BorderBrush = (SolidColorBrush)FindResource("Colors.Red");
+                    txtBoxEndChapter.BorderThickness = new Thickness(2);
                 }
                 errorMessage += " is not a valid number";
-                ErrorMessage = errorMessage;
+                ErrorMessageRange = errorMessage;
+                ShowErrorAlert(true, errorAlertAddRange);
             }
         }
 
@@ -301,20 +330,29 @@ namespace ScanNetDownloader.View.CustomControls
 
         private void txtBoxSingleChapter_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (txtBoxSingleChapter.Background == Brushes.IndianRed)
-                txtBoxSingleChapter.ClearValue(Control.BackgroundProperty);
+            if (txtBoxSingleChapter.BorderThickness == new Thickness(2))
+            {
+                txtBoxSingleChapter.ClearValue(Control.BorderThicknessProperty);
+                txtBoxSingleChapter.ClearValue(Control.BorderBrushProperty);
+            }   
         }
 
         private void txtBoxStartChapter_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (txtBoxStartChapter.Background == Brushes.IndianRed)
-                txtBoxStartChapter.ClearValue(Control.BackgroundProperty);
+            if (txtBoxStartChapter.BorderThickness == new Thickness(2))
+            {
+                txtBoxStartChapter.ClearValue(Control.BorderThicknessProperty);
+                txtBoxStartChapter.ClearValue(Control.BorderBrushProperty);
+            }    
         }
 
         private void txtBoxEndChapter_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (txtBoxEndChapter.Background == Brushes.IndianRed)
-                txtBoxEndChapter.ClearValue(Control.BackgroundProperty);
+            if (txtBoxEndChapter.BorderThickness == new Thickness(2))
+            {
+                txtBoxEndChapter.ClearValue(Control.BorderThicknessProperty);
+                txtBoxEndChapter.ClearValue(Control.BorderBrushProperty);
+            }     
         }
 
         private void ChapterItem_DeleteChapter(object sender, RoutedEventArgs e)
@@ -409,5 +447,22 @@ namespace ScanNetDownloader.View.CustomControls
             return chapterAlreadyAdded;
         }
         #endregion
+
+        private void ShowErrorAlert(bool show, ErrorAlert alertToShow)
+        {
+            int shownHeight = 20;
+            int hiddenHeight = 10;
+            
+            if (show)
+            {
+                alertToShow.Visibility = Visibility.Visible;
+                alertToShow.Height = shownHeight;
+            }
+            else
+            {
+                alertToShow.Visibility = Visibility.Hidden;
+                alertToShow.Height = hiddenHeight;
+            }
+        }
     }
 }

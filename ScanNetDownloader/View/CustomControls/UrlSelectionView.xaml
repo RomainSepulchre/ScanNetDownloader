@@ -5,19 +5,29 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ScanNetDownloader.View.CustomControls"
              mc:Ignorable="d" 
-             d:DesignHeight="500" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800">
     <Grid Grid.Row="1" Visibility="Visible">
         <Grid.RowDefinitions>
-            <RowDefinition Height="0.63*"/>
-            <RowDefinition Height="0.37*"/>
-            <RowDefinition Height="40"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
-        <TextBlock Name="txtBlockInfos"  Text="{Binding SelectUrlInfos}" VerticalAlignment="Center" Margin="30" TextWrapping="Wrap"/>
-        <StackPanel Grid.Row="1" Margin="10 0 10 0">
-            <Label Content="Enter the URL here"/>
-            <TextBox Name="txtBoxUrlInput" Text="{Binding UrlInput, UpdateSourceTrigger=PropertyChanged}" TextChanged="txtBoxUrlInput_TextChanged" VerticalContentAlignment="Center" Height="30" Background="Beige"/>
-            <Label Name="lbUrlError" Content="{Binding ErrorMessage}" Foreground="Red"/>
+        
+        <StackPanel Margin="20 13 20 0">
+            <TextBlock Text="Add a new scan url" FontWeight="Bold" FontSize="24" Margin="0 0 0 6"/>
+            <TextBox Name="txtBoxUrlInput" Text="{Binding UrlInput, UpdateSourceTrigger=PropertyChanged}" TextChanged="txtBoxUrlInput_TextChanged" VerticalContentAlignment="Center" Height="37" Background="{StaticResource Colors.White}" BorderBrush="{StaticResource Colors.DarkGrey}"/>
+            <local:ErrorAlert x:Name="errorAlertUrl" ErrorMsg="{Binding ErrorMessage}" Visibility="Collapsed"/> 
+            <!--<Label Name="lbUrlError" Content="{Binding ErrorMessage}" Foreground="Red"/>-->
+            <TextBlock Text="Compatibles websites and url examples" Margin="0 20 0 0" FontWeight="Bold" FontSize="16"/>
+            <TextBlock Text="Here is the list of the scan website that are currently compatible with ScanNetDownloader. If you're not sure what url you should use, refer to the examples url:" Margin="0 12 0 0" TextWrapping="Wrap"/>
+            <TextBlock Text="https://www.scan-vf.net" FontWeight="Bold" Margin="0 5 0 2"/>
+            <TextBlock Text="- https://www.scan-vf.net/one_piece" />
+            <TextBlock Text="- https://www.scan-vf.net/one_piece/chapitre-1133/1"/>
+            <TextBlock Text="https://anime-sama.fr/" FontWeight="Bold" Margin="0 5 0 2"/>
+            <TextBlock Text="- https://anime-sama.fr/catalogue/one-piece/scan_noir-et-blanc/vf/ (for scan in french)" />
+            <TextBlock Text="- https://anime-sama.fr/catalogue/one-piece/scan_noir-et-blanc/va/ (for scan in english)"/>
+            <!--<TextBlock Name="txtBlockInfos"  Text="{Binding SelectUrlInfos}" VerticalAlignment="Center" Margin="30" TextWrapping="Wrap"/>-->
         </StackPanel>
-        <Button Grid.Row="2" Name="btnNext" Content="Next" Click="btnNext_Click"/>
+        
+        <Button Grid.Row="2" Name="btnNext" Content="Next" Click="btnNext_Click" FontSize="22"/>
     </Grid>
 </UserControl>

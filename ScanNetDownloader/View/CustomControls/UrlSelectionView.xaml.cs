@@ -119,14 +119,17 @@ namespace ScanNetDownloader.View.CustomControls
                 TempScanData = ScanManagement.CreateTemporaryScanData(UrlInput);
                 if (TempScanData == null)
                 {
+                    errorAlertUrl.Visibility = Visibility.Visible;
                     ErrorMessage = "Impossible to create a ScanData object from url";
-                    txtBoxUrlInput.Background = Brushes.IndianRed;
+                    txtBoxUrlInput.BorderBrush = (SolidColorBrush)FindResource("Colors.Red");
+                    txtBoxUrlInput.BorderThickness = new Thickness(2);
                     return;
                 }
 
                 // Reset Error
-                ErrorMessage = "";
-                txtBoxUrlInput.ClearValue(Control.BackgroundProperty);
+                errorAlertUrl.Visibility = Visibility.Collapsed;
+                txtBoxUrlInput.ClearValue(Control.BorderBrushProperty);
+                txtBoxUrlInput.ClearValue(Control.BorderThicknessProperty);
 
                 RaiseEvent(new RoutedEventArgs(UrlConfirmedEvent, this));
             }
@@ -134,8 +137,11 @@ namespace ScanNetDownloader.View.CustomControls
             {
                 //TODO: Show error, Add text explanation
                 Debug.WriteLine(urlTestResult.InvalidityReason);
+                errorAlertUrl.Visibility = Visibility.Visible;
                 ErrorMessage = urlTestResult.InvalidityReason;
-                txtBoxUrlInput.Background = Brushes.IndianRed;
+                txtBoxUrlInput.BorderBrush = (SolidColorBrush)FindResource("Colors.Red");
+                txtBoxUrlInput.BorderThickness = new Thickness(2);
+                return;
             }
         }
         #endregion
