@@ -22,14 +22,16 @@
         </Grid.RowDefinitions>
         <StackPanel Margin="20 13 20 0">
             <TextBlock Text="{Binding SelectChapterInfos, FallbackValue=Select chapters for...}" FontSize="24" FontWeight="Bold" TextWrapping="NoWrap" Margin="0 0 0 5"/>
-            <!--<TextBlock Name="txtBlockSelectChapterInfo" Text="{Binding SelectChapterInfos}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="30 0 30 0" TextWrapping="Wrap"/>-->
-            <TextBlock Text="Add a single chapter" FontWeight="Bold"/>
+            
+            <TextBlock Text="Add a single chapter" FontWeight="Bold" Margin="0 0 0 1"/>
             <StackPanel Orientation="Horizontal">
+                <!--<local:TextInputBox TxtInput="" PlaceholderText="Enter a chapter number" Height="30" Width="172" ShowClearBtn="False" TxtAlignment="Center"/>-->
                 <TextBox Name="txtBoxSingleChapter" Text="{Binding SingleChapterInput}" TextChanged="txtBoxSingleChapter_TextChanged" Height="30" Width="172" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Background="{StaticResource Colors.White}" BorderBrush="{StaticResource Colors.DarkGrey}"/>
                 <Button Name="btnAddSingleChapter" Content="Add single chapter" Click="btnAddSingleChapter_Click" Height="30" Width="178" Margin="20 0 0 0" FontSize="16"/>
             </StackPanel>
             <local:ErrorAlert x:Name="errorAlertAddSingle" ErrorMsg="{Binding ErrorMessageSingle}" Height="10" Visibility="Hidden"/>
-            <TextBlock Text="Add a range of chapter" FontWeight="Bold"/>
+            
+            <TextBlock Text="Add a range of chapter" FontWeight="Bold" Margin="0 0 0 1"/>
             <StackPanel Orientation="Horizontal">
                 <TextBox Name="txtBoxStartChapter" Text="{Binding StartChapterInput}" TextChanged="txtBoxStartChapter_TextChanged" Height="30"  Width="172" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Background="{StaticResource Colors.White}" BorderBrush="{StaticResource Colors.DarkGrey}"/>
                 <TextBlock Text="-" TextAlignment="Center" VerticalAlignment="Center" Width="20"/>
@@ -37,7 +39,7 @@
                 <Button Name="btnAddRangeOfChapter" Content="Add range of chapter" Click="btnAddRangeOfChapter_Click" Width="178" Margin="20 0 0 0" FontSize="16"/>
             </StackPanel>
             <local:ErrorAlert x:Name="errorAlertAddRange" ErrorMsg="{Binding ErrorMessageRange}" Height="10" Visibility="Hidden" />
-            <!--<TextBlock Name="txtBlockChapterError" Text="{Binding ErrorMessage}" Foreground="Red" TextWrapping="Wrap"/>-->
+            
         </StackPanel>
 
 

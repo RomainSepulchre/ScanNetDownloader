@@ -41,7 +41,7 @@ namespace ScanNetDownloader.View.CustomControls
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public static RoutedEvent DeleteBtnPressedEvent = EventManager.RegisterRoutedEvent(nameof(DeleteChapterBtnPressed), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ScanItem));
+        public static RoutedEvent DeleteBtnPressedEvent = EventManager.RegisterRoutedEvent(nameof(DeleteChapterBtnPressed), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ChapterItem));
 
         public event RoutedEventHandler DeleteChapterBtnPressed
         {

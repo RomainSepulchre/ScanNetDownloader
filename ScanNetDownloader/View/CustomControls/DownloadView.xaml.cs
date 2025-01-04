@@ -59,7 +59,7 @@ namespace ScanNetDownloader.View.CustomControls
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public static RoutedEvent OnDownloadCompletedEvent = EventManager.RegisterRoutedEvent(nameof(OnDownloadCompleted), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ScanItem));
+        public static RoutedEvent OnDownloadCompletedEvent = EventManager.RegisterRoutedEvent(nameof(OnDownloadCompleted), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(DownloadView));
 
         public event RoutedEventHandler OnDownloadCompleted
         {

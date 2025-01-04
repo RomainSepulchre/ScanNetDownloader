@@ -37,7 +37,7 @@ namespace ScanNetDownloader.View.CustomControls
             }
         }
 
-        public static RoutedEvent StartDownloadEvent = EventManager.RegisterRoutedEvent(nameof(StartDownload), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ScanItem));
+        public static RoutedEvent StartDownloadEvent = EventManager.RegisterRoutedEvent(nameof(StartDownload), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ScanManagerView));
 
         public event RoutedEventHandler StartDownload
         {

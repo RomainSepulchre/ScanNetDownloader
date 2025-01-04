@@ -60,7 +60,7 @@ namespace ScanNetDownloader.View.CustomControls
         public event PropertyChangedEventHandler? PropertyChanged;
 
         // View Events
-        public static RoutedEvent UrlConfirmedEvent = EventManager.RegisterRoutedEvent(nameof(UrlConfirmed), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ScanItem));      
+        public static RoutedEvent UrlConfirmedEvent = EventManager.RegisterRoutedEvent(nameof(UrlConfirmed), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(UrlSelectionView));      
 
         public event RoutedEventHandler UrlConfirmed
         {
@@ -98,7 +98,8 @@ namespace ScanNetDownloader.View.CustomControls
         }
 
         #region Buttons and Ui Events
-        private void txtBoxUrlInput_TextChanged(object sender, TextChangedEventArgs e)
+
+        private void txtBoxUrlInput_TextInputChanged(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrEmpty(UrlInput) == false && btnNext != null)
             {
@@ -106,7 +107,11 @@ namespace ScanNetDownloader.View.CustomControls
             }
             else if (btnNext != null && btnNext.IsEnabled) btnNext.IsEnabled = false;
 
-            if (txtBoxUrlInput.Background == Brushes.IndianRed) txtBoxUrlInput.ClearValue(Control.BackgroundProperty);
+            if (txtBoxUrlInput.BorderThickness == new Thickness(2))
+            {
+                txtBoxUrlInput.ClearValue(Control.BorderBrushProperty);
+                txtBoxUrlInput.ClearValue(Control.BorderThicknessProperty);
+            }
         }
 
         private async void btnNext_Click(object sender, RoutedEventArgs e)

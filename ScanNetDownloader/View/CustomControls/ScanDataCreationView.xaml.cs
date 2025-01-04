@@ -1,7 +1,9 @@
 ﻿using ScanNetDownloader.Logic;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -19,12 +21,22 @@ namespace ScanNetDownloader.View.CustomControls
     /// <summary>
     /// Logique d'interaction pour ScanDataCreationView.xaml
     /// </summary>
-    public partial class ScanDataCreationView : UserControl
+    public partial class ScanDataCreationView : UserControl, INotifyPropertyChanged
     {
         private List<ScanData> NewScanDatas { get; set; }
 
+        private string _progressStatus;
+        public string ProgressStatus
+        {
+            get { return _progressStatus; }
+            set {
+                _progressStatus = value;
+                OnPropertyChanged();
+            }
+        }
+
         // View Events
-        public static RoutedEvent FinishBtnPressedEvent = EventManager.RegisterRoutedEvent(nameof(FinishBtnPressed), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ScanItem));
+        public static RoutedEvent FinishBtnPressedEvent = EventManager.RegisterRoutedEvent(nameof(FinishBtnPressed), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ScanDataCreationView));
 
         public event RoutedEventHandler FinishBtnPressed
         {
@@ -32,9 +44,16 @@ namespace ScanNetDownloader.View.CustomControls
             remove { RemoveHandler(FinishBtnPressedEvent, value); }
         }
 
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        private void OnPropertyChanged([CallerMemberName] string property = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+        }
 
         public ScanDataCreationView()
         {
+            DataContext = this;
             InitializeComponent();
         }
 
@@ -48,30 +67,26 @@ namespace ScanNetDownloader.View.CustomControls
             for (int i = 0; i < chaptersSelected.Count; i++)
             {
                 int chapter = chaptersSelected[i];
+                ProgressStatus = $"{tempScanData.BookName} - {chapter} ({i}/{chaptersSelected.Count})";
 
-                // TODO: Replace txtBlock with a dedicated item
-                TextBlock chapterTxtBlock = new TextBlock();
-                chapterTxtBlock.TextWrapping = TextWrapping.Wrap;
-                chapterTxtBlock.Text = $"Scan Data creation for {tempScanData.BookName}-{chapter} in progress...";
-                listVwCreationStatus.Items.Add(chapterTxtBlock);
+                ScanDataCreationItem scanDataCreationItem = new ScanDataCreationItem(tempScanData.BookName, chapter);
+                //listVwCreationStatus.Items.Add(scanDataCreationItem);
+                listVwCreationStatus.Children.Add(scanDataCreationItem);
 
                 ScanDataInitResult newScanDataResult = await ScanManagement.CreateNewScanData(url, chapter);
 
                 if (newScanDataResult.Success)
                 {
                     NewScanDatas.Add(newScanDataResult.NewScanData);
-                    chapterTxtBlock.Text = $"Scan Data creation for {tempScanData.BookName}-{chapter} successful!";
-                    chapterTxtBlock.Text += $"\n -> {newScanDataResult.NewScanData.PagesCount} pages found";
-                    chapterTxtBlock.Foreground = Brushes.Green;
+                    scanDataCreationItem.RetrieveDataSuccess($"Success - {newScanDataResult.NewScanData.PagesCount} pages found");
                 }
                 else
                 {
-                    chapterTxtBlock.Text = $"Scan Data creation for {tempScanData.BookName}-{chapter} failed!";
-                    chapterTxtBlock.Text += $"\n -> {newScanDataResult.Exception.Message}";
-                    chapterTxtBlock.Foreground = Brushes.Red;
+                    scanDataCreationItem.RetrieveDataFailed(newScanDataResult.Exception.Message);
                 }
                 progrBarScanDataCreation.Value = ((float)(i + 1) / chaptersSelected.Count) * 100;
             }
+            ProgressStatus = $"Done ({chaptersSelected.Count}/{chaptersSelected.Count})";
 
             // Old way doing everything at once -> no progress evolution
             //NewScanDatas = await ScanManagement.CreateNewScanDatas(UrlInput, ChapterSelected);

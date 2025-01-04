@@ -104,7 +104,7 @@ namespace ScanNetDownloader.View.CustomControls
         public event PropertyChangedEventHandler? PropertyChanged;
 
         // View Events
-        public static RoutedEvent BackBtnPressedEvent = EventManager.RegisterRoutedEvent(nameof(BackBtnPressed), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ScanItem));
+        public static RoutedEvent BackBtnPressedEvent = EventManager.RegisterRoutedEvent(nameof(BackBtnPressed), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ChaptersSelectionView));
 
         public event RoutedEventHandler BackBtnPressed
         {
@@ -112,7 +112,7 @@ namespace ScanNetDownloader.View.CustomControls
             remove { RemoveHandler(BackBtnPressedEvent, value); }
         }
 
-        public static RoutedEvent ChaptersConfirmedEvent = EventManager.RegisterRoutedEvent(nameof(ChaptersConfirmed), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ScanItem));
+        public static RoutedEvent ChaptersConfirmedEvent = EventManager.RegisterRoutedEvent(nameof(ChaptersConfirmed), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ChaptersSelectionView));
 
         
 
@@ -190,7 +190,14 @@ namespace ScanNetDownloader.View.CustomControls
             }
             else // Invalid number entered
             {
-                ErrorMessageSingle = $"\"{SingleChapterInput}\" is not a valid number";
+                if(string.IsNullOrEmpty(SingleChapterInput))
+                {
+                    ErrorMessageSingle = $"No chapter number provided";
+                }
+                else
+                {
+                    ErrorMessageSingle = $"\"{SingleChapterInput}\" is not a valid number";
+                }             
                 txtBoxSingleChapter.BorderBrush = (SolidColorBrush)FindResource("Colors.Red");
                 txtBoxSingleChapter.BorderThickness = new Thickness(2);
                 ShowErrorAlert(true, errorAlertAddSingle);
@@ -300,19 +307,47 @@ namespace ScanNetDownloader.View.CustomControls
             else // Invalid number entered
             {                          
                 string errorMessage = "";
-                if (validStartChapter == false)
+
+                if(string.IsNullOrEmpty(StartChapterInput) && string.IsNullOrEmpty(EndChapterInput))
                 {
-                    errorMessage += $"\"{StartChapterInput}\"";
+                    errorMessage = "No chapter number provided";
                     txtBoxStartChapter.BorderBrush = (SolidColorBrush)FindResource("Colors.Red");
                     txtBoxStartChapter.BorderThickness = new Thickness(2);
-                }
-                if (validEndChapter == false)
-                {
-                    errorMessage += string.IsNullOrEmpty(errorMessage) ? $"\"{EndChapterInput}\"" : $", \"{EndChapterInput}\"";
                     txtBoxEndChapter.BorderBrush = (SolidColorBrush)FindResource("Colors.Red");
                     txtBoxEndChapter.BorderThickness = new Thickness(2);
                 }
-                errorMessage += " is not a valid number";
+                else
+                {
+                    if (validStartChapter == false)
+                    {
+                        if (string.IsNullOrEmpty(StartChapterInput))
+                        {
+                            errorMessage += $"No chapter number provided";
+                        }
+                        else
+                        {
+                            errorMessage += $"\"{StartChapterInput}\" is not a valid number";
+                        }
+                        txtBoxStartChapter.BorderBrush = (SolidColorBrush)FindResource("Colors.Red");
+                        txtBoxStartChapter.BorderThickness = new Thickness(2);
+                    }
+
+                    if (validEndChapter == false)
+                    {
+                        if (string.IsNullOrEmpty(EndChapterInput))
+                        {
+                            errorMessage += string.IsNullOrEmpty(errorMessage) ? $"No chapter number provided" : $" and no chapter number provided";
+                        }
+                        else
+                        {
+                            errorMessage += string.IsNullOrEmpty(errorMessage) ? $"\"{EndChapterInput}\" is not a valid number" : $" and \"{EndChapterInput}\" is not a valid number";
+
+                        }
+                        txtBoxEndChapter.BorderBrush = (SolidColorBrush)FindResource("Colors.Red");
+                        txtBoxEndChapter.BorderThickness = new Thickness(2);
+                    }
+                }  
+
                 ErrorMessageRange = errorMessage;
                 ShowErrorAlert(true, errorAlertAddRange);
             }
@@ -384,7 +419,7 @@ namespace ScanNetDownloader.View.CustomControls
         private void AddChapterItem(string chapterKey)
         {
             ChapterItem chapterItem = new ChapterItem(chapterKey);
-            chapterItem.Margin = new Thickness(5, 0, 0, 0);
+            chapterItem.Margin = new Thickness(5);
             chapterItem.DeleteChapterBtnPressed += ChapterItem_DeleteChapter;
 
             ChapterItems.Add(chapterItem); // Object ordered on display with a CollectionViewSource
