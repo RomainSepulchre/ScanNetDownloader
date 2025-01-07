@@ -34,7 +34,6 @@ namespace ScanNetDownloader.View.CustomControls
         }
 
         private TextAlignment _txtAlignment = TextAlignment.Left;
-
         public TextAlignment TxtAlignment
         {
             get { return _txtAlignment; }
@@ -42,12 +41,6 @@ namespace ScanNetDownloader.View.CustomControls
                 _txtAlignment = value;
                 SetTextHorizontalAlignment(_txtAlignment);
             }
-        }
-
-        private void SetTextHorizontalAlignment(TextAlignment alignment)
-        {
-            txtInput.TextAlignment = alignment;
-            txtPlaceholder.TextAlignment = alignment;
         }
 
         private string _placeholderTxt;
@@ -70,6 +63,17 @@ namespace ScanNetDownloader.View.CustomControls
             }
         }
 
+        public string TxtInput
+        {
+            get { return (string)GetValue(TxtInputProperty); }
+            set {
+                SetValue(TxtInputProperty, value);
+                OnPropertyChanged();
+            }
+        }
+        public static readonly DependencyProperty TxtInputProperty = DependencyProperty.Register("TxtInput", typeof(string), typeof(TextInputBox), new PropertyMetadata(""));
+
+
         public static RoutedEvent TextInputChangedEvent = EventManager.RegisterRoutedEvent(nameof(TextInputChanged), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(TextInputBox));
         public event RoutedEventHandler TextInputChanged
         {
@@ -77,23 +81,7 @@ namespace ScanNetDownloader.View.CustomControls
             remove { RemoveHandler(TextInputChangedEvent, value); }
         }
 
-
-
-        public string TxtInput
-        {
-            get { return (string)GetValue(TxtInputProperty); }
-            set {
-                SetValue(TxtInputProperty, value);
-                Debug.WriteLine($"TXT INPUT CHANGED");
-            }
-        }
-        // Using a DependencyProperty as the backing store for TxtInput.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty TxtInputProperty = DependencyProperty.Register("TxtInput", typeof(string), typeof(TextInputBox), new PropertyMetadata(""));
-
-
-
         public event PropertyChangedEventHandler? PropertyChanged;
-
         private void OnPropertyChanged([CallerMemberName] string property = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
@@ -103,6 +91,12 @@ namespace ScanNetDownloader.View.CustomControls
         {
             //DataContext = this;
             InitializeComponent();
+        }
+
+        private void SetTextHorizontalAlignment(TextAlignment alignment)
+        {
+            txtInput.TextAlignment = alignment;
+            txtPlaceholder.TextAlignment = alignment;
         }
 
         private void SetTxtPadding(Thickness newPadding)
@@ -141,7 +135,6 @@ namespace ScanNetDownloader.View.CustomControls
 
         private void txtInput_TextChanged(object sender, TextChangedEventArgs e)
         {
-            Debug.WriteLine("TEXT CHANGED");
             RaiseEvent(new RoutedEventArgs(TextInputChangedEvent, this));
 
             if (string.IsNullOrEmpty(txtInput.Text))

@@ -8,8 +8,8 @@
              d:DesignHeight="40" d:DesignWidth="250"
              x:Name="userControl">
     <Grid Background="{StaticResource Colors.White}" DataContext="{Binding ElementName=userControl}">
-        <TextBox Name="txtInput"  Text="{Binding TxtInput}" TextChanged="txtInput_TextChanged" VerticalContentAlignment="Center"  Background="Transparent" BorderBrush="{StaticResource Colors.DarkGrey}"/>
-        <TextBlock Name="txtPlaceholder" Panel.ZIndex="-1" Text="{Binding PlaceholderText, FallbackValue=Enter something...}" FontStyle="Italic" Foreground="{StaticResource Colors.DarkGrey}" VerticalAlignment="Center" Margin="3 0 0 0"/>
+        <TextBox Name="txtInput"  Text="{Binding TxtInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextChanged="txtInput_TextChanged" VerticalContentAlignment="Center"  Background="Transparent" Style="{StaticResource DefaultTextBoxStyle}" />
+        <TextBlock Name="txtPlaceholder" Panel.ZIndex="-1" Text="{Binding PlaceholderText, FallbackValue=Enter something...}" FontStyle="Italic" Foreground="{StaticResource Colors.DarkGrey}" VerticalAlignment="Center" Margin="3 0 3 0"/>
         <Button Name="btnClear" Click="btnClear_Click" Width="20" Height="20" HorizontalAlignment="Right" Margin="0 0 5 0" Style="{StaticResource closeButton}" Foreground="{StaticResource Colors.DarkGrey}">
             <Button.Content>
                 <Image Source="{StaticResource Img.crossWhite}"/>

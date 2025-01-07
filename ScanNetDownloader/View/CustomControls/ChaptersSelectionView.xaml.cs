@@ -171,8 +171,7 @@ namespace ScanNetDownloader.View.CustomControls
                 if (ChapterAlreadyAdded(chapterToAdd))
                 {
                     ErrorMessageSingle = $"Chapter {chapterToAdd} is already added";
-                    txtBoxSingleChapter.BorderBrush = (SolidColorBrush)FindResource("Colors.Red");
-                    txtBoxSingleChapter.BorderThickness = new Thickness(2);
+                    ShowErrorAlertOnTextBox(txtBoxSingleChapter);
                     ShowErrorAlert(true, errorAlertAddSingle);
                 }
                 else
@@ -198,8 +197,7 @@ namespace ScanNetDownloader.View.CustomControls
                 {
                     ErrorMessageSingle = $"\"{SingleChapterInput}\" is not a valid number";
                 }             
-                txtBoxSingleChapter.BorderBrush = (SolidColorBrush)FindResource("Colors.Red");
-                txtBoxSingleChapter.BorderThickness = new Thickness(2);
+                ShowErrorAlertOnTextBox(txtBoxSingleChapter);
                 ShowErrorAlert(true, errorAlertAddSingle);
             }
         }
@@ -220,10 +218,8 @@ namespace ScanNetDownloader.View.CustomControls
                     if (nonDuplicatedChapters.Count == 0)
                     {
                         ErrorMessageRange = $"{startChapter}-{endChapter} all chapters in the range are already added";
-                        txtBoxEndChapter.BorderBrush = (SolidColorBrush)FindResource("Colors.Red");
-                        txtBoxEndChapter.BorderThickness = new Thickness(2);
-                        txtBoxStartChapter.BorderBrush = (SolidColorBrush)FindResource("Colors.Red");
-                        txtBoxStartChapter.BorderThickness = new Thickness(2);
+                        ShowErrorAlertOnTextBox(txtBoxEndChapter);
+                        ShowErrorAlertOnTextBox(txtBoxStartChapter);
                         ShowErrorAlert(true, errorAlertAddRange);
                     }
                     else
@@ -311,10 +307,8 @@ namespace ScanNetDownloader.View.CustomControls
                 if(string.IsNullOrEmpty(StartChapterInput) && string.IsNullOrEmpty(EndChapterInput))
                 {
                     errorMessage = "No chapter number provided";
-                    txtBoxStartChapter.BorderBrush = (SolidColorBrush)FindResource("Colors.Red");
-                    txtBoxStartChapter.BorderThickness = new Thickness(2);
-                    txtBoxEndChapter.BorderBrush = (SolidColorBrush)FindResource("Colors.Red");
-                    txtBoxEndChapter.BorderThickness = new Thickness(2);
+                    ShowErrorAlertOnTextBox(txtBoxStartChapter);
+                    ShowErrorAlertOnTextBox(txtBoxEndChapter);
                 }
                 else
                 {
@@ -328,8 +322,7 @@ namespace ScanNetDownloader.View.CustomControls
                         {
                             errorMessage += $"\"{StartChapterInput}\" is not a valid number";
                         }
-                        txtBoxStartChapter.BorderBrush = (SolidColorBrush)FindResource("Colors.Red");
-                        txtBoxStartChapter.BorderThickness = new Thickness(2);
+                        ShowErrorAlertOnTextBox(txtBoxStartChapter);
                     }
 
                     if (validEndChapter == false)
@@ -343,8 +336,7 @@ namespace ScanNetDownloader.View.CustomControls
                             errorMessage += string.IsNullOrEmpty(errorMessage) ? $"\"{EndChapterInput}\" is not a valid number" : $" and \"{EndChapterInput}\" is not a valid number";
 
                         }
-                        txtBoxEndChapter.BorderBrush = (SolidColorBrush)FindResource("Colors.Red");
-                        txtBoxEndChapter.BorderThickness = new Thickness(2);
+                        ShowErrorAlertOnTextBox(txtBoxEndChapter);
                     }
                 }  
 
@@ -363,31 +355,28 @@ namespace ScanNetDownloader.View.CustomControls
             RaiseEvent(new RoutedEventArgs(ChaptersConfirmedEvent, this));
         }
 
-        private void txtBoxSingleChapter_TextChanged(object sender, TextChangedEventArgs e)
+        private void txtBoxSingleChapter_TextInputChanged(object sender, RoutedEventArgs e)
         {
-            if (txtBoxSingleChapter.BorderThickness == new Thickness(2))
+            if (ErrorAlertIsShown(txtBoxSingleChapter))
             {
-                txtBoxSingleChapter.ClearValue(Control.BorderThicknessProperty);
-                txtBoxSingleChapter.ClearValue(Control.BorderBrushProperty);
-            }   
+                ClearAlertOnTextBox(txtBoxSingleChapter);
+            }
         }
 
-        private void txtBoxStartChapter_TextChanged(object sender, TextChangedEventArgs e)
+        private void txtBoxStartChapter_TextInputChanged(object sender, RoutedEventArgs e)
         {
-            if (txtBoxStartChapter.BorderThickness == new Thickness(2))
+            if (ErrorAlertIsShown(txtBoxStartChapter))
             {
-                txtBoxStartChapter.ClearValue(Control.BorderThicknessProperty);
-                txtBoxStartChapter.ClearValue(Control.BorderBrushProperty);
-            }    
-        }
+                ClearAlertOnTextBox(txtBoxStartChapter);
+            }
+        }  
 
-        private void txtBoxEndChapter_TextChanged(object sender, TextChangedEventArgs e)
+        private void txtBoxEndChapter_TextInputChanged(object sender, RoutedEventArgs e)
         {
-            if (txtBoxEndChapter.BorderThickness == new Thickness(2))
+            if (ErrorAlertIsShown(txtBoxEndChapter))
             {
-                txtBoxEndChapter.ClearValue(Control.BorderThicknessProperty);
-                txtBoxEndChapter.ClearValue(Control.BorderBrushProperty);
-            }     
+                ClearAlertOnTextBox(txtBoxEndChapter);
+            }
         }
 
         private void ChapterItem_DeleteChapter(object sender, RoutedEventArgs e)
@@ -483,6 +472,8 @@ namespace ScanNetDownloader.View.CustomControls
         }
         #endregion
 
+
+        #region Error Alters
         private void ShowErrorAlert(bool show, ErrorAlert alertToShow)
         {
             int shownHeight = 20;
@@ -499,5 +490,23 @@ namespace ScanNetDownloader.View.CustomControls
                 alertToShow.Height = hiddenHeight;
             }
         }
+
+        private void ShowErrorAlertOnTextBox(TextInputBox txtBox)
+        {
+            txtBox.BorderBrush = (SolidColorBrush)FindResource("Colors.Red");
+            txtBox.BorderThickness = new Thickness(2);
+        }
+
+        private void ClearAlertOnTextBox(TextInputBox txtBox)
+        {
+            txtBox.ClearValue(Control.BorderBrushProperty);
+            txtBox.ClearValue(Control.BorderThicknessProperty);
+        }
+
+        private bool ErrorAlertIsShown(TextInputBox txtBox)
+        {
+            return txtBox.BorderThickness == new Thickness(2);
+        }
+        #endregion
     }
 }

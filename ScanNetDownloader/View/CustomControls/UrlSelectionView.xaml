@@ -14,8 +14,7 @@
         <StackPanel Margin="20 13 20 0">
             <TextBlock Text="Add a new scan url" FontWeight="Bold" FontSize="24" Margin="0 0 0 6"/>
 
-            <local:TextInputBox x:Name="txtBoxUrlInput" TxtInput="{Binding UrlInput}" PlaceholderText="Enter the scan url here... " TextInputChanged="txtBoxUrlInput_TextInputChanged" Height="37" TxtPadding="10 0 0 0"/>
-            <!--<TextBox Name="txtBoxUrlInput" Text="{Binding UrlInput, UpdateSourceTrigger=PropertyChanged}" TextChanged="txtBoxUrlInput_TextChanged" Padding="10 0 10 0" VerticalContentAlignment="Center" Height="37" Background="{StaticResource Colors.White}" BorderBrush="{StaticResource Colors.DarkGrey}"/>-->
+            <local:TextInputBox x:Name="txtBoxUrlInput" TxtInput="{Binding UrlInput, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" PlaceholderText="Enter the scan url here... " TextInputChanged="txtBoxUrlInput_TextInputChanged" Height="37" TxtPadding="10 0 0 0"/>
             <local:ErrorAlert x:Name="errorAlertUrl" ErrorMsg="{Binding ErrorMessage}" Visibility="Collapsed"/>
 
             <TextBlock Text="Compatibles websites and url examples" Margin="0 20 0 0" FontWeight="Bold" FontSize="16"/>

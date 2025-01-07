@@ -22,7 +22,7 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Text="Progress..." VerticalAlignment="Center" Margin="0 0 13 0" FontSize="14"/>
-                <ProgressBar Grid.Column="1" Name="progrBarScanDataCreation" Minimum="0" Maximum="100" Height="25" BorderThickness="0" Background="{StaticResource Colors.LightGrey}" Foreground="{StaticResource Colors.Green}"/>
+                <ProgressBar Grid.Column="1" Name="progrBarScanDataCreation" Minimum="0" Maximum="100" Height="25" Style="{DynamicResource DefaultProgressBarStyle}"/>
                 <TextBlock Grid.Column="1" Text="{Binding ProgressStatus}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </Grid>
         </StackPanel>

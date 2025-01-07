@@ -25,17 +25,16 @@
             
             <TextBlock Text="Add a single chapter" FontWeight="Bold" Margin="0 0 0 1"/>
             <StackPanel Orientation="Horizontal">
-                <!--<local:TextInputBox TxtInput="" PlaceholderText="Enter a chapter number" Height="30" Width="172" ShowClearBtn="False" TxtAlignment="Center"/>-->
-                <TextBox Name="txtBoxSingleChapter" Text="{Binding SingleChapterInput}" TextChanged="txtBoxSingleChapter_TextChanged" Height="30" Width="172" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Background="{StaticResource Colors.White}" BorderBrush="{StaticResource Colors.DarkGrey}"/>
+                <local:TextInputBox x:Name="txtBoxSingleChapter" TxtInput="{Binding SingleChapterInput, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" TextInputChanged="txtBoxSingleChapter_TextInputChanged" PlaceholderText="Enter a chapter number..." Height="30" Width="172" ShowClearBtn="False" TxtAlignment="Center"/>
                 <Button Name="btnAddSingleChapter" Content="Add single chapter" Click="btnAddSingleChapter_Click" Height="30" Width="178" Margin="20 0 0 0" FontSize="16"/>
             </StackPanel>
             <local:ErrorAlert x:Name="errorAlertAddSingle" ErrorMsg="{Binding ErrorMessageSingle}" Height="10" Visibility="Hidden"/>
             
             <TextBlock Text="Add a range of chapter" FontWeight="Bold" Margin="0 0 0 1"/>
             <StackPanel Orientation="Horizontal">
-                <TextBox Name="txtBoxStartChapter" Text="{Binding StartChapterInput}" TextChanged="txtBoxStartChapter_TextChanged" Height="30"  Width="172" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Background="{StaticResource Colors.White}" BorderBrush="{StaticResource Colors.DarkGrey}"/>
+                <local:TextInputBox x:Name="txtBoxStartChapter" TxtInput="{Binding StartChapterInput, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" TextInputChanged="txtBoxStartChapter_TextInputChanged" PlaceholderText="Enter start chapter number..." Height="30" Width="172" ShowClearBtn="False" TxtAlignment="Center"/>
                 <TextBlock Text="-" TextAlignment="Center" VerticalAlignment="Center" Width="20"/>
-                <TextBox Name="txtBoxEndChapter" Text="{Binding EndChapterInput}" TextChanged="txtBoxEndChapter_TextChanged" Height="30" Width="172" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Background="{StaticResource Colors.White}" BorderBrush="{StaticResource Colors.DarkGrey}"/>
+                <local:TextInputBox x:Name="txtBoxEndChapter" TxtInput="{Binding EndChapterInput, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" TextInputChanged="txtBoxEndChapter_TextInputChanged" PlaceholderText="Enter end chapter number..." Height="30" Width="172" ShowClearBtn="False" TxtAlignment="Center"/>
                 <Button Name="btnAddRangeOfChapter" Content="Add range of chapter" Click="btnAddRangeOfChapter_Click" Width="178" Margin="20 0 0 0" FontSize="16"/>
             </StackPanel>
             <local:ErrorAlert x:Name="errorAlertAddRange" ErrorMsg="{Binding ErrorMessageRange}" Height="10" Visibility="Hidden" />

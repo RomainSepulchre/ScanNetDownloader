@@ -107,47 +107,67 @@ namespace ScanNetDownloader.View.CustomControls
             }
             else if (btnNext != null && btnNext.IsEnabled) btnNext.IsEnabled = false;
 
-            if (txtBoxUrlInput.BorderThickness == new Thickness(2))
+            if (UrlErrorAlertIsShown())
             {
-                txtBoxUrlInput.ClearValue(Control.BorderBrushProperty);
-                txtBoxUrlInput.ClearValue(Control.BorderThicknessProperty);
+                ClearAlertOnUrlTextBox();
             }
         }
 
         private async void btnNext_Click(object sender, RoutedEventArgs e)
         {
+            if(string.IsNullOrEmpty(UrlInput))
+            {
+                ShowUrlErrorAlert("You didn't provide any url, the field is empty");
+                return;
+
+            }
+
             UrlValidityResult urlTestResult = await ScanManagement.IsValidScanUrl(UrlInput);
             if (urlTestResult.Success) // TODO: Find a way to know if the url is valid for each website
             {
-                Debug.WriteLine($"URL INPUT = {UrlInput}");
-
                 TempScanData = ScanManagement.CreateTemporaryScanData(UrlInput);
                 if (TempScanData == null)
                 {
-                    errorAlertUrl.Visibility = Visibility.Visible;
-                    ErrorMessage = "Impossible to create a ScanData object from url";
-                    txtBoxUrlInput.BorderBrush = (SolidColorBrush)FindResource("Colors.Red");
-                    txtBoxUrlInput.BorderThickness = new Thickness(2);
+                    ShowUrlErrorAlert("Impossible to create a ScanData object from url");
                     return;
                 }
 
                 // Reset Error
-                errorAlertUrl.Visibility = Visibility.Collapsed;
-                txtBoxUrlInput.ClearValue(Control.BorderBrushProperty);
-                txtBoxUrlInput.ClearValue(Control.BorderThicknessProperty);
-
+                HideUrlErrorAlert();
                 RaiseEvent(new RoutedEventArgs(UrlConfirmedEvent, this));
             }
             else
             {
-                //TODO: Show error, Add text explanation
-                Debug.WriteLine(urlTestResult.InvalidityReason);
-                errorAlertUrl.Visibility = Visibility.Visible;
-                ErrorMessage = urlTestResult.InvalidityReason;
-                txtBoxUrlInput.BorderBrush = (SolidColorBrush)FindResource("Colors.Red");
-                txtBoxUrlInput.BorderThickness = new Thickness(2);
+                ShowUrlErrorAlert(urlTestResult.InvalidityReason);
                 return;
             }
+        }
+        #endregion
+
+        #region Error Alert
+        private void ShowUrlErrorAlert(string errorMsg)
+        {
+            errorAlertUrl.Visibility = Visibility.Visible;
+            ErrorMessage = errorMsg;
+            txtBoxUrlInput.BorderBrush = (SolidColorBrush)FindResource("Colors.Red");
+            txtBoxUrlInput.BorderThickness = new Thickness(2);
+        } 
+
+        private void HideUrlErrorAlert()
+        {
+            errorAlertUrl.Visibility = Visibility.Collapsed;
+            ClearAlertOnUrlTextBox();
+        }
+
+        private void ClearAlertOnUrlTextBox()
+        {
+            txtBoxUrlInput.ClearValue(Control.BorderBrushProperty);
+            txtBoxUrlInput.ClearValue(Control.BorderThicknessProperty);
+        }
+
+        private bool UrlErrorAlertIsShown()
+        {
+            return txtBoxUrlInput.BorderThickness == new Thickness(2);
         }
         #endregion
     }
