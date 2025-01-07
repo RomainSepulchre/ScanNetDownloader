@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Diagnostics;
 using ScanNetDownloader.Logic.Helpers;
+using System.Net.Http;
 
 namespace ScanNetDownloader.Logic
 {
@@ -260,9 +261,18 @@ namespace ScanNetDownloader.Logic
                 UrlLoadResult loadResult = await UrlLoadCorrectlyAsync(url);
                 if (loadResult.Success == false)
                 {
-                    result.InvalidityReason = "Impossible to load url, make sure the url load in a web browser";
-                    result.Exception = loadResult.Exception;
-                    result.Success = false;
+                    if (loadResult.Exception is HttpRequestException)
+                    {
+                        result.InvalidityReason = "Impossible to load url, make sure the url load in a web browser";
+                        result.Exception = loadResult.Exception;
+                        result.Success = false;
+                    }
+                    else if (loadResult.Exception is InvalidOperationException || loadResult.Exception is NotSupportedException)
+                    {                  
+                        result.InvalidityReason = "This does not seem to be an url, usually the url should start with \"https://\"";
+                        result.Exception = loadResult.Exception;
+                        result.Success = false;
+                    }    
                 }
                 else
                 {

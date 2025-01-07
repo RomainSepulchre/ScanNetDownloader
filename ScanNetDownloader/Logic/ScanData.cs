@@ -180,6 +180,20 @@ namespace ScanNetDownloader.Logic
                 result.StatusCode = ex.StatusCode;
                 result.Exception = ex;
             }
+            catch (InvalidOperationException ex)
+            {
+                Debug.WriteLine($"|---> Invalid url: {url}\n{ex}");
+                result.Success = false;
+                result.StatusCode = null;
+                result.Exception = ex;
+            }
+            catch (NotSupportedException ex)
+            {
+                Debug.WriteLine($"|---> Invalid url: {url}\n{ex}");
+                result.Success = false;
+                result.StatusCode = null;
+                result.Exception = ex;
+            }
 
             return result;
         }

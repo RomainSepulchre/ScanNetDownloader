@@ -13,6 +13,18 @@ namespace ScanNetDownloader.Logic.Helpers
             return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(title.ToLower());
         }
 
+        public static bool StartsWithAny(this string s, List<string> listOfStrings)
+        {
+            bool startWithAny = false;
+
+            foreach (string stringToTest in listOfStrings)
+            {
+                if (s.StartsWith(stringToTest)) startWithAny = true;
+            }
+
+            return startWithAny;
+        }
+
         public static void Log<T>(this List<T> list)
         {
             foreach (T item in list)
