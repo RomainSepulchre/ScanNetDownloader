@@ -7,7 +7,8 @@
         xmlns:customControls="clr-namespace:ScanNetDownloader.View.CustomControls"
         mc:Ignorable="d"
         WindowStyle="None" WindowStartupLocation="CenterOwner"
-        Title="Add a new scan" Height="450" Width="800">
+        Title="Add a new scan" Height="450" Width="800"
+        ResizeMode="NoResize">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="38"/>

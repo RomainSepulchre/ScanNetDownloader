@@ -1,22 +1,14 @@
-﻿using Microsoft.Win32;
-using ScanNetDownloader.Logic;
+﻿using ScanNetDownloader.Logic;
 using ScanNetDownloader.Logic.Helpers;
 using ScanNetDownloader.View;
 using ScanNetDownloader.View.CustomControls;
-using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
-using System.Runtime.CompilerServices;
-using System.Security.Policy;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Media;
-using static System.Net.Mime.MediaTypeNames;
+using System.Windows.Media.Imaging;
 
 namespace ScanNetDownloader
 {
@@ -219,12 +211,44 @@ namespace ScanNetDownloader
 
         private void btnDbg5_Click(object sender, RoutedEventArgs e)
         {
+            Window parentWindow = this;
 
+            string header = "Test for yes no window";
+            string msg = "The files will be downloaded in C:\\Users\\romai.DESKTOP-UA02MBJ\\Dev Projects.\n\nDo you want to start the download ?";
+            YesNoWindow ynWindow = new YesNoWindow(parentWindow, header, msg, false, (BitmapImage)FindResource("Img.questionBlack"));
+            parentWindow.Opacity = 0.4;
+            ynWindow.ShowDialog();
+            parentWindow.Opacity = 1;
+
+            if (ynWindow.Success) // TODO: Clean this
+            {
+                Debug.WriteLine("YESNOWINDOW --> YES");
+            }
+            else
+            {
+                Debug.WriteLine("YESNOWINDOW --> NO OR CLOSED");
+            }
         }
 
         private void btnDbg6_Click(object sender, RoutedEventArgs e)
         {
+            Window parentWindow = this;
 
+            string header = "Ok window";
+            string msg = "Do you acknowledge something? It can be anything, just acknowledge it!";
+            OkWindow okWindow = new OkWindow(this, header, msg, false, (BitmapImage)FindResource("Img.error"));
+            parentWindow.Opacity = 0.4;
+            okWindow.ShowDialog();
+            parentWindow.Opacity = 1;
+
+            if (okWindow.Success) // TODO: Clean this
+            {
+                Debug.WriteLine("OK WINDOW --> YES");
+            }
+            else
+            {
+                Debug.WriteLine("OK WINDOW --> NO OR CLOSED");
+            }
         }
 
         void SaveHtmlFiles(List<string> urlList=null)
@@ -263,8 +287,11 @@ namespace ScanNetDownloader
             string mBoxCaption = "Hmtl saved";
             string mBoxMessage = $"Html file saved, press ok to open folder location...";
             Debug.WriteLine(mBoxMessage);
-            MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Information);
-            Settings.Instance.OpenOutputDirectoryAfterDownload = false;
+            OkWindow okWindow = new OkWindow(this, mBoxCaption, mBoxMessage, false);
+            Opacity = 0.4;
+            okWindow.ShowDialog();
+            Opacity = 1;
+            //MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Information);
             FileManagement.OpenFolder(Settings.Instance.OutputDirectory);
         }
         #endregion

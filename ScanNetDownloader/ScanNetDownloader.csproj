@@ -20,6 +20,7 @@
     <None Remove="Images\moreDetailsIcon_Oppened.png" />
     <None Remove="Images\plusIcon_Black.png" />
     <None Remove="Images\plusIcon_White.png" />
+    <None Remove="Images\questionIcon_Black.png" />
     <None Remove="Images\startIcon_Black.png" />
     <None Remove="Images\startIcon_Blue.png" />
     <None Remove="Images\startIcon_White.png" />
@@ -44,6 +45,7 @@
     <Resource Include="Images\plusIcon_White.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Images\questionIcon_Black.png" />
     <Resource Include="Images\startIcon_Black.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>

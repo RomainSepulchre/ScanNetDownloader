@@ -37,6 +37,25 @@ namespace ScanNetDownloader.View.CustomControls
             }
         }
 
+        private int _selectedCount;
+
+        public int SelectedCount
+        {
+            get { return _selectedCount; }
+            set {
+                _selectedCount = value;
+                if (_selectedCount > 0)
+                {
+                    if(btnStart.IsEnabled == false) btnStart.IsEnabled = true;
+                }
+                else
+                {
+                    btnStart.IsEnabled = false;
+                }
+            }
+        }
+
+
         public static RoutedEvent StartDownloadEvent = EventManager.RegisterRoutedEvent(nameof(StartDownload), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ScanManagerView));
 
         public event RoutedEventHandler StartDownload
@@ -141,6 +160,22 @@ namespace ScanNetDownloader.View.CustomControls
                 item.IsDownloaded = fileDownloaded;
             }
         }
+
+        private void ScanItem_IsSelectedForDownload(object sender, RoutedEventArgs e)
+        {
+            ScanItem item = e.Source as ScanItem;
+            if (item != null)
+            {
+                if (item.IsSelectedForDownload == true) // was false before +1
+                {
+                    SelectedCount++;
+                }
+                else // was true before -1
+                {
+                    SelectedCount--;
+                }
+            }
+        }
         #endregion
 
         private void AddScanItems(List<ScanData> newScansToAdd) // TODO: Replace the refresh by a add function to prevent recreating the whole view everytime
@@ -164,6 +199,8 @@ namespace ScanNetDownloader.View.CustomControls
                 item.DeleteScanBtnPressed += ScanItem_DeleteBtnPressed;
                 item.CreateCbzBtnPressed += ScanItem_CreateCbzBtnPressed;
                 ScanListItems.Add(item);
+
+                SelectedCount++;
             }
 
             if (ScanListItems.Count != 0 && stPanelNoScans.Visibility == Visibility.Visible)
@@ -180,8 +217,11 @@ namespace ScanNetDownloader.View.CustomControls
             // Save the scans local data
             ScansLocalData.Save();
 
+            if (itemToDelete.IsSelectedForDownload) SelectedCount--;
+
             // Remove item from list view
             ScanListItems.Remove(itemToDelete);
+            
 
             if (ScanListItems.Count == 0 && stPanelNoScans.Visibility != Visibility.Visible)
             {
@@ -195,8 +235,11 @@ namespace ScanNetDownloader.View.CustomControls
             Debug.WriteLine("REFRESH SCAN LIST");
             ScanListItems.Clear();
 
+
             foreach (ScanData scanData in ScanDatas)
             {
+                if (scanData.IsSelectedForDownload) SelectedCount++;
+
                 bool filesAlreadyDownloaded = FileManagement.AreScanFilesDownloaded(scanData);
                 bool cbzAlreadyCreated = FileManagement.IsCbzArchiveCreated(scanData);
 
@@ -204,8 +247,11 @@ namespace ScanNetDownloader.View.CustomControls
                 item.DeleteScanBtnPressed += ScanItem_DeleteBtnPressed;
                 item.CreateCbzBtnPressed += ScanItem_CreateCbzBtnPressed;
                 item.StatusBtnPressed += ScanItem_StatusBtnPressed;
+                item.IsSelectedModified += ScanItem_IsSelectedForDownload;
                 ScanListItems.Add(item);
             }
+
+            if(SelectedCount == 0) btnStart.IsEnabled = false;
         }
     }
 }

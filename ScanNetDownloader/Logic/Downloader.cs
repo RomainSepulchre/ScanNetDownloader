@@ -10,6 +10,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using ScanNetDownloader.View;
 
 namespace ScanNetDownloader.Logic
 {
@@ -55,13 +56,24 @@ namespace ScanNetDownloader.Logic
 
             string mBoxMessage = $"The files will be downloaded in {Settings.Instance.OutputDirectory}.\n\nDo you want to start the download ?";
             string mBoxCaption = "Continue ?";
-            MessageBoxResult result = MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.YesNo, MessageBoxImage.Question);
+            Window mainWindow = Application.Current.MainWindow;
+            YesNoWindow ynWindow = new YesNoWindow(mainWindow, mBoxCaption, mBoxMessage, true);
+            mainWindow.Opacity = 0.4;
+            ynWindow.ShowDialog();
+            mainWindow.Opacity = 1;
 
-            if (result == MessageBoxResult.No)
+            if (ynWindow.Success == false)
             {
                 OnDownloadStopped();
                 return;
             }
+            
+            //MessageBoxResult result = MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.YesNo, MessageBoxImage.Question);
+            //if (result == MessageBoxResult.No)
+            //{
+            //    OnDownloadStopped();
+            //    return;
+            //}
 
             await DownloadScans(scanItemsToDownload);
 

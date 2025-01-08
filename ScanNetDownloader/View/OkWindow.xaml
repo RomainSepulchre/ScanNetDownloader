@@ -1,0 +1,55 @@
+﻿<Window x:Class="ScanNetDownloader.View.OkWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ScanNetDownloader.View"
+        mc:Ignorable="d"
+        WindowStyle="None" WindowStartupLocation="CenterOwner"
+        Title="Ok Window" Height="250" Width="500"
+        ResizeMode="NoResize">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="38"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+
+        <Grid Margin="20 8 16 0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="30"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0 2 0 0">
+                <TextBlock Name="headerUrlView" Text="{Binding Header, FallbackValue= No header set}" FontWeight="SemiBold" Foreground="{StaticResource Colors.Black}" FontSize="16"/>
+            </StackPanel>
+            <Button Grid.Column="1" Name="btnClose" Click="btnClose_Click" Width="30" Height="30" Style="{StaticResource closeButton}" Visibility="{Binding ShowQuitButton, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Button.Content>
+                    <Image Source="{StaticResource Img.crossWhite}"/>
+                </Button.Content>
+            </Button>
+        </Grid>
+
+        <Grid Grid.Row="1" Margin="20 13 20 20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+            <Image Height="50" Width="50" Source="{Binding Image}" Visibility="{Binding ShowImage, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+            <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <!--<Image Height="50" Width="50" Source="{StaticResource Img.error}" Margin="0 -20 0 0"/>-->
+                <!--<TextBlock TextWrapping="Wrap" Text="The files will be downloaded in {Settings.Instance.OutputDirectory}.\n\nDo you want to start the download ?"/>-->
+                <TextBlock TextWrapping="Wrap" Text="{Binding Message, FallbackValue=no message set}"/>
+            </StackPanel>
+        </Grid>
+
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+            <Button Name="btnOk" Content="Ok" Click="btnOk_Click" FontSize="22"/>
+        </Grid>
+    </Grid>
+</Window>

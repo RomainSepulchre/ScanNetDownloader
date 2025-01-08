@@ -33,7 +33,7 @@
             </ScrollViewer>
         </Grid>
 
-        <TextBlock Name="txtBlockNoScanSelected" Text="No scans have been selected for download, select at least a scan to start the download" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <TextBlock Name="txtBlockNoScanSelected" Text="No scans have been selected for download, select at least one scan to start the download" VerticalAlignment="Center" HorizontalAlignment="Center"/>
 
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>

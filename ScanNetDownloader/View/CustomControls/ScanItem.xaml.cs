@@ -20,7 +20,11 @@ namespace ScanNetDownloader.View.CustomControls
             set {
                 _isSelectedForDownload = value;
                 OnPropertyChanged();
-                if (linkedScanData != null) linkedScanData.IsSelectedForDownload = value; // TODO: when to save the value in the settings json ? Only when closing app or save everytime value is changed ?
+                if (linkedScanData != null)
+                {
+                    linkedScanData.IsSelectedForDownload = value; // TODO: when to save the value in the settings json ? Only when closing app or save everytime value is changed ?
+                    RaiseEvent(new RoutedEventArgs(IsSelectedModifiedEvent, this));
+                }
             }
         }
 
@@ -82,6 +86,14 @@ namespace ScanNetDownloader.View.CustomControls
         {
             add { AddHandler(StatusBtnPressedEvent, value); }
             remove { RemoveHandler(StatusBtnPressedEvent, value); }
+        }
+
+        public static RoutedEvent IsSelectedModifiedEvent = EventManager.RegisterRoutedEvent(nameof(IsSelectedModified), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ScanItem));
+
+        public event RoutedEventHandler IsSelectedModified
+        {
+            add { AddHandler(IsSelectedModifiedEvent, value); }
+            remove { RemoveHandler(IsSelectedModifiedEvent, value); }
         }
 
         public ScanItem()

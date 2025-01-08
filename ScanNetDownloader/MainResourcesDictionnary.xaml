@@ -1,7 +1,10 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    
+    <!--Converters-->
+    <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+
+
     <!--Colors-->
     
     <Color x:Key="BaseColor.Black" R="0" G="0" B="0" A="255"/>
@@ -45,6 +48,7 @@
     <BitmapImage x:Key="Img.checkboxBlackEmpty" UriSource="/Images/checkboxIcon_Black_Empty.png"></BitmapImage>
     <BitmapImage x:Key="Img.error" UriSource="/Images/errorIcon.png"></BitmapImage>
     <BitmapImage x:Key="Img.crossWhite" UriSource="/Images/crossIcon_White.png"></BitmapImage>
+    <BitmapImage x:Key="Img.questionBlack" UriSource="/Images/questionIcon_Black.png"></BitmapImage>
 
     <ImageBrush x:Key="ImgBrush.StartNormal" ImageSource="{StaticResource Img.startIconWhite}"/>
     <ImageBrush x:Key="ImgBrush.StartHover" ImageSource="{StaticResource Img.startIconBlue}"/>
