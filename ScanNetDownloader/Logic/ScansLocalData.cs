@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using ScanNetDownloader.Logic.Helpers;
+using ScanNetDownloader.View;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
@@ -47,13 +49,13 @@ namespace ScanNetDownloader.Logic
                     Error.FailedToLoadScansLocalData(jsonPath, ex);
 
                     // TODO: Redo error management to fit with WPF version
-                    string mBoxMessage = $"Error while loading scan local data, do you want to clear the data ?";
-                    string mBoxCaption = "Continue ?";
+                    string mBoxMessage = $"Error while loading scan local data, do you want to clear the data ?\nAll the previous data of the scan manager view will be lost but you will keep everything you already downloaded.";
+                    string mBoxCaption = "Clear local scan data ?";
                     Debug.WriteLine($"{mBoxMessage}\n {ex}");
                     
-                    MessageBoxResult result = MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                    YesNoWindow yesNoWindow = MsgWindow.ShowYesNoWindow(mBoxCaption, mBoxMessage, false, MsgWindow.ImageType.Warning);
 
-                    if (result == MessageBoxResult.Yes)
+                    if (yesNoWindow.Success)
                     {
                         loadedData = ClearLocalData();
                         return loadedData;
@@ -61,9 +63,9 @@ namespace ScanNetDownloader.Logic
                     else // TODO: What to do in this case with WPF app ?
                     {
                         mBoxMessage = "Please make sure nothing is wrong with the data in ScansLocalData.json, if the problem persist backup your data and reset the json to it's default values.";
-                        mBoxCaption = "Scan data error";
+                        mBoxCaption = "Scan data loading error";
                         Debug.WriteLine(mBoxMessage);
-                        MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Warning);
+                        MsgWindow.ShowOkWindow(mBoxCaption, mBoxMessage, false, MsgWindow.ImageType.Error);
 
                         OpenJsonFile();
                         App.Quit();

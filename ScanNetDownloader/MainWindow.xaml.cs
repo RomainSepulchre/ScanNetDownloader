@@ -122,10 +122,10 @@ namespace ScanNetDownloader
 
         private void AskToSaveSettings()
         {
-            string mBoxMessage = "Do you want to save your options changes ?";
-            string mBoxCaption = "Save Options";
-            MessageBoxResult result = MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (result == MessageBoxResult.Yes) optionsVw.SaveSettings();
+            string mBoxMessage = "Do you want to save your settings changes ?";
+            string mBoxCaption = "Save settings ?";
+            YesNoWindow yesNoWindow = MsgWindow.ShowYesNoWindow(mBoxCaption, mBoxMessage, true, MsgWindow.ImageType.Question);
+            if (yesNoWindow.Success) optionsVw.SaveSettings();
         }
 
         #region Debug Tab
@@ -214,13 +214,11 @@ namespace ScanNetDownloader
             Window parentWindow = this;
 
             string header = "Test for yes no window";
-            string msg = "The files will be downloaded in C:\\Users\\romai.DESKTOP-UA02MBJ\\Dev Projects.\n\nDo you want to start the download ?";
-            YesNoWindow ynWindow = new YesNoWindow(parentWindow, header, msg, false, (BitmapImage)FindResource("Img.questionBlack"));
-            parentWindow.Opacity = 0.4;
-            ynWindow.ShowDialog();
-            parentWindow.Opacity = 1;
+            string msg = "Nothing will happen to the directory C:\\Users\\aRandomUserName\\IncredibleDirectoryName.\n\nDo accept that nothing will happen to this directory ?";
 
-            if (ynWindow.Success) // TODO: Clean this
+            YesNoWindow ynWindow = MsgWindow.ShowYesNoWindow(this, header, msg, true, MsgWindow.ImageType.Question);
+
+            if (ynWindow.Success)
             {
                 Debug.WriteLine("YESNOWINDOW --> YES");
             }
@@ -232,16 +230,11 @@ namespace ScanNetDownloader
 
         private void btnDbg6_Click(object sender, RoutedEventArgs e)
         {
-            Window parentWindow = this;
-
             string header = "Ok window";
             string msg = "Do you acknowledge something? It can be anything, just acknowledge it!";
-            OkWindow okWindow = new OkWindow(this, header, msg, false, (BitmapImage)FindResource("Img.error"));
-            parentWindow.Opacity = 0.4;
-            okWindow.ShowDialog();
-            parentWindow.Opacity = 1;
+            OkWindow okWindow = MsgWindow.ShowOkWindow(this, header, msg, false, MsgWindow.ImageType.Warning);
 
-            if (okWindow.Success) // TODO: Clean this
+            if (okWindow.Success)
             {
                 Debug.WriteLine("OK WINDOW --> YES");
             }
@@ -257,15 +250,18 @@ namespace ScanNetDownloader
 
             if (urlList == null)
             {
+                urlToDownload = new List<string>();
+
                 string header = "Download html file";
                 string msg = $"Enter the url from which you want to download HTML";
-                InputWindow inputPopUp = new InputWindow(this, header, msg, "Enter url here...");
-                Opacity = 0.4;
-                inputPopUp.ShowDialog();
-                Opacity = 1;
+                string inputPlaceholder = "Enter url here...";
 
-                urlToDownload = new List<string>();
-                if(inputPopUp.Success && string.IsNullOrEmpty(inputPopUp.Input) == false) urlToDownload.Add(inputPopUp.Input);
+                InputWindow inputWindow = MsgWindow.ShowInputWindow(this, header, msg, inputPlaceholder);
+  
+                if (inputWindow.Success && string.IsNullOrEmpty(inputWindow.Input) == false)
+                {    
+                    urlToDownload.Add(inputWindow.Input);
+                }
             }
             else
             {
@@ -289,14 +285,11 @@ namespace ScanNetDownloader
                 }
             }
 
-            string mBoxCaption = "Hmtl saved";
-            string mBoxMessage = $"Html file saved, press ok to open folder location...";
-            Debug.WriteLine(mBoxMessage);
-            OkWindow okWindow = new OkWindow(this, mBoxCaption, mBoxMessage, false);
-            Opacity = 0.4;
-            okWindow.ShowDialog();
-            Opacity = 1;
-            //MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Information);
+            string windowHeader = "Hmtl saved";
+            string windowMsg = $"Html file saved, press ok to open folder location...";
+
+            MsgWindow.ShowOkWindow(this, windowHeader, windowMsg, false, MsgWindow.ImageType.Information);
+
             FileManagement.OpenFolder(Settings.Instance.OutputDirectory);
         }
         #endregion

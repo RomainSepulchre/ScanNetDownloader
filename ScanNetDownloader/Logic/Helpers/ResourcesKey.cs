@@ -56,6 +56,8 @@ namespace ScanNetDownloader.Logic.Helpers
             public const string Error = "Img.error";
             public const string Cross_White = "Img.crossWhite";
             public const string Question_Black = "Img.questionBlack";
+            public const string InfoIcon = "Img.infoIcon";
+            public const string WarningIcon = "Img.warningIcon";
         }
 
         public static class ImageBrushes

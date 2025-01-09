@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using ScanNetDownloader.View;
 
 namespace ScanNetDownloader.Logic
 {
@@ -29,11 +30,11 @@ namespace ScanNetDownloader.Logic
                 Error.NoOutputDirectory();
 
                 string mBoxMessage = $"\"{OutputDirectory}\" does not exist, do you want to create the directory?";
-                string mBoxCaption = "Continue ?";
+                string mBoxCaption = "Create the directory ?";
                 // TODO: Create a window with CreateDirectory, Choose another directory, Cancel
-                MessageBoxResult resultCreateDir = MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.YesNo, MessageBoxImage.Question);
+                YesNoWindow yesNoWindow_CreateDir = MsgWindow.ShowYesNoWindow(mBoxCaption, mBoxMessage, false, MsgWindow.ImageType.Question);
 
-                if (resultCreateDir == MessageBoxResult.Yes)
+                if (yesNoWindow_CreateDir.Success)
                 {
                     Directory.CreateDirectory(OutputDirectory);
                     return true;
@@ -41,10 +42,10 @@ namespace ScanNetDownloader.Logic
                 else
                 {
                     mBoxMessage = $"Do you want to select another download directory ?";
-                    mBoxCaption = "Select Directory ?";
-                    MessageBoxResult resultSelectDir = MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    mBoxCaption = "Select directory ?";
+                    YesNoWindow yesNoWindow_SelectDir = MsgWindow.ShowYesNoWindow(mBoxCaption, mBoxMessage, false, MsgWindow.ImageType.Question);
 
-                    if(resultSelectDir == MessageBoxResult.Yes)
+                    if(yesNoWindow_SelectDir.Success)
                     {
                         OpenFolderDialog fileDialog = new OpenFolderDialog();
                         fileDialog.Title = "Select download directory";
@@ -63,7 +64,7 @@ namespace ScanNetDownloader.Logic
                         {
                             mBoxMessage = "Please modify the download directory in the Settings, it must be a valid directory.";
                             mBoxCaption = "Invalid download directory";
-                            MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Warning);
+                            MsgWindow.ShowOkWindow(mBoxCaption, mBoxMessage, false, MsgWindow.ImageType.Warning);
                             // TODO: Find a cleaner way to do that
                             MainWindow mainWindow = Application.Current.MainWindow as MainWindow;
                             mainWindow.tabCtrlNavigation.SelectedItem = mainWindow.tabOptions;
@@ -74,7 +75,7 @@ namespace ScanNetDownloader.Logic
                     {
                         mBoxMessage = "Please modify the download directory in the Settings, it must be a valid directory.";
                         mBoxCaption = "Invalid download directory";
-                        MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Warning);
+                        MsgWindow.ShowOkWindow(mBoxCaption, mBoxMessage, false, MsgWindow.ImageType.Warning);
                         // TODO: Find a cleaner way to do that
                         MainWindow mainWindow = Application.Current.MainWindow as MainWindow;
                         mainWindow.tabCtrlNavigation.SelectedItem = mainWindow.tabOptions;

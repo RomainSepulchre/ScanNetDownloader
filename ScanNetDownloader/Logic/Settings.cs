@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using ScanNetDownloader.Logic.Helpers;
+using ScanNetDownloader.View;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
@@ -90,12 +92,13 @@ namespace ScanNetDownloader.Logic
                     Error.FailedToLoadSettingsJson(jsonPath, ex);
 
                     // TODO: Redo error management to fit with WPF version
-                    string mBoxMessage = $"Do you want to reset settings.json to it's default values ?";
-                    string mBoxCaption = "Continue ?";
+                    string mBoxMessage = $"No settings found. Do you want to reset settings.json to it's default values ?";
+                    string mBoxCaption = "No settings found";
                     Debug.WriteLine(mBoxMessage);
-                    MessageBoxResult result = MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.YesNo, MessageBoxImage.Question);
 
-                    if (result == MessageBoxResult.Yes)
+                    YesNoWindow yesNoWindow = MsgWindow.ShowYesNoWindow(mBoxCaption, mBoxMessage, false, MsgWindow.ImageType.Warning);
+
+                    if (yesNoWindow.Success)
                     {
                         loadedSettings = ResetToDefault();
                         return loadedSettings;
@@ -103,9 +106,9 @@ namespace ScanNetDownloader.Logic
                     else //TODO: What to do in this case with WPF app ?
                     {
                         mBoxMessage = "Please make sure nothing is wrong with the data in Settings.json, if the problem persist backup your settings and reset the json to it's default values.";
-                        mBoxCaption = "Settings data error";
+                        mBoxCaption = "Settings loading error";
                         Debug.WriteLine(mBoxMessage);
-                        MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Warning);
+                        MsgWindow.ShowOkWindow(mBoxCaption, mBoxMessage, false, MsgWindow.ImageType.Error);
 
                         OpenJsonFile();
                         App.Quit();

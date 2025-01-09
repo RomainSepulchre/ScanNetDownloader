@@ -72,7 +72,7 @@ namespace ScanNetDownloader.Logic
             string mBoxMessage = $"Unknown web domain: {url}, the possibility to download scan from this website has not been implemented yet.";
             string mBoxCaption = "Error";
             Debug.WriteLine($"{mBoxMessage}\n");
-            if (showPopUp) MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Information);
+            if (showPopUp) MsgWindow.ShowOkWindow(mBoxCaption, mBoxMessage, false, MsgWindow.ImageType.Information);
 
             return error;
         }
@@ -103,8 +103,8 @@ namespace ScanNetDownloader.Logic
             Debug.WriteLine($"Exception: {ex}\n");
 
             if (Settings.Instance.ErrorPauseApp)
-            {               
-                MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Error);
+            {
+                MsgWindow.ShowOkWindow(mBoxCaption, mBoxMessage, false, MsgWindow.ImageType.Error);
             }
 
             return error;
@@ -173,8 +173,8 @@ namespace ScanNetDownloader.Logic
             Debug.WriteLine($"\n{mBoxMessage}\n");
 
             // TODO: Proper management of error pop-up
-            
-            MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Warning);
+
+            MsgWindow.ShowOkWindow(mBoxCaption, mBoxMessage, false, MsgWindow.ImageType.Warning);
 
             return error;
         }
@@ -205,7 +205,7 @@ namespace ScanNetDownloader.Logic
             Debug.WriteLine($"\n{mBoxMessage}\n");
             Debug.WriteLine($"Exception: {ex}\n");
 
-            MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Error);
+            MsgWindow.ShowOkWindow(mBoxCaption, mBoxMessage, false, MsgWindow.ImageType.Error);
 
             return error;
         }
@@ -236,7 +236,7 @@ namespace ScanNetDownloader.Logic
             Debug.WriteLine($"\n{mBoxMessage}\n");
             Debug.WriteLine($"Exception: {ex}\n");
 
-            MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Error);
+            MsgWindow.ShowOkWindow(mBoxCaption, mBoxMessage, false, MsgWindow.ImageType.Error);
 
             return error;
         }

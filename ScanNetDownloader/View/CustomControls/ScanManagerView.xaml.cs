@@ -104,8 +104,8 @@ namespace ScanNetDownloader.View.CustomControls
                 if (newScansToAdd == null || newScansToAdd.Count == 0)
                 {
                     string mBoxMessage = $"No scan data to add for {urlInput}, make sure you used a valid url";
-                    string mBoxCaption = "No scan data";
-                    MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Warning);
+                    string mBoxCaption = "No scan data found";
+                    MsgWindow.ShowOkWindow(mBoxCaption, mBoxMessage, false, MsgWindow.ImageType.Error);
                 }
                 else
                 {
@@ -137,9 +137,10 @@ namespace ScanNetDownloader.View.CustomControls
                 {
                     // TODO: Propose to build cbz
                     string mBoxMessage = $"Do you want to create a .cbz for {item.BookName} - Chapter {item.ChapterId} ?";
-                    string mBoxCaption = "CBZ Archive creation";
-                    MessageBoxResult result = MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.YesNo, MessageBoxImage.Question);
-                    if (result == MessageBoxResult.Yes)
+                    string mBoxCaption = "CBZ archive creation";
+
+                    YesNoWindow yesNoWindow = MsgWindow.ShowYesNoWindow(mBoxCaption, mBoxMessage, true, MsgWindow.ImageType.Question);
+                    if (yesNoWindow.Success)
                     {
                         string chapterPath = FileManagement.GetChapterDirectoryPath(item.linkedScanData);
                         CbzCreator.BuildCbzArchive(item, chapterPath);

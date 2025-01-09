@@ -16,6 +16,7 @@
     <None Remove="Images\checkIcon.png" />
     <None Remove="Images\crossIcon_White.png" />
     <None Remove="Images\errorIcon.png" />
+    <None Remove="Images\infoIcon.png" />
     <None Remove="Images\moreDetailsIcon_Closed.png" />
     <None Remove="Images\moreDetailsIcon_Oppened.png" />
     <None Remove="Images\plusIcon_Black.png" />
@@ -25,6 +26,7 @@
     <None Remove="Images\startIcon_Blue.png" />
     <None Remove="Images\startIcon_White.png" />
     <None Remove="Images\stopIcon.png" />
+    <None Remove="Images\warningIcon.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,6 +39,7 @@
     <Resource Include="Images\CheckboxIcon_White_Empty.png" />
     <Resource Include="Images\crossIcon_White.png" />
     <Resource Include="Images\errorIcon.png" />
+    <Resource Include="Images\infoIcon.png" />
     <Resource Include="Images\moreDetailsIcon_Closed.png" />
     <Resource Include="Images\moreDetailsIcon_Oppened.png" />
     <Resource Include="Images\plusIcon_Black.png">
@@ -54,6 +57,7 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Images\stopIcon.png" />
+    <Resource Include="Images\warningIcon.png" />
   </ItemGroup>
 
 </Project>

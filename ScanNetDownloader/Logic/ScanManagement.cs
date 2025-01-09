@@ -114,7 +114,7 @@ namespace ScanNetDownloader.Logic
                 string mBoxMessage = "Make sure to check the errors and press any key to continue...";
                 string mBoxCaption = "Check errrors";
                 Debug.WriteLine(mBoxMessage);
-                MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.OK, MessageBoxImage.Warning);
+                MsgWindow.ShowOkWindow(mBoxCaption, mBoxMessage, false, MsgWindow.ImageType.Warning);
             }
 
             return newScanDatas;
