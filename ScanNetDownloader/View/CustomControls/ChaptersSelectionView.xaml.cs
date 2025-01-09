@@ -493,7 +493,7 @@ namespace ScanNetDownloader.View.CustomControls
 
         private void ShowErrorAlertOnTextBox(TextInputBox txtBox)
         {
-            txtBox.BorderBrush = (SolidColorBrush)FindResource("Colors.Red");
+            txtBox.BorderBrush = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Red);
             txtBox.BorderThickness = new Thickness(2);
         }
 

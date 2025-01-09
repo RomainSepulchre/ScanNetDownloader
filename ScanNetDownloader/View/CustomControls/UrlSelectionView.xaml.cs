@@ -1,4 +1,5 @@
 ﻿using ScanNetDownloader.Logic;
+using ScanNetDownloader.Logic.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -149,7 +150,7 @@ namespace ScanNetDownloader.View.CustomControls
         {
             errorAlertUrl.Visibility = Visibility.Visible;
             ErrorMessage = errorMsg;
-            txtBoxUrlInput.BorderBrush = (SolidColorBrush)FindResource("Colors.Red");
+            txtBoxUrlInput.BorderBrush = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Red);
             txtBoxUrlInput.BorderThickness = new Thickness(2);
         } 
 

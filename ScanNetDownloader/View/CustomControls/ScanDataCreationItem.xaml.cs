@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ScanNetDownloader.Logic.Helpers;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -90,8 +91,8 @@ namespace ScanNetDownloader.View.CustomControls
             ScanDataCreationInfos = $"Retrieve scan data for {BookName} - {ChapterNumber}";
 
             StatusMessage = "In progress...";
-            txtBlockStatus.Foreground = (SolidColorBrush)FindResource($"Colors.DarkGrey");
-            rectStatusBar.Fill = (SolidColorBrush)FindResource($"Colors.MediumGrey");
+            txtBlockStatus.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.DarkGrey);
+            rectStatusBar.Fill = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.MediumGrey);
 
             ShowError = false;
         }
@@ -99,7 +100,7 @@ namespace ScanNetDownloader.View.CustomControls
         public void RetrieveDataSuccess(string msg)
         {
             StatusMessage = msg;
-            SolidColorBrush successColor = (SolidColorBrush)FindResource($"Colors.Green");
+            SolidColorBrush successColor = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Green);
             txtBlockStatus.Foreground = successColor;
             rectStatusBar.Fill = successColor;
         }
@@ -109,7 +110,7 @@ namespace ScanNetDownloader.View.CustomControls
             StatusMessage = $"Failed";   
             ErrorMessage = errorMsg;
             ShowError = true;
-            SolidColorBrush failedColor = (SolidColorBrush)FindResource($"Colors.Red");
+            SolidColorBrush failedColor = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Red);
             txtBlockStatus.Foreground = failedColor;
             rectStatusBar.Fill = failedColor;
         }

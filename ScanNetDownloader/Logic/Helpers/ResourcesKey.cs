@@ -1,0 +1,69 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ScanNetDownloader.Logic.Helpers
+{
+    public class ResourcesKey
+    {
+
+        public static class BaseColors
+        {
+            public const string Black = "BaseColor.Black";
+            public const string White = "BaseColor.White";
+            public const string LightGrey = "BaseColor.LightGrey";
+            public const string MediumGrey = "BaseColor.MediumGrey";
+            public const string DarkGrey = "BaseColor.DarkGrey";
+            public const string Blue = "BaseColor.Blue";
+            public const string DarkBlue = "BaseColor.DarkBlue";
+            public const string Red = "BaseColor.Red";
+            public const string Orange = "BaseColor.Orange";
+            public const string Green = "BaseColor.Green";
+            public const string Blue_Pressed = "BaseColor.Blue.Pressed";
+            public const string DarkBlue_Pressed = "BaseColor.DarkBlue.Pressed";
+            public const string LightGrey_Locked = "BaseColor.LightGrey.Locked";
+            public const string Grey_Locked = "BaseColor.Grey.Locked";
+        }
+
+        public static class ColorBrushes
+        {
+            public const string Black = "Colors.Black";
+            public const string White = "Colors.White";
+            public const string LightGrey = "Colors.LightGrey";
+            public const string MediumGrey = "Colors.MediumGrey";
+            public const string DarkGrey = "Colors.DarkGrey";
+            public const string Blue = "Colors.Blue";
+            public const string DarkBlue = "Colors.DarkBlue";
+            public const string Red = "Colors.Red";
+            public const string Orange = "Colors.Orange";
+            public const string Green = "Colors.Green";
+        }
+
+        public static class BitmapImages
+        {
+            public const string PlusIcon_White = "Img.plusIconWhite";
+            public const string PlusIcon_Black= "Img.plusIconBlack";
+            public const string StartIcon_White = "Img.startIconWhite";
+            public const string StartIcon_Black = "Img.startIconBlack";
+            public const string StartIcon_Blue= "Img.startIconBlue";
+            public const string StopIcon = "Img.stopIcon";
+            public const string MoreDetailsIcon_Closed = "Img.moreDetailsClosed";
+            public const string MoreDetailsIcon_Oppened = "Img.moreDetailsOppened";
+            public const string Checkbox_White_Empty = "Img.checkboxWhiteEmpty";
+            public const string Checkbox_Black_Empty = "Img.checkboxBlackEmpty";
+            public const string Error = "Img.error";
+            public const string Cross_White = "Img.crossWhite";
+            public const string Question_Black = "Img.questionBlack";
+        }
+
+        public static class ImageBrushes
+        {
+            // Image Brushes
+            public const string Start_Normal = "ImgBrush.StartNormal";
+            public const string Start_Hover = "ImgBrush.StartHover";
+        }
+
+    }
+}

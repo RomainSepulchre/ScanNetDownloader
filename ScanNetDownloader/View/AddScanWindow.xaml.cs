@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using ScanNetDownloader.Logic;
+using ScanNetDownloader.Logic.Helpers;
 using ScanNetDownloader.View.CustomControls;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -37,17 +38,17 @@ namespace ScanNetDownloader.View
             scanDataCreationVw.Visibility = Visibility.Collapsed;
 
             headerUrlView.FontWeight = FontWeights.SemiBold;
-            headerUrlView.Foreground = (SolidColorBrush)FindResource("Colors.Black");
+            headerUrlView.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Black);
             headerFirstSeparator.FontWeight = FontWeights.SemiBold;
-            headerFirstSeparator.Foreground = (SolidColorBrush)FindResource("Colors.Black");
+            headerFirstSeparator.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Black);
 
             headerChapterView.FontWeight = FontWeights.Light;
-            headerChapterView.Foreground = (SolidColorBrush)FindResource("Colors.DarkGrey");
+            headerChapterView.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.DarkGrey);
             headerSecondSeparator.FontWeight = FontWeights.Light;
-            headerSecondSeparator.Foreground = (SolidColorBrush)FindResource("Colors.DarkGrey");
+            headerSecondSeparator.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.DarkGrey);
 
             headerScanDataCreationView.FontWeight = FontWeights.Light;
-            headerScanDataCreationView.Foreground = (SolidColorBrush)FindResource("Colors.DarkGrey");
+            headerScanDataCreationView.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.DarkGrey);
         }
 
         private void btnChapterView_Click(object sender, RoutedEventArgs e)
@@ -57,17 +58,17 @@ namespace ScanNetDownloader.View
             scanDataCreationVw.Visibility = Visibility.Collapsed;
 
             headerUrlView.FontWeight = FontWeights.Normal;
-            headerUrlView.Foreground = (SolidColorBrush)FindResource("Colors.Black");
+            headerUrlView.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Black);
             headerFirstSeparator.FontWeight = FontWeights.Normal;
-            headerFirstSeparator.Foreground = (SolidColorBrush)FindResource("Colors.Black");
+            headerFirstSeparator.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Black);
 
             headerChapterView.FontWeight = FontWeights.SemiBold;
-            headerChapterView.Foreground = (SolidColorBrush)FindResource("Colors.Black");
+            headerChapterView.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Black);
             headerSecondSeparator.FontWeight = FontWeights.SemiBold;
-            headerSecondSeparator.Foreground = (SolidColorBrush)FindResource("Colors.Black");
+            headerSecondSeparator.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Black);
 
             headerScanDataCreationView.FontWeight = FontWeights.Light;
-            headerScanDataCreationView.Foreground = (SolidColorBrush)FindResource("Colors.DarkGrey");
+            headerScanDataCreationView.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.DarkGrey);
         }
 
         private void btnClose_Click(object sender, RoutedEventArgs e)
@@ -91,14 +92,14 @@ namespace ScanNetDownloader.View
             chapterSelectionVw.Visibility = Visibility.Visible;
 
             headerUrlView.FontWeight = FontWeights.Normal;
-            headerUrlView.Foreground = (SolidColorBrush)FindResource("Colors.Black");
+            headerUrlView.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Black);
             headerFirstSeparator.FontWeight = FontWeights.Normal;
-            headerFirstSeparator.Foreground = (SolidColorBrush)FindResource("Colors.Black");
+            headerFirstSeparator.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Black);
 
             headerChapterView.FontWeight = FontWeights.SemiBold;
-            headerChapterView.Foreground = (SolidColorBrush)FindResource("Colors.Black");
+            headerChapterView.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Black);
             headerSecondSeparator.FontWeight = FontWeights.SemiBold;
-            headerSecondSeparator.Foreground = (SolidColorBrush)FindResource("Colors.Black");
+            headerSecondSeparator.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Black);
         }
 
         private void chapterSelectionVw_BackBtnPressed(object sender, RoutedEventArgs e)
@@ -115,17 +116,17 @@ namespace ScanNetDownloader.View
             scanDataCreationVw.Visibility = Visibility.Visible;
 
             headerUrlView.FontWeight = FontWeights.Normal;
-            headerUrlView.Foreground = (SolidColorBrush)FindResource("Colors.Black");
+            headerUrlView.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Black);
             headerFirstSeparator.FontWeight = FontWeights.Normal;
-            headerFirstSeparator.Foreground = (SolidColorBrush)FindResource("Colors.Black");
+            headerFirstSeparator.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Black);
 
             headerChapterView.FontWeight = FontWeights.Normal;
-            headerChapterView.Foreground = (SolidColorBrush)FindResource("Colors.Black");
+            headerChapterView.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Black);
             headerSecondSeparator.FontWeight = FontWeights.Normal;
-            headerSecondSeparator.Foreground = (SolidColorBrush)FindResource("Colors.Black");
+            headerSecondSeparator.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Black);
 
             headerScanDataCreationView.FontWeight = FontWeights.SemiBold;
-            headerScanDataCreationView.Foreground = (SolidColorBrush)FindResource("Colors.Black");
+            headerScanDataCreationView.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Black);
 
             // Create Scan Datas
             NewScanDatas = await scanDataCreationVw.CreateScanDatas(UrlInput, ChapterSelected, TempScanData);
