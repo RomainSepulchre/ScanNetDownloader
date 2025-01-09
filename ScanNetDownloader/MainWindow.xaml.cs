@@ -257,25 +257,30 @@ namespace ScanNetDownloader
 
             if (urlList == null)
             {
-                InputPopUp inputPopUp = new InputPopUp(this, $"Enter the url to download HTML from:");
+                string header = "Download html file";
+                string msg = $"Enter the url from which you want to download HTML";
+                InputWindow inputPopUp = new InputWindow(this, header, msg, "Enter url here...");
                 Opacity = 0.4;
                 inputPopUp.ShowDialog();
                 Opacity = 1;
 
                 urlToDownload = new List<string>();
-                urlToDownload.Add(inputPopUp.Input);
+                if(inputPopUp.Success && string.IsNullOrEmpty(inputPopUp.Input) == false) urlToDownload.Add(inputPopUp.Input);
             }
             else
             {
                 urlToDownload = urlList;
             }
 
+            if (urlToDownload.Count == 0) return;
+
             foreach (string urlToDl in urlToDownload)
             {
                 // Save htlm code in a file to test
                 using (WebClient client = new WebClient())
                 {
-                    string htmlFileName = urlToDl.Remove(0, 8); // Remove "https://"
+                    string htmlFileName="";
+                    if (urlToDl.StartsWith("http")) htmlFileName = urlToDl.Remove(0, 8); // Remove "https://"
                     htmlFileName = htmlFileName.Replace('/', '_');
                     htmlFileName = htmlFileName + ".html";
                     client.DownloadFile(urlToDl, Path.Combine(Settings.Instance.OutputDirectory, htmlFileName));
