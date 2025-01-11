@@ -8,7 +8,24 @@
              d:DesignHeight="660" d:DesignWidth="1280">
     <UserControl.Resources>
         <CollectionViewSource x:Key="ScanItemsSource" Source="{Binding ScanListItems}">
-            </CollectionViewSource>
+        </CollectionViewSource>
+
+        <DataTemplate x:Key="gridHeaderCheckboxIcon">
+            <Image Source="{StaticResource Img.checkboxWhiteEmpty}" HorizontalAlignment="Center" VerticalAlignment="Center" Width="35"/>
+        </DataTemplate>
+
+        <DataTemplate x:Key="listItemCustomTemplate">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="5" />
+                </Grid.RowDefinitions>
+                
+                <GridViewRowPresenter/>
+                <Rectangle Grid.Row="1" Fill="Blue"/>
+            </Grid>
+        </DataTemplate>
+
     </UserControl.Resources>
     <Grid Margin="20 0 20 20">
         <Grid.RowDefinitions>
@@ -35,7 +52,6 @@
             </Button>
         </StackPanel>
 
-        <Border Grid.Row="1" >
             <!--<DataGrid Name="listVwScans" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" ItemsSource="{Binding Source={StaticResource ScanItemsSource}, UpdateSourceTrigger=PropertyChanged}">
             <DataGrid.Columns>
                 <DataGridCheckBoxColumn Header="Download" Binding="{Binding Path=IsSelectedForDownload}"/>
@@ -55,35 +71,29 @@
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>-->
-            
-            <ListView Name="listVwScans" ItemsSource="{Binding Source={StaticResource ScanItemsSource}, UpdateSourceTrigger=PropertyChanged}" SelectionMode="Single" HorizontalContentAlignment="Stretch" Background="{StaticResource Colors.LightGrey}">
-                <ListView.ItemContainerStyle>
-                    <Style TargetType="ListViewItem">
-                        <Setter Property="Background" Value="White"/>
-                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                    </Style>
-                </ListView.ItemContainerStyle>
-                <ListView.View>
-                    <GridView AllowsColumnReorder="True">
-                        <GridViewColumn Width="40">
-                            <GridViewColumn.Header>
-                                <StackPanel VerticalAlignment="Stretch" Background="Black">
-                                    <Image Source="{StaticResource Img.checkboxWhiteEmpty}" VerticalAlignment="Center" Margin="0 0 0 0" />
-                                </StackPanel>
-                            </GridViewColumn.Header>
-                            <GridViewColumn.CellTemplate>
+
+        <ListView Grid.Row="1" ItemContainerStyle="{StaticResource testForScanManager}" Name="listVwScans" ItemsSource="{Binding Source={StaticResource ScanItemsSource}, UpdateSourceTrigger=PropertyChanged}" SelectionMode="Single" HorizontalContentAlignment="Stretch" Background="{StaticResource Colors.LightGrey}" BorderThickness="0">
+            <!--<ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    --><!--<Setter Property="Background" Value="white"/>--><!--
+                    <Setter Property="Foreground" Value="Black"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                </Style>
+            </ListView.ItemContainerStyle>-->
+
+            <ListView.View>
+                <GridView AllowsColumnReorder="True" ColumnHeaderContainerStyle="{StaticResource testColumnsHeader}">
+
+                    <GridViewColumn Width="40" HeaderTemplate="{StaticResource gridHeaderCheckboxIcon}"> 
+                        <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <CheckBox IsChecked="{Binding Path=IsSelectedForDownload}" ToolTip="Select this scan for download" HorizontalAlignment="Center"/>
+                                    <CheckBox IsChecked="{Binding Path=IsSelectedForDownload}" ToolTip="Select this scan for download" HorizontalAlignment="Center" Margin="3 0 0 0"/>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn  DisplayMemberBinding="{Binding Path=BookName}" Width="470">
-                            <GridViewColumn.Header>
-                                <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Black">
-                                    <TextBlock Text="Book Name" Foreground="White"/>
-                                </StackPanel>
-                            </GridViewColumn.Header>
-                        </GridViewColumn>
+
+                        <GridViewColumn Header="Book name" DisplayMemberBinding="{Binding Path=BookName}" Width="470"/>
+
                         <GridViewColumn Header="Chapter" Width="100">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
@@ -91,6 +101,7 @@
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
+                        
                         <GridViewColumn Header="Pages" Width="100">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
@@ -98,6 +109,7 @@
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
+                        
                         <GridViewColumn Header="Website" Width="250">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
@@ -105,16 +117,17 @@
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
+                        
                         <GridViewColumn Header="Options" Width="230">
                             <!--I would love to understand why scanItem is displayed in this column and how to do it with a cell template to make it more clear
                         but I can't find how to assign the source scanItem as the template scanItem-->
                         </GridViewColumn>
+                        
                         <!--<GridViewColumn Header="Url" DisplayMemberBinding="{Binding Path=Url}"/>-->
                     </GridView>
                 </ListView.View>
             </ListView>
-        </Border>
-        
+
         <StackPanel Grid.Row="1" Name="stPanelNoScans" VerticalAlignment="Center">
             <TextBlock Text="No scans added yet. Add a new scan url to get the scan information and download it." VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 20 0 10" FontSize="16"/>
             <Button x:Name="btnAdd2" Click="btnAdd_Click" Height="30" Width="150" Margin="0 0 5 0" Style="{StaticResource complexButton}">
