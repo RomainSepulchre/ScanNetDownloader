@@ -5,39 +5,18 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ScanNetDownloader.View.CustomControls"
              mc:Ignorable="d" 
-             d:DesignHeight="30" d:DesignWidth="100">
+             d:DesignHeight="20" d:DesignWidth="190">
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <!--<ColumnDefinition Width="20"/>
-            <ColumnDefinition Width="1"/>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="1"/>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="1"/>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="1"/>
-            <ColumnDefinition Width="65"/>-->
-        </Grid.ColumnDefinitions>
-        
-        <!--<CheckBox Name="chBoxIsSelected" IsChecked="{Binding IsSelectedForDownload, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-        <Rectangle Grid.Column="1" Fill="#333333"/>
-        <Label Grid.Column="2" Name="lbBookName" Content="BookName" VerticalAlignment="Center"/>
-        <Rectangle Grid.Column="3" Fill="#333333"/>
-        <Label Grid.Column="4" Name="lbChapterNumber" Content="Chapter" VerticalAlignment="Center"/>
-        <Rectangle Grid.Column="5" Fill="#333333"/>
-        <Label Grid.Column="6" Name="lbWebsite" Content="Website" VerticalAlignment="Center"/>
-        <Rectangle Grid.Column="7" Fill="#333333"/>
-        <StackPanel Grid.Column="8" Orientation="Horizontal" VerticalAlignment="Center">
-            <Button Name="btnStatus" Content="?" Click="btnStatus_Click" Height="15" Width="15"  FontSize="9" Margin="3 0 3 0" />
-            <Button Name="btnCbzCreation" Content="📁" Click="btnCbzCreation_Click" Height="15" Width="15" FontSize="9"  Margin="3 0 3 0"/>
-            <Button Name="btnDelete" Content="X" Click="btnDelete_Click" Height="15" Width="15" FontSize="9"  Margin="3 0 3 0"/>
-        </StackPanel>-->
-
-        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-            <Button Name="btnStatus" Content="?" ToolTip="Is the scan downloaded ?" Click="btnStatus_Click" Height="20" Width="20"  FontSize="9" Margin="3 0 3 0" />
-            <Button Name="btnCbzCreation" Content="📁" ToolTip="Is the cbz archive created ?" Click="btnCbzCreation_Click" Height="20" Width="20" FontSize="9"  Margin="3 0 3 0"/>
-            <Button Name="btnDelete" Content="X" Click="btnDelete_Click" ToolTip="Delete scan from list" Height="20" Width="20" FontSize="9"  Margin="3 0 3 0"/>
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 -2 0 2">
+            <Button Name="btnCbzCreation" Content="Create .CBZ" FontWeight="Normal" ToolTip="Is the cbz archive created ?" Click="btnCbzCreation_Click" Width="80" Height="20"  FontSize="12"  Margin="0 0 0 0" Style="{StaticResource complexButton}">
+            </Button>
+            
+            <Button Name="btnDelete" Click="btnDelete_Click" ToolTip="Delete scan from list" Height="20" Width="20" FontSize="9"  Margin="10 0 0 0" Style="{StaticResource closeButton}">
+                <Button.Content>
+                    <Image Source="{StaticResource Img.crossWhite}" Height="20" Width="20"/>
+                </Button.Content>
+            </Button>
         </StackPanel>
+
     </Grid>
 </UserControl>

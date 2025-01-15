@@ -206,9 +206,12 @@ namespace ScanNetDownloader.View.CustomControls
         {
             downloadedScan.IsSelectedForDownload = false; // Disable download selection since we just downloaded
 
-            bool fileSuccessfullyDownloaded = FileManagement.AreScanFilesDownloaded(downloadedScan.linkedScanData);
             bool cbzCreated = FileManagement.IsCbzArchiveCreated(downloadedScan.linkedScanData);
+            bool fileSuccessfullyDownloaded = FileManagement.AreScanFilesDownloaded(downloadedScan.linkedScanData, cbzCreated);
+            ScanItem.DownloadedStatus downloadStatus = FileManagement.GetDownloadStatus(downloadedScan.linkedScanData, cbzCreated);
+
             downloadedScan.IsDownloaded = fileSuccessfullyDownloaded;
+            downloadedScan.DownloadStatus = downloadStatus;
             downloadedScan.CbzArchiveCreated = cbzCreated;
 
             DownloadItem dlItem = DownloadItems.First(x => x.linkedScanItem == downloadedScan);
@@ -290,7 +293,7 @@ namespace ScanNetDownloader.View.CustomControls
 
         private void btnStopDl_Click(object sender, RoutedEventArgs e)
         {
-
+            Downloader.CancelDownload();
         } 
         #endregion
     }

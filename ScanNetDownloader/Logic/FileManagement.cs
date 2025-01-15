@@ -139,8 +139,11 @@ namespace ScanNetDownloader.Logic
             }
         }
 
-        public static bool AreScanFilesDownloaded(ScanData scanData)
+        [Obsolete("Remove after cleaning - use Download statuts instead of this")]
+        public static bool AreScanFilesDownloaded(ScanData scanData, bool cbzCreated)
         {
+            if (cbzCreated) return true;
+
             string chapterDirPath = GetChapterDirectoryPath(scanData);
             if (Directory.Exists(chapterDirPath))
             {
@@ -159,6 +162,36 @@ namespace ScanNetDownloader.Logic
             else
             {
                 return false;
+            }
+        }
+
+        public static ScanItem.DownloadedStatus GetDownloadStatus(ScanData scanData, bool cbzCreated)
+        {
+            string chapterDirPath = GetChapterDirectoryPath(scanData);
+            if (Directory.Exists(chapterDirPath))
+            {
+                int expectedImgsCount = scanData.PagesCount;
+                int filesInChapterDirCount = Directory.GetFiles(chapterDirPath).Length;
+
+                if (filesInChapterDirCount > 0 && expectedImgsCount == filesInChapterDirCount)
+                {
+                    if (cbzCreated) return ScanItem.DownloadedStatus.Downloaded;
+                    else return ScanItem.DownloadedStatus.OnlyImages;
+                }
+                else if (filesInChapterDirCount > 0 && filesInChapterDirCount < expectedImgsCount)
+                {
+                    return ScanItem.DownloadedStatus.MissingImages;
+                }
+                else
+                {
+                    if(cbzCreated) return ScanItem.DownloadedStatus.OnlyCbz;
+                    else return ScanItem.DownloadedStatus.NotDownloaded;
+                }
+            }
+            else
+            {
+                if (cbzCreated) return ScanItem.DownloadedStatus.OnlyCbz;
+                else return ScanItem.DownloadedStatus.NotDownloaded;
             }
         }
 

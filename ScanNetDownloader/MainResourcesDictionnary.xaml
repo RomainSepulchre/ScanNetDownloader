@@ -1,5 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:converters="clr-namespace:ScanNetDownloader.Logic.Converters">
 
     <!--Colors-->
     
@@ -50,6 +51,11 @@
     <BitmapImage x:Key="Img.questionBlack" UriSource="/Images/questionIcon_Black.png"></BitmapImage>
     <BitmapImage x:Key="Img.infoIcon" UriSource="/Images/infoIcon.png"></BitmapImage>
     <BitmapImage x:Key="Img.warningIcon" UriSource="/Images/warningIcon.png"></BitmapImage>
+    <BitmapImage x:Key="Img.downloadWhite" UriSource="/Images/downloadIcon_White.png"></BitmapImage>
+    <BitmapImage x:Key="Img.downloadGrey" UriSource="/Images/downloadIcon_Grey.png"></BitmapImage>
+    <BitmapImage x:Key="Img.downloadBlack" UriSource="/Images/downloadIcon_Black.png"></BitmapImage>
+    <BitmapImage x:Key="Img.downloadOrange" UriSource="/Images/downloadIcon_Orange.png"></BitmapImage>
+    <BitmapImage x:Key="Img.downloadBorderBlack" UriSource="/Images/downloadIcon_BorderBlack.png"></BitmapImage>
 
     
     <!--Image Brushes-->
@@ -61,8 +67,13 @@
     <!--Converters-->
 
     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    <converters:BoolToDownloadedIconConverter x:Key="BoolToDownloadedIconConverter"/>
+    <converters:BoolToDownloadStatusTextConverter x:Key="BoolToDownloadedStatusTextConverter"/>
+    <converters:DownloadStatusToDownloadIconConverter x:Key="DownloadStatusToDownloadIconConverter"/>
+    <converters:DownloadStatusToDownloadedTooltipConverter x:Key="DownloadStatusToDownloadedTooltipConverter"/>
+    <converters:DownloadStatusToEllipseVisibilityConverter x:Key="DownloadStatusToEllipseVisibilityConverter"/>
 
-    
+
     <!--Styles-->
 
     <!-- =============================================
@@ -86,6 +97,17 @@
                 <ControlTemplate>
                     <!--<Rectangle Margin="2" StrokeDashArray="1 2" Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" SnapsToDevicePixels="true" StrokeThickness="1"/>-->
                     <Rectangle Margin="2" StrokeDashArray="1 2" Stroke="{StaticResource Colors.Black}" SnapsToDevicePixels="true" StrokeThickness="1"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="FocusVisualListItems">
+        <Setter Property="Control.Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <!--<Rectangle Margin="2" StrokeDashArray="1 2" Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" SnapsToDevicePixels="true" StrokeThickness="1"/>-->
+                    <Rectangle Margin="2 1 2 4" StrokeDashArray="1 2" Stroke="{StaticResource Colors.Black}" SnapsToDevicePixels="true" StrokeThickness="1"/>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -1213,7 +1235,7 @@
         <Setter Property="Background" Value="{StaticResource Colors.LightGrey}"/>
         <Setter Property="BorderBrush" Value="Transparent"/>
         <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualListItems}"/>
         <Setter Property="Foreground" Value="{StaticResource Colors.Black}"/>
         
         <Setter Property="Template">

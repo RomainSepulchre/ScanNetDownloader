@@ -58,6 +58,11 @@ namespace ScanNetDownloader.Logic.Helpers
             public const string Question_Black = "Img.questionBlack";
             public const string InfoIcon = "Img.infoIcon";
             public const string WarningIcon = "Img.warningIcon";
+            public const string DownloadWhite = "Img.downloadWhite";
+            public const string DownloadGrey = "Img.downloadGrey";
+            public const string DownloadBlack = "Img.downloadBlack";
+            public const string DownloadOrange = "Img.downloadOrange";
+            public const string DownloadBorderBlack = "Img.downloadBorderBlack";
         }
 
         public static class ImageBrushes

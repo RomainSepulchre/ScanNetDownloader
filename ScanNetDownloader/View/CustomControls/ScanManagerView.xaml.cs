@@ -120,6 +120,13 @@ namespace ScanNetDownloader.View.CustomControls
             ScanItem item = e.Source as ScanItem;
             if (item != null)
             {
+                // Ask user before deleting scan item
+                //string header = "Delete scan data";
+                //string msg = $"Are you sure you want to delete {item.BookName} - Chapter {item.ChapterId} from the list?\n\nLocal files such as downloaded images and .CBZ archive won't be deleted.";
+                //YesNoWindow yesNoWindow = MsgWindow.ShowYesNoWindow(header, msg, true, MsgWindow.ImageType.Warning);
+                //if (yesNoWindow.Success) DeleteScanItem(item);
+
+                // Delete item instantly
                 DeleteScanItem(item);
             }
         }
@@ -158,8 +165,11 @@ namespace ScanNetDownloader.View.CustomControls
             ScanItem item = e.Source as ScanItem;
             if (item != null)
             {
-                bool fileDownloaded = FileManagement.AreScanFilesDownloaded(item.linkedScanData);
+                bool fileDownloaded = FileManagement.AreScanFilesDownloaded(item.linkedScanData, item.CbzArchiveCreated);
+                ScanItem.DownloadedStatus downloadStatus = FileManagement.GetDownloadStatus(item.linkedScanData, item.CbzArchiveCreated);
+
                 item.IsDownloaded = fileDownloaded;
+                item.DownloadStatus = downloadStatus;
             }
         }
 
@@ -194,10 +204,11 @@ namespace ScanNetDownloader.View.CustomControls
             foreach (ScanData scanData in newScansToAdd)
             {
                 // TODO: Add a check to prevent a double entry of the same chapter on the same website, maybe check before caliing AddScanItems ?
-                bool filesAlreadyDownloaded = FileManagement.AreScanFilesDownloaded(scanData);
                 bool cbzAlreadyCreated = FileManagement.IsCbzArchiveCreated(scanData);
+                bool filesAlreadyDownloaded = FileManagement.AreScanFilesDownloaded(scanData, cbzAlreadyCreated);
+                ScanItem.DownloadedStatus downloadStatus = FileManagement.GetDownloadStatus(scanData, cbzAlreadyCreated);
 
-                ScanItem item = new ScanItem(scanData, filesAlreadyDownloaded, cbzAlreadyCreated);
+                ScanItem item = new ScanItem(scanData, filesAlreadyDownloaded, cbzAlreadyCreated, downloadStatus);
                 item.DeleteScanBtnPressed += ScanItem_DeleteBtnPressed;
                 item.CreateCbzBtnPressed += ScanItem_CreateCbzBtnPressed;
                 ScanListItems.Add(item);
@@ -231,6 +242,14 @@ namespace ScanNetDownloader.View.CustomControls
             }
         }
 
+        public void ForceScanDataRefresh()
+        {
+            RefreshScanListView();
+
+            if (ScanListItems.Count == 0) stPanelNoScans.Visibility = Visibility.Visible;
+            else stPanelNoScans.Visibility = Visibility.Collapsed;
+        }
+
         private void RefreshScanListView()
         {
             // TODO: Why is it so long with a lot of items ? Way to optiomize this ?
@@ -242,10 +261,11 @@ namespace ScanNetDownloader.View.CustomControls
             {
                 if (scanData.IsSelectedForDownload) SelectedCount++;
 
-                bool filesAlreadyDownloaded = FileManagement.AreScanFilesDownloaded(scanData);
                 bool cbzAlreadyCreated = FileManagement.IsCbzArchiveCreated(scanData);
+                bool filesAlreadyDownloaded = FileManagement.AreScanFilesDownloaded(scanData, cbzAlreadyCreated);
+                ScanItem.DownloadedStatus downloadStatus = FileManagement.GetDownloadStatus(scanData, cbzAlreadyCreated);
 
-                ScanItem item = new ScanItem(scanData, filesAlreadyDownloaded, cbzAlreadyCreated);
+                ScanItem item = new ScanItem(scanData, filesAlreadyDownloaded, cbzAlreadyCreated, downloadStatus);
                 item.DeleteScanBtnPressed += ScanItem_DeleteBtnPressed;
                 item.CreateCbzBtnPressed += ScanItem_CreateCbzBtnPressed;
                 item.StatusBtnPressed += ScanItem_StatusBtnPressed;

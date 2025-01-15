@@ -15,6 +15,11 @@
     <None Remove="Images\CheckboxIcon_White_Empty.png" />
     <None Remove="Images\checkIcon.png" />
     <None Remove="Images\crossIcon_White.png" />
+    <None Remove="Images\downloadIcon_Black.png" />
+    <None Remove="Images\downloadIcon_BorderBlack.png" />
+    <None Remove="Images\downloadIcon_Grey.png" />
+    <None Remove="Images\downloadIcon_Orange.png" />
+    <None Remove="Images\downloadIcon_White.png" />
     <None Remove="Images\errorIcon.png" />
     <None Remove="Images\infoIcon.png" />
     <None Remove="Images\moreDetailsIcon_Closed.png" />
@@ -38,6 +43,11 @@
     <Resource Include="Images\CheckboxIcon_Black_Empty.png" />
     <Resource Include="Images\CheckboxIcon_White_Empty.png" />
     <Resource Include="Images\crossIcon_White.png" />
+    <Resource Include="Images\downloadIcon_Black.png" />
+    <Resource Include="Images\downloadIcon_BorderBlack.png" />
+    <Resource Include="Images\downloadIcon_Grey.png" />
+    <Resource Include="Images\downloadIcon_Orange.png" />
+    <Resource Include="Images\downloadIcon_White.png" />
     <Resource Include="Images\errorIcon.png" />
     <Resource Include="Images\infoIcon.png" />
     <Resource Include="Images\moreDetailsIcon_Closed.png" />

@@ -1,9 +1,11 @@
 ﻿using ScanNetDownloader.Logic;
+using ScanNetDownloader.Logic.Helpers;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using static ScanNetDownloader.View.CustomControls.ScanItem;
 
 namespace ScanNetDownloader.View.CustomControls
 {
@@ -41,15 +43,35 @@ namespace ScanNetDownloader.View.CustomControls
         public string Website { get; private set; }
 
         private bool _isDownloaded;
-        public bool IsDownloaded
+        public bool IsDownloaded // TODO: Clean this or link it to DownloadedStatus ? Is it still used ?
         {
             get { return _isDownloaded; }
             set
             {
                 _isDownloaded = value;
                 SetDownloadStatus(value);
+                OnPropertyChanged();
             }
         }
+
+        public enum DownloadedStatus
+        {
+            NotDownloaded = 0,
+            Downloaded = 1,   
+            OnlyImages = 2,
+            OnlyCbz = 3,
+            MissingImages = 4
+        }
+        private DownloadedStatus _downloadStatus;
+        public DownloadedStatus DownloadStatus
+        {
+            get { return _downloadStatus; }
+            set {
+                _downloadStatus = value;
+                OnPropertyChanged();
+            }
+        }
+
 
         private bool _cbzArchiveCreated;
         public bool CbzArchiveCreated
@@ -102,7 +124,7 @@ namespace ScanNetDownloader.View.CustomControls
             InitializeComponent();
         }
 
-        public ScanItem(ScanData _scanData, bool fileAlreadyDownloaded=false, bool cbzAlreadyCreated=false)
+        public ScanItem(ScanData _scanData, bool fileAlreadyDownloaded=false, bool cbzAlreadyCreated=false, DownloadedStatus dlStatus=DownloadedStatus.NotDownloaded)
         {
             DataContext = this;
             
@@ -116,6 +138,7 @@ namespace ScanNetDownloader.View.CustomControls
             Website = _scanData.WebsiteDomain;
             IsDownloaded = fileAlreadyDownloaded;
             CbzArchiveCreated = cbzAlreadyCreated;
+            DownloadStatus = dlStatus;
             IsSelectedForDownload = _scanData.IsSelectedForDownload;           
 
             //lbBookName.Content = BookName;
@@ -145,16 +168,12 @@ namespace ScanNetDownloader.View.CustomControls
 
         private void SetDownloadStatus(bool fileDownloaded)
         {
-            if (fileDownloaded)
+            if (fileDownloaded && CbzArchiveCreated == false)
             {
-                btnStatus.Content = "ok";
-                btnStatus.Background = Brushes.Green;
                 btnCbzCreation.IsEnabled = true;
             }
             else
             {
-                btnStatus.Content = "∅";
-                btnStatus.Background = Brushes.Red;
                 btnCbzCreation.IsEnabled = false;
             }
         }
@@ -163,11 +182,32 @@ namespace ScanNetDownloader.View.CustomControls
         {
             if (cbzCreated)
             {
-                btnCbzCreation.Background = Brushes.Green;
+                if(IsDownloaded) btnCbzCreation.IsEnabled = false;
+                btnCbzCreation.Content = ".CBZ created";
+                btnCbzCreation.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.White);
+                btnCbzCreation.Background = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Green);
             }
             else
             {
+                btnCbzCreation.Content = "Create .CBZ";
                 btnCbzCreation.ClearValue(Button.BackgroundProperty);
+            }
+        }
+
+        public static bool DownloadStatusToIsDownloaded(DownloadedStatus dlStatus)
+        {
+            switch (dlStatus)
+            {
+                case DownloadedStatus.NotDownloaded:
+                default:
+                    return false;
+
+                case DownloadedStatus.Downloaded:
+                case DownloadedStatus.MissingImages:
+                case DownloadedStatus.OnlyCbz:
+                case DownloadedStatus.OnlyImages:
+                    return true;
+
             }
         }
     }
