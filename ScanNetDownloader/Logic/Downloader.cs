@@ -44,6 +44,10 @@ namespace ScanNetDownloader.Logic
 
         public static event EventHandler OnDownloadsFinishedEvent;
 
+        public static bool downloadInProgress = false;
+
+        static CancellationTokenSource downloadCancelToken = null;
+
         public static async void StartDownloader(List<ScanItem> scanItemsToDownload)
         {
             List<ScanData> scansToDownload = scanItemsToDownload.ToScanDataList();
@@ -67,15 +71,35 @@ namespace ScanNetDownloader.Logic
                 OnDownloadStopped();
                 return;
             }
-            
+
             //MessageBoxResult result = MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.YesNo, MessageBoxImage.Question);
             //if (result == MessageBoxResult.No)
             //{
             //    OnDownloadStopped();
             //    return;
             //}
+            downloadCancelToken = new CancellationTokenSource();
+            var cancelToken = downloadCancelToken.Token;
+            bool canceled = false;
 
-            await DownloadScans(scanItemsToDownload);
+            downloadInProgress = true;
+            try
+            {
+                await DownloadScans(scanItemsToDownload, cancelToken);
+            }
+            catch (OperationCanceledException ex)
+            {
+                canceled = true;
+                OnDownloadStopped();
+            }
+            finally
+            {
+                Debug.WriteLine($"DL FINNALY");
+                downloadCancelToken.Dispose();
+                downloadInProgress = false;
+            }
+
+            if (canceled) return;
 
             if (CurrentSettings.OpenOutputDirectoryAfterDownload)
             {
@@ -85,7 +109,7 @@ namespace ScanNetDownloader.Logic
             OnDownloadsFinished();
         }
 
-        static async Task DownloadScans(List<ScanItem> scanItemsToDownload)
+        static async Task DownloadScans(List<ScanItem> scanItemsToDownload, CancellationToken cancelToken)
         {
             OnDownloadStarted();
 
@@ -166,6 +190,12 @@ namespace ScanNetDownloader.Logic
                     }
 
                     pageId++;
+
+                    if(cancelToken.IsCancellationRequested)
+                    {
+                        // Stopping task
+                        cancelToken.ThrowIfCancellationRequested();
+                    }
                 }
 
 
@@ -177,6 +207,11 @@ namespace ScanNetDownloader.Logic
                 // Deselect since we just downloaded it
                 OnScanDownloaded(scanItem);
             }
+        }
+
+        public static void CancelDownload()
+        {
+            if(downloadInProgress) downloadCancelToken.Cancel();
         }
 
         #region Events
