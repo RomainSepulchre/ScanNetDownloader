@@ -1,5 +1,7 @@
 ﻿using ScanNetDownloader.Logic.Helpers;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -10,7 +12,7 @@ namespace ScanNetDownloader.View.CustomControls
     /// <summary>
     /// Logique d'interaction pour DownloadItem.xaml
     /// </summary>
-    public partial class DownloadItem : UserControl
+    public partial class DownloadItem : UserControl, INotifyPropertyChanged
     {
         private ObservableCollection<DownloadEventItem> _downloadEventItems;
 
@@ -36,8 +38,35 @@ namespace ScanNetDownloader.View.CustomControls
 
         public bool CbzCreationError { get; set; } = false;
 
+        private string _itemHeader;
+        public string ItemHeader
+        {
+            get { return _itemHeader; }
+            set {
+                _itemHeader = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _downloadStatus;
+        public string DownloadStatus
+        {
+            get { return _downloadStatus; }
+            set {
+                _downloadStatus = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        private void OnPropertyChanged([CallerMemberName] string property = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+        }
+
         public DownloadItem()
         {
+            DataContext = this;
             InitializeComponent();
         }
 
@@ -57,7 +86,8 @@ namespace ScanNetDownloader.View.CustomControls
             Url = _scanItem.Url;
             Website = _scanItem.Website;
 
-            txtBlockItemHeader.Text = $"{BookName} - Chapter {ChapterId} ({PagesCount} pages)";
+            ItemHeader = $"{BookName} - Chapter {ChapterId} ({PagesCount} pages)";
+            DownloadStatus = "Ready for download...";
 
             ShowDownloadDetails(false);
             SetShowDetailsBtnVisibility();
@@ -93,14 +123,14 @@ namespace ScanNetDownloader.View.CustomControls
 
         public void PrepareForDownload()
         {
-            txtBlockDlStatus.Text = $"Waiting for download start...";
+            DownloadStatus = $"Waiting for download start...";
         }
 
         public void ScanDownloadStarted()
         {
             progrBarItemDownload.Visibility = Visibility.Visible;
             progrBarItemDownload.Value = 0;
-            txtBlockDlStatus.Text = $"Downloading page 1...";
+            DownloadStatus = $"Downloading page 1...";
         }
 
         public void PageDownloaded(int pageNumber)
@@ -113,7 +143,10 @@ namespace ScanNetDownloader.View.CustomControls
 
             int nextPageNumber = pageNumber + 1;
             progrBarItemDownload.Value = ((float)pageNumber / PagesCount) * 100;
-            if (pageNumber != PagesCount) txtBlockDlStatus.Text = $"Downloading page {nextPageNumber}...";
+            if (pageNumber != PagesCount)
+            {
+                DownloadStatus = $"Downloading page {nextPageNumber}...";
+            }
         }
 
         public void PageAlreadyDownloaded(int pageNumber)
@@ -126,7 +159,10 @@ namespace ScanNetDownloader.View.CustomControls
 
             int nextPageNumber = pageNumber + 1;
             progrBarItemDownload.Value = ((float)pageNumber / PagesCount) * 100;
-            if (pageNumber != PagesCount) txtBlockDlStatus.Text = $"Downloading page {nextPageNumber}...";
+            if (pageNumber != PagesCount)
+            {
+                DownloadStatus = $"Downloading page {nextPageNumber}...";
+            }
         }
 
         public void PageDownloadError(int pageNumber, Exception ex)
@@ -140,7 +176,10 @@ namespace ScanNetDownloader.View.CustomControls
 
             int nextPageNumber = pageNumber + 1;
             progrBarItemDownload.Value = ((float)pageNumber / PagesCount) * 100;
-            if (pageNumber != PagesCount) txtBlockDlStatus.Text = $"Downloading page {nextPageNumber}...";
+            if (pageNumber != PagesCount)
+            {
+                DownloadStatus = $"Downloading page {nextPageNumber}...";
+            }
         }
 
         public void PageFileSavingError(int pageNumber, Exception ex)
@@ -154,13 +193,16 @@ namespace ScanNetDownloader.View.CustomControls
 
             int nextPageNumber = pageNumber + 1;
             progrBarItemDownload.Value = ((float)pageNumber / PagesCount) * 100;
-            if (pageNumber != PagesCount) txtBlockDlStatus.Text = $"Downloading page {nextPageNumber}...";
+            if (pageNumber != PagesCount)
+            {
+                DownloadStatus = $"Downloading page {nextPageNumber}...";
+            }
         }
 
         public void ScanDownloadError(Exception ex)
         {
             gridDlStatus.Background = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Red);
-            txtBlockDlStatus.Text = "An error happened while downloading the scan, see download details";
+            DownloadStatus = "An error happened while downloading the scan, see download details";
 
             string errorMsg = $"Error while downloading scan {BookName}-{ChapterId}: {ex.Message}";
             DownloadEventItem eventItem = new DownloadEventItem(errorMsg, (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Red));
@@ -179,12 +221,12 @@ namespace ScanNetDownloader.View.CustomControls
                 if (CbzCreationError)
                 {
                     gridDlStatus.Background = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Orange);
-                    txtBlockDlStatus.Text = "Successfully downloaded but cbz archive creation failed";
+                    DownloadStatus = "Successfully downloaded but cbz archive creation failed";
                 }
                 else
                 {
                     gridDlStatus.Background = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Green);
-                    txtBlockDlStatus.Text = "Successfully downloaded";
+                    DownloadStatus = "Successfully downloaded";
                 }
             }
             else if (ErrorCount >= 1 && ErrorCount <= (PagesCount*0.1f)) // Less than 10% of error
@@ -192,11 +234,11 @@ namespace ScanNetDownloader.View.CustomControls
                 gridDlStatus.Background = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Orange);
                 if (CbzCreationError)
                 {
-                    txtBlockDlStatus.Text = "Scan downloaded but some pages download and cbz archive creation failed, see download details";
+                    DownloadStatus = "Scan downloaded but some pages download and cbz archive creation failed, see download details";
                 }
                 else
                 {
-                    txtBlockDlStatus.Text = "Scan downloaded but some pages download failed, see download details";
+                    DownloadStatus = "Scan downloaded but some pages download failed, see download details";
                 }
             }
             else // Too many download error
@@ -205,19 +247,18 @@ namespace ScanNetDownloader.View.CustomControls
                 txtBlockDlStatus.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.White);
                 if (CbzCreationError)
                 {
-                    txtBlockDlStatus.Text = "Errors while downloading scan pages and creating cbz archive, see download details";
-                    
+                    DownloadStatus = "Errors while downloading scan pages and creating cbz archive, see download details";
                 }
                 else
                 {
-                    txtBlockDlStatus.Text = "Errors while downloading scan pages, see download details";
+                    DownloadStatus = "Errors while downloading scan pages, see download details";
                 }  
             } 
         }
 
         public void CbzCreationStarted()
         {
-            txtBlockDlStatus.Text = "Creating cbz archive...";
+            DownloadStatus = "Creating cbz archive...";
         }
 
         public void CbzCreated()

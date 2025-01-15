@@ -25,13 +25,13 @@
 
         <!--Main Row-->
         <Border>
-            <TextBlock Name="txtBlockItemHeader"  Text="Jujutsu Kaisen - Chapter 15 (10 pages)" VerticalAlignment="Center" Margin="20 0 0 0" FontWeight="SemiBold"/>
+            <TextBlock Name="txtBlockItemHeader"  Text="{Binding ItemHeader, FallbackValue=Book name - Chapter 999 (99 pages)}" VerticalAlignment="Center" Margin="20 0 0 0" FontWeight="SemiBold"/>
         </Border>
 
         <Grid Grid.Column="1" Name="gridDlStatus" Background="{StaticResource Colors.MediumGrey}">
             <ProgressBar Name="progrBarItemDownload" Minimum="0" Maximum="100" Height="18" Margin="10 0 10 0" Visibility="Collapsed" Style="{DynamicResource DefaultProgressBarStyle}"/>
             <Border Height="18" Margin="10 0 10 1">
-                <TextBlock Name="txtBlockDlStatus" Text="Ready for download..." VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <TextBlock Name="txtBlockDlStatus" Text="{Binding DownloadStatus, UpdateSourceTrigger=PropertyChanged, FallbackValue=Default download status...}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </Border>
         </Grid>
 
