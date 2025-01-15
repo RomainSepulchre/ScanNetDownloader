@@ -108,6 +108,11 @@ namespace ScanNetDownloader
             ScansLocalData.Save();
         }
 
+        private void optionsVw_ClearLocalData(object sender, RoutedEventArgs e)
+        {
+            scanManagerVw.ForceScanDataRefresh();
+        }
+
         private void OnApplicationExit(object sender, EventArgs e)
         {
             // Save the scans local data
@@ -293,6 +298,5 @@ namespace ScanNetDownloader
             FileManagement.OpenFolder(Settings.Instance.OutputDirectory);
         }
         #endregion
-
     }
 }

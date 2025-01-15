@@ -125,6 +125,11 @@ namespace ScanNetDownloader.Logic
             }
         }
 
+        public void ClearScanData()
+        {
+            ClearLocalData();
+        }
+
         public void Log()
         {
             Debug.WriteLine($"LOG SCANS DATA");

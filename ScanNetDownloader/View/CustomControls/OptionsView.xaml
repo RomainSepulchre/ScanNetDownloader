@@ -39,6 +39,10 @@
                 <CheckBox Name="chBoxCreateCbz" Content="Automatically create a .CBZ archive when a scan is downloaded " IsChecked="{Binding CreateCbzAfterDownload, UpdateSourceTrigger=PropertyChanged}"/>
                 <CheckBox Name="chBoxDeleteImageAfterCbz" Content="Delete scan images once the .CBZ archive is created" IsChecked="{Binding DeleteImagesAfterCbzCreation, UpdateSourceTrigger=PropertyChanged}" Margin="0 5 0 0"/>
             </StackPanel>
+
+            <TextBlock Text="Reset data" FontWeight="Bold" FontSize="24" Margin="0 12 0 0"/>
+            <Button Name="btnClearScanData" Content="Clear local scan data" Click="btnClearScanData_Click" Width="200" Height="30" HorizontalAlignment="Left" Margin="0 5 0 0"/>
+            
         </StackPanel>
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0 0 0 0">
             <Button Name="btnSaveOptions" Content="Save changes" Click="btnSaveOptions_Click" Width="200" Height="50" HorizontalAlignment="Right" FontSize="16"/>

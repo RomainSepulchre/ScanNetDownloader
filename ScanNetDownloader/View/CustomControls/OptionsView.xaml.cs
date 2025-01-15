@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using ScanNetDownloader.Logic;
+using ScanNetDownloader.Logic.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -118,6 +119,14 @@ namespace ScanNetDownloader.View.CustomControls
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
+        public static RoutedEvent ClearLocalDataEvent = EventManager.RegisterRoutedEvent(nameof(ClearLocalData), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(OptionsView));
+
+        public event RoutedEventHandler ClearLocalData
+        {
+            add { AddHandler(ClearLocalDataEvent, value); }
+            remove { RemoveHandler(ClearLocalDataEvent, value); }
+        }
+
         public OptionsView()
         {
             DataContext = this;
@@ -163,6 +172,19 @@ namespace ScanNetDownloader.View.CustomControls
             {
                 OpenOutputDirectoryErrorMsg = "Directory doesn't exist, impossible to open it";
                 errorAlertOpenOutputDir.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void btnClearScanData_Click(object sender, RoutedEventArgs e)
+        {
+            // Ask user before deleting scan item
+            string header = "Clear local scan data ?";
+            string msg = $"Are you sure you want to clear all your scan data ?\n\nLocal scan data are the information displayed in the scan manager view, local files such as downloaded images and .CBZ archive won't be deleted.";
+            YesNoWindow yesNoWindow = MsgWindow.ShowYesNoWindow(header, msg, true, MsgWindow.ImageType.Warning);
+            if (yesNoWindow.Success)
+            {
+                ScansLocalData.Instance.ClearScanData();
+                RaiseEvent(new RoutedEventArgs(ClearLocalDataEvent, this));
             }
         }
 
