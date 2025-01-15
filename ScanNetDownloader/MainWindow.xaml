@@ -14,16 +14,10 @@
     </Window.Resources>
     <Grid x:Name="gridMainContent">
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="10"/>
-            <RowDefinition Height="25"/>
-        </Grid.RowDefinitions>
-        
         <TabControl Style="{DynamicResource TabControlStyle}" Name="tabCtrlNavigation" SelectionChanged="tabCtrlNavigation_SelectionChanged">
-            
+
             <!--Scan Management-->
-            <TabItem Style="{DynamicResource TabItemStyle}" Name="tabScanManager" Height="60">
+            <TabItem Style="{DynamicResource TabItemStyle}" Name="tabScanManager" Height="50">
                 <TabItem.Header>
                     <Border Style="{StaticResource TabItemHeaderBorderStyle_FirstTab}">
                         <TextBlock Text="SCAN MANAGER" FontSize="24" HorizontalAlignment="Center" Style="{StaticResource TabItemHeaderTextBlockStyle}"/>
@@ -31,9 +25,9 @@
                 </TabItem.Header>
                 <customControls:ScanManagerView x:Name="scanManagerVw" StartDownload="scanManagerVw_StartDownload"/>
             </TabItem>
-            
+
             <!--Scan Download-->
-            <TabItem Style="{DynamicResource TabItemStyle}" Name="tabDownload" Height="60">
+            <TabItem Style="{DynamicResource TabItemStyle}" Name="tabDownload" Height="50">
                 <TabItem.Header>
                     <Border Style="{StaticResource TabItemHeaderBorderStyle}">
                         <TextBlock Text="DOWNLOAD" FontSize="24" HorizontalAlignment="Center" Style="{StaticResource TabItemHeaderTextBlockStyle}"/>
@@ -41,19 +35,19 @@
                 </TabItem.Header>
                 <customControls:DownloadView x:Name="downloadVw" OnDownloadCompleted="downloadVw_OnDownloadCompleted"/>
             </TabItem>
-            
+
             <!--Options-->
-            <TabItem Style="{DynamicResource TabItemStyle}" Name="tabOptions" Height="60">
+            <TabItem Style="{DynamicResource TabItemStyle}" Name="tabOptions" Height="50">
                 <TabItem.Header>
                     <Border Style="{StaticResource TabItemHeaderBorderStyle}">
                         <TextBlock Text="OPTIONS" FontSize="24" HorizontalAlignment="Center" Style="{StaticResource TabItemHeaderTextBlockStyle}"/>
                     </Border>
                 </TabItem.Header>
-                <customControls:OptionsView x:Name="optionsVw" ClearLocalData="optionsVw_ClearLocalData"/> 
+                <customControls:OptionsView x:Name="optionsVw" ClearLocalData="optionsVw_ClearLocalData"/>
             </TabItem>
 
             <!--Debug-->
-            <TabItem Style="{DynamicResource TabItemStyle}" Name="tabDebug" Height="60">
+            <TabItem Style="{DynamicResource TabItemStyle}" Name="tabDebug" Height="50">
                 <TabItem.Header>
                     <Border Style="{StaticResource TabItemHeaderBorderStyle}">
                         <TextBlock Text="DEBUG" FontSize="24" HorizontalAlignment="Center" Style="{StaticResource TabItemHeaderTextBlockStyle}"/>
@@ -71,19 +65,7 @@
                     <Button Name="btnDbg6" Content="Ok window" Width="200" Click="btnDbg6_Click" Height="50" Margin="10" FontSize="12" Style="{StaticResource buttonWithStartImage}">
                     </Button>
                 </WrapPanel>
-            </TabItem>        
+            </TabItem>
         </TabControl>
-
-        <!--Status Bar-->
-        <Grid Grid.Row="2" Background="DarkSlateBlue" Name="gridStatusBar">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="25"/>
-            </Grid.ColumnDefinitions>
-            
-            <TextBlock Text="Status...." Foreground="Aqua" VerticalAlignment="Center" Margin="10 0 0 0"/>
-            <Button Grid.Column="1" Name="btnOpenStatusBar" Click="btnOpenStatusBar_Click" Content="^" Height="14" Width="14"/>
-        </Grid>
-        
     </Grid>
 </Window>

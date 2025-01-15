@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ScanNetDownloader.Logic.Helpers
+﻿namespace ScanNetDownloader.Logic.Helpers
 {
     public class ResourcesKey
     {
@@ -67,7 +61,6 @@ namespace ScanNetDownloader.Logic.Helpers
 
         public static class ImageBrushes
         {
-            // Image Brushes
             public const string Start_Normal = "ImgBrush.StartNormal";
             public const string Start_Hover = "ImgBrush.StartHover";
         }

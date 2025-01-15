@@ -7,10 +7,12 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid Grid.Row="1" Visibility="Visible">
+        
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
+        
         <StackPanel Margin="20 13 20 0">
             <TextBlock Text="Add a new scan url" FontWeight="Bold" FontSize="24" Margin="0 0 0 6"/>
 

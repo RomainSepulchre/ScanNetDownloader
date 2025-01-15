@@ -1,11 +1,7 @@
-﻿using System.Diagnostics;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
-using ScanNetDownloader.Logic;
+﻿using ScanNetDownloader.Logic;
 using ScanNetDownloader.Logic.Helpers;
-using ScanNetDownloader.View.CustomControls;
-using static System.Net.Mime.MediaTypeNames;
+using System.Windows;
+using System.Windows.Media;
 
 namespace ScanNetDownloader.View
 {
@@ -85,7 +81,6 @@ namespace ScanNetDownloader.View
             TempScanData = urlSelectionVw.TempScanData;
 
             // Check if chapter is already specified
-
             chapterSelectionVw.InitChapterSelection(TempScanData);
 
             urlSelectionVw.Visibility = Visibility.Collapsed;

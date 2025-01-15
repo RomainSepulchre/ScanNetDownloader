@@ -1,20 +1,8 @@
 ﻿using ScanNetDownloader.Logic;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ScanNetDownloader.View.CustomControls
 {
@@ -37,7 +25,6 @@ namespace ScanNetDownloader.View.CustomControls
 
         // View Events
         public static RoutedEvent FinishBtnPressedEvent = EventManager.RegisterRoutedEvent(nameof(FinishBtnPressed), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ScanDataCreationView));
-
         public event RoutedEventHandler FinishBtnPressed
         {
             add { AddHandler(FinishBtnPressedEvent, value); }
@@ -70,7 +57,6 @@ namespace ScanNetDownloader.View.CustomControls
                 ProgressStatus = $"{tempScanData.BookName} - {chapter} ({i}/{chaptersSelected.Count})";
 
                 ScanDataCreationItem scanDataCreationItem = new ScanDataCreationItem(tempScanData.BookName, chapter);
-                //listVwCreationStatus.Items.Add(scanDataCreationItem);
                 listVwCreationStatus.Children.Add(scanDataCreationItem);
 
                 ScanDataInitResult newScanDataResult = await ScanManagement.CreateNewScanData(url, chapter);
@@ -87,9 +73,6 @@ namespace ScanNetDownloader.View.CustomControls
                 progrBarScanDataCreation.Value = ((float)(i + 1) / chaptersSelected.Count) * 100;
             }
             ProgressStatus = $"Done ({chaptersSelected.Count}/{chaptersSelected.Count})";
-
-            // Old way doing everything at once -> no progress evolution
-            //NewScanDatas = await ScanManagement.CreateNewScanDatas(UrlInput, ChapterSelected);
 
             btnFinish.IsEnabled = true;
             return NewScanDatas;

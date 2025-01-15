@@ -1,13 +1,5 @@
-﻿using ScanNetDownloader.View;
-using ScanNetDownloader.Logic.Helpers;
-using System;
-using System.Collections.Generic;
+﻿using ScanNetDownloader.Logic.Helpers;
 using System.Diagnostics;
-using System.Linq;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 
 namespace ScanNetDownloader.Logic
 {

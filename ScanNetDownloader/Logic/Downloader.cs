@@ -1,21 +1,15 @@
-﻿using ScanNetDownloader.View.CustomControls;
-using ScanNetDownloader.Logic.Helpers;
-using System;
-using System.Collections.Generic;
+﻿using ScanNetDownloader.Logic.Helpers;
+using ScanNetDownloader.View;
+using ScanNetDownloader.View.CustomControls;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using ScanNetDownloader.View;
 
 namespace ScanNetDownloader.Logic
 {
     /// <summary>
-    /// Manage 
+    /// Manage the download of the images
     /// </summary>
     class Downloader
     {
@@ -72,12 +66,6 @@ namespace ScanNetDownloader.Logic
                 return;
             }
 
-            //MessageBoxResult result = MessageBox.Show(mBoxMessage, mBoxCaption, MessageBoxButton.YesNo, MessageBoxImage.Question);
-            //if (result == MessageBoxResult.No)
-            //{
-            //    OnDownloadStopped();
-            //    return;
-            //}
             downloadCancelToken = new CancellationTokenSource();
             var cancelToken = downloadCancelToken.Token;
             bool canceled = false;
@@ -186,7 +174,6 @@ namespace ScanNetDownloader.Logic
                     catch (IOException ex)
                     {
                         OnPageFileSavingError(scanItem, pageIndex, ex);
-                        //TODO : Manage IO Eception
                     }
 
                     pageId++;

@@ -3,7 +3,6 @@ using ScanNetDownloader.Logic.Helpers;
 using ScanNetDownloader.View;
 using System.Diagnostics;
 using System.IO;
-using System.Windows;
 
 namespace ScanNetDownloader.Logic
 {
@@ -103,7 +102,7 @@ namespace ScanNetDownloader.Logic
                         loadedSettings = ResetToDefault();
                         return loadedSettings;
                     }
-                    else //TODO: What to do in this case with WPF app ?
+                    else //TODO: What to do in this case with WPF app ? Is there a better solution ?
                     {
                         mBoxMessage = "Please make sure nothing is wrong with the data in Settings.json, if the problem persist backup your settings and reset the json to it's default values.";
                         mBoxCaption = "Settings loading error";

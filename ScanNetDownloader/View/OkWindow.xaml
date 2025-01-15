@@ -38,8 +38,6 @@
             <Image Height="50" Width="50" Source="{Binding Image}" Visibility="{Binding ShowImage, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
             <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
-                <!--<Image Height="50" Width="50" Source="{StaticResource Img.error}" Margin="0 -20 0 0"/>-->
-                <!--<TextBlock TextWrapping="Wrap" Text="The files will be downloaded in {Settings.Instance.OutputDirectory}.\n\nDo you want to start the download ?"/>-->
                 <TextBlock TextWrapping="Wrap" Text="{Binding Message, FallbackValue=no message set}"/>
             </StackPanel>
         </Grid>

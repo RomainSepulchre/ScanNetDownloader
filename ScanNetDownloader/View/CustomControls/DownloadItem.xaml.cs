@@ -1,21 +1,9 @@
-﻿using ScanNetDownloader.Logic;
-using ScanNetDownloader.Logic.Helpers;
-using System;
-using System.Collections.Generic;
+﻿using ScanNetDownloader.Logic.Helpers;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ScanNetDownloader.View.CustomControls
 {
@@ -263,15 +251,13 @@ namespace ScanNetDownloader.View.CustomControls
 
         public void SetShowDetailsBtnVisibility()
         {
-            if(DownloadEventItems.Count > 0) //&& btnShowDetails.Visibility != Visibility.Visible)
+            if(DownloadEventItems.Count > 0)
             {
                 btnShowDetails.IsEnabled = true;
-                //btnShowDetails.Visibility = Visibility.Visible;
             }
-            else //if(btnShowDetails.Visibility != Visibility.Collapsed)
+            else
             {
                 btnShowDetails.IsEnabled = false;
-                //btnShowDetails.Visibility = Visibility.Collapsed;
             }
         }
     }

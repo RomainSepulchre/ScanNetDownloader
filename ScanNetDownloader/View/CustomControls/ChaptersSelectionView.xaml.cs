@@ -1,24 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using ScanNetDownloader.Logic;
+using ScanNetDownloader.Logic.Helpers;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using ScanNetDownloader.Logic;
-using ScanNetDownloader.Logic.Helpers;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ScanNetDownloader.View.CustomControls
 {
@@ -37,7 +25,6 @@ namespace ScanNetDownloader.View.CustomControls
             get { return _chapterItems; }
             set { _chapterItems = value; }
         }
-
 
         private string _selectChapterInfos = "Select chapters for...";
         public string SelectChapterInfos
@@ -105,17 +92,13 @@ namespace ScanNetDownloader.View.CustomControls
 
         // View Events
         public static RoutedEvent BackBtnPressedEvent = EventManager.RegisterRoutedEvent(nameof(BackBtnPressed), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ChaptersSelectionView));
-
         public event RoutedEventHandler BackBtnPressed
         {
             add { AddHandler(BackBtnPressedEvent, value); }
             remove { RemoveHandler(BackBtnPressedEvent, value); }
         }
 
-        public static RoutedEvent ChaptersConfirmedEvent = EventManager.RegisterRoutedEvent(nameof(ChaptersConfirmed), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ChaptersSelectionView));
-
-        
-
+        public static RoutedEvent ChaptersConfirmedEvent = EventManager.RegisterRoutedEvent(nameof(ChaptersConfirmed), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ChaptersSelectionView));     
         public event RoutedEventHandler ChaptersConfirmed
         {
             add { AddHandler(ChaptersConfirmedEvent, value); }
@@ -136,7 +119,7 @@ namespace ScanNetDownloader.View.CustomControls
         }
 
         #region View Initialization
-        public void InitChapterSelection(ScanData tempScanData) // TODO: How to manage adding more chapters for Url with chapter number -> add url with chapter first remove chapter from list and then generate url for all the other added chapter
+        public void InitChapterSelection(ScanData tempScanData)
         {
             SetUrlInfo(tempScanData);
 
@@ -154,7 +137,8 @@ namespace ScanNetDownloader.View.CustomControls
         {
             SelectChapterInfos = $"Select chapters for {tempScanData.BookName}";
 
-            // TODO: Do I need to tell the user a chapter has already been added ?
+            //
+            // : Do I need to tell the user a chapter has already been added ?
             //if (tempScanData.UrlContainsChapter())
             //{
             //    SelectChapterInfos = $"Chapter {tempScanData.ChapterId} is already specified in {tempScanData.Url} but you can add additionnal chapter";

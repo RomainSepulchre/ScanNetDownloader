@@ -20,16 +20,15 @@
                 <ColumnDefinition Width="1*"/>
                 <ColumnDefinition Width="30"/>
             </Grid.ColumnDefinitions>
+            
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0 2 0 0">
                 <TextBlock Name="headerUrlView" Text="Add a new scan" FontWeight="SemiBold" Foreground="{StaticResource Colors.Black}" FontSize="16"/>
                 <TextBlock Name="headerFirstSeparator" Text=">" Margin="10 0 10 0" FontWeight="SemiBold" Foreground="{StaticResource Colors.Black}" FontSize="16"/>
                 <TextBlock Name="headerChapterView" Text="Select chapters" FontWeight="Light" Foreground="{StaticResource Colors.DarkGrey}" FontSize="16"/>
                 <TextBlock Name="headerSecondSeparator" Text=">" Margin="10 0 10 0" FontWeight="Light" Foreground="{StaticResource Colors.DarkGrey}" FontSize="16"/>
                 <TextBlock Name="headerScanDataCreationView" Text="Retrieve scan data" FontWeight="Light" Foreground="{StaticResource Colors.DarkGrey}" FontSize="16"/>
-                <!--<Button Name="btnUrlView" Click="btnUrlView_Click" Content="Url" FontWeight="Black" IsEnabled="False"  Width="70"  Margin="10 0 0 0"/>
-                <Button Name="btnChapterView" Click="btnChapterView_Click"  Content="Chapter selection" FontWeight="Normal" IsEnabled="False" Width="150" Margin="10 0 0 0"/>
-                <Button Name="btnScanDataCreationView"  Content="Scan Data creation" FontWeight="Normal" IsEnabled="False" Width="150" Margin="10 0 0 0"/>-->
             </StackPanel>
+            
             <Button Grid.Column="1" Name="btnClose" Click="btnClose_Click" Width="30" Height="30" Style="{StaticResource closeButton}">
                 <Button.Content>
                     <Image Source="{StaticResource Img.crossWhite}"/>

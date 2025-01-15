@@ -58,7 +58,6 @@
                 </Button.Content>
             </Button>
 
-
             <ProgressBar Grid.Column="1" Name="progrBarDownload" Minimum="0" Maximum="100" Value="{Binding DownloadProgress}" Margin="10 0 0 0" Style="{DynamicResource DefaultProgressBarStyle}"/>
             <Label Grid.Column="1" Content="{Binding DownloadLabelTxt}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
  

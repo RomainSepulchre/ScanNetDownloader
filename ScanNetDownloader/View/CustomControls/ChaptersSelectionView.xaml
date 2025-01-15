@@ -7,6 +7,7 @@
              xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    
     <UserControl.Resources>
         <CollectionViewSource x:Key="ChapterItemsSource" Source="{Binding ChapterItems}">
             <CollectionViewSource.SortDescriptions>
@@ -14,13 +15,16 @@
             </CollectionViewSource.SortDescriptions>
         </CollectionViewSource>
     </UserControl.Resources>
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
+        
         <StackPanel Margin="20 13 20 0">
+            
             <TextBlock Text="{Binding SelectChapterInfos, FallbackValue=Select chapters for...}" FontSize="24" FontWeight="Bold" TextWrapping="NoWrap" Margin="0 0 0 5"/>
             
             <TextBlock Text="Add a single chapter" FontWeight="Bold" Margin="0 0 0 1"/>
@@ -41,7 +45,6 @@
             
         </StackPanel>
 
-
         <Border Grid.Row="1" Margin="20 10 20 20" Background="{StaticResource Colors.LightGrey}" BorderThickness="0">
             <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <ItemsControl Name="chapterSelectedPanel" ItemsSource="{Binding Source={StaticResource ChapterItemsSource}}" VerticalAlignment="Center">
@@ -55,18 +58,6 @@
             </ScrollViewer>
         </Border>
 
-        <!--<StackPanel Grid.Row="2">
-            <Label Content="Chapters selected" FontWeight="Bold"/>
-            <ItemsControl Name="chapterSelectedPanel" ItemsSource="{Binding Source={StaticResource ChapterItemsSource}}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel Orientation="Horizontal" IsItemsHost="True" HorizontalAlignment="Center" VerticalAlignment="Center">
-                        </WrapPanel>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ItemsControl>
-        </StackPanel>-->
-
         <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="0.25*"/> 
@@ -78,5 +69,6 @@
             <Rectangle Grid.Column="1" Fill="{StaticResource Colors.White}"/>
             <Button Grid.Column="2" Name="btnConfirmChapters" Content="Next" Click="btnConfirmChapters_Click" FontSize="22" IsEnabled="False"/>
         </Grid>
+        
     </Grid>
 </UserControl>

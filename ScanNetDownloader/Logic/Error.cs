@@ -1,10 +1,8 @@
 ﻿using ScanNetDownloader.Logic.Helpers;
 using System.Diagnostics;
-using System.Windows;
 
 namespace ScanNetDownloader.Logic
 {
-    // TODO : Build WPF error system
     public class Error
     {
         public enum ErrorType
@@ -171,8 +169,6 @@ namespace ScanNetDownloader.Logic
             string mBoxMessage = $"The settings.json file ({jsonPath}) is missing, a new json file will be created with the default settings.";
             string mBoxCaption = "Error - missing json file";
             Debug.WriteLine($"\n{mBoxMessage}\n");
-
-            // TODO: Proper management of error pop-up
 
             MsgWindow.ShowOkWindow(mBoxCaption, mBoxMessage, false, MsgWindow.ImageType.Warning);
 

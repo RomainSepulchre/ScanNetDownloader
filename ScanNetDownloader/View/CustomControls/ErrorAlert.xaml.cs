@@ -1,19 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ScanNetDownloader.View.CustomControls
 {
@@ -28,12 +14,9 @@ namespace ScanNetDownloader.View.CustomControls
             get { return (string)GetValue(ErrorMsgProperty); }
             set { SetValue(ErrorMsgProperty, value); }
         }
-
-        // Using a DependencyProperty as the backing store for ErrorMsg.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ErrorMsgProperty = DependencyProperty.Register(nameof(ErrorMsg), typeof(string), typeof(ErrorAlert), new PropertyMetadata("Error message"));
 
 
-        // TODO: Add Text property to change text inside error alert control
         public ErrorAlert()
         {
             InitializeComponent();

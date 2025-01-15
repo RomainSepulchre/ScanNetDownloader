@@ -1,15 +1,10 @@
 ﻿using Microsoft.Win32;
-using ScanNetDownloader.View.CustomControls;
 using ScanNetDownloader.Logic.Helpers;
-using System;
-using System.Collections.Generic;
+using ScanNetDownloader.View;
+using ScanNetDownloader.View.CustomControls;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using ScanNetDownloader.View;
 
 namespace ScanNetDownloader.Logic
 {

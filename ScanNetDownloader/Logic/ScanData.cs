@@ -1,8 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System.Diagnostics;
-using System.Net;
 using System.Net.Http;
-using System.Windows.Navigation;
 
 namespace ScanNetDownloader.Logic
 {
@@ -79,7 +77,7 @@ namespace ScanNetDownloader.Logic
 
         protected abstract string GetChapterNumberFromUrl(string url, bool keepNumberOnly = true);
 
-        public abstract string GetFileExtensionFromImgUrl(string url); //TODO: Can probably be improved once img url will be saved in ScanData     
+        public abstract string GetFileExtensionFromImgUrl(string url);    
 
         protected abstract Task<List<string>> ParseHtmlToGetImgLinks(string htmlContent);
         #endregion
@@ -166,7 +164,6 @@ namespace ScanNetDownloader.Logic
                         }
                         else
                         {
-                            // TODO: Manage Status Code -> return in result ?
                             result.Success = false;
                         }     
                     }
@@ -174,22 +171,21 @@ namespace ScanNetDownloader.Logic
             }
             catch (HttpRequestException ex)
             {
-                // TODO: Manage Status Code -> return in result ?
-                Debug.WriteLine($"|---> Invalid url: {url}\n{ex}");
+                Debug.WriteLine($"{ex} |---> Invalid url: {url}");
                 result.Success = false;
                 result.StatusCode = ex.StatusCode;
                 result.Exception = ex;
             }
             catch (InvalidOperationException ex)
             {
-                Debug.WriteLine($"|---> Invalid url: {url}\n{ex}");
+                Debug.WriteLine($"{ex} |---> Invalid url: {url}");
                 result.Success = false;
                 result.StatusCode = null;
                 result.Exception = ex;
             }
             catch (NotSupportedException ex)
             {
-                Debug.WriteLine($"|---> Invalid url: {url}\n{ex}");
+                Debug.WriteLine($"{ex} |---> Invalid url: {url}");
                 result.Success = false;
                 result.StatusCode = null;
                 result.Exception = ex;

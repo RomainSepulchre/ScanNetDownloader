@@ -1,9 +1,6 @@
 ﻿using System.ComponentModel;
-using System.Reflection.PortableExecutable;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 
 namespace ScanNetDownloader.View
@@ -106,7 +103,6 @@ namespace ScanNetDownloader.View
             }
 
             txtBoxInput.PlaceholderText = inputPlaceholder;
-            //lbPopUpInfo.Content = info;
         }
 
         private void btnOk_Click(object sender, RoutedEventArgs e)

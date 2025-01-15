@@ -2,7 +2,6 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
-using System.Windows.Documents;
 
 namespace ScanNetDownloader.Logic.Helpers
 {

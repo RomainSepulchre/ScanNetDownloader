@@ -72,7 +72,6 @@ namespace ScanNetDownloader.Logic
             {
                 Error.ChapterDoesntExist(this, Url);
                 Debug.WriteLine($"ERROR WHILE DOWNLOADING HTML CONTENT -> CHAPTER DOESNT EXIST");
-                // TODO : Return more based on HtmlContentResult info
                 result.Success = false;
                 result.Exception = new Exception($"The chapter {ChapterId} doesn't exist, {Url} does not load and we are unable to get its html content");
                 return result;
@@ -96,7 +95,9 @@ namespace ScanNetDownloader.Logic
         public override bool UrlContainsChapter()
         {
             string[] urlSplits = Url.Split(Constants.SLASH_CHAR); // Check if the url has a chapter number (the number of split let us know if url stop at book name or not)
-            bool chapterIsInUrl = urlSplits.Length > 4; // TODO: Should I also check && !string.IsNullOrEmpty(urlSplits[4]); to make sure Chapter split is not an empty split
+            bool chapterIsInUrl = urlSplits.Length > 4; //
+                                                        //
+                                                        // : Should I also check && !string.IsNullOrEmpty(urlSplits[4]); to make sure Chapter split is not an empty split
             return chapterIsInUrl;
         }
 
@@ -216,7 +217,7 @@ namespace ScanNetDownloader.Logic
                 }
             }
 
-            imgUrls.Log(); // Debug log of list items
+            imgUrls.Log();
             Debug.WriteLine("\n");
 
             return imgUrls;

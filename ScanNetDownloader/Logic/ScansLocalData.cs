@@ -3,7 +3,6 @@ using ScanNetDownloader.Logic.Helpers;
 using ScanNetDownloader.View;
 using System.Diagnostics;
 using System.IO;
-using System.Windows;
 
 namespace ScanNetDownloader.Logic
 {
@@ -48,7 +47,6 @@ namespace ScanNetDownloader.Logic
                 {
                     Error.FailedToLoadScansLocalData(jsonPath, ex);
 
-                    // TODO: Redo error management to fit with WPF version
                     string mBoxMessage = $"Error while loading scan local data, do you want to clear the data ?\nAll the previous data of the scan manager view will be lost but you will keep everything you already downloaded.";
                     string mBoxCaption = "Clear local scan data ?";
                     Debug.WriteLine($"{mBoxMessage}\n {ex}");
@@ -60,7 +58,8 @@ namespace ScanNetDownloader.Logic
                         loadedData = ClearLocalData();
                         return loadedData;
                     }
-                    else // TODO: What to do in this case with WPF app ?
+                    else //
+                         // : What to do in this case with WPF app ? Is there a better solution ?
                     {
                         mBoxMessage = "Please make sure nothing is wrong with the data in ScansLocalData.json, if the problem persist backup your data and reset the json to it's default values.";
                         mBoxCaption = "Scan data loading error";
@@ -73,10 +72,8 @@ namespace ScanNetDownloader.Logic
                     }
                 }
             }
-            else // Missing Settings.json
+            else // No scan data yet, create the scan data
             {
-                // TODO: Error Management missing scan data json file
-                //Error.MissingSettingsJson(jsonPath);
                 loadedData = ClearLocalData();
                 return loadedData;
             }
@@ -93,7 +90,6 @@ namespace ScanNetDownloader.Logic
                 }
             }
 
-            // TODO: Delete Update and do the same change done with Settings on Save()
             JsonSerializerSettings serializerSettings = new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.All,

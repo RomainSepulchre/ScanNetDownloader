@@ -5,7 +5,6 @@ using ScanNetDownloader.Logic.Helpers;
 
 namespace ScanNetDownloader.Logic
 {
-    // TODO: How to manage scan in english for chapter and image url generation
     public class AnimeSamaFrScanData: ScanData
     {
         public string DownloadUrlBookName { get; private set; }
@@ -217,7 +216,8 @@ namespace ScanNetDownloader.Logic
             // https://anime-sama.fr/s2/scans/Fairy%20Tail/1/1.jpg
             // https://anime-sama.fr/s2/scans/The%20Terminally%20Ill%20Young%20Master%20of%20the%20Baek%20Clan/1/1.jpg
 
-            // TODO: Manage Scan in english-> VF (normal url)/VA (add: " Anglais" after image name) <- check if reliable
+            //
+            // : Manage Scan in english-> VF (normal url)/VA (add: " Anglais" after image name) <- check if reliable
             string chapterUrl = GetChapterUrl(htmlContent);
 
             List<string> imgUrls = new List<string>();

@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO.Compression;
+﻿using ScanNetDownloader.View.CustomControls;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ScanNetDownloader.View.CustomControls;
+using System.IO.Compression;
 
 namespace ScanNetDownloader.Logic
 {

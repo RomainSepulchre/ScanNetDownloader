@@ -5,7 +5,6 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using static ScanNetDownloader.View.CustomControls.ScanItem;
 
 namespace ScanNetDownloader.View.CustomControls
 {
@@ -71,7 +70,6 @@ namespace ScanNetDownloader.View.CustomControls
                 OnPropertyChanged();
             }
         }
-
 
         private bool _cbzArchiveCreated;
         public bool CbzArchiveCreated
@@ -140,10 +138,6 @@ namespace ScanNetDownloader.View.CustomControls
             CbzArchiveCreated = cbzAlreadyCreated;
             DownloadStatus = dlStatus;
             IsSelectedForDownload = _scanData.IsSelectedForDownload;           
-
-            //lbBookName.Content = BookName;
-            //lbChapterNumber.Content = $"{ChapterId} - {linkedScanData.PagesCount} pages";
-            //lbWebsite.Content = Website;
         }
 
         private void OnPropertyChanged([CallerMemberName] string property = null)
@@ -207,7 +201,6 @@ namespace ScanNetDownloader.View.CustomControls
                 case DownloadedStatus.OnlyCbz:
                 case DownloadedStatus.OnlyImages:
                     return true;
-
             }
         }
     }

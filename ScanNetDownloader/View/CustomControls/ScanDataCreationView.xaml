@@ -31,9 +31,6 @@
             <StackPanel Background="{StaticResource Colors.LightGrey}" Name="listVwCreationStatus">
             </StackPanel>
         </ScrollViewer>
-        
-        <!--<ListView Style="{StaticResource RetrieveScanDataListViewStyle}" ItemContainerStyle="{StaticResource RetrieveScanDataListViewItemStyle}" Grid.Row="1" Margin="20 0 20 20" Name="listVwCreationStatus" HorizontalContentAlignment="Stretch" Background="{StaticResource Colors.LightGrey}" BorderThickness="0">
-        </ListView>-->
 
         <Button Grid.Row="3" Name="btnFinish" Content="Finish" Click="btnFinish_Click" FontSize="22" IsEnabled="False"/>
     </Grid>

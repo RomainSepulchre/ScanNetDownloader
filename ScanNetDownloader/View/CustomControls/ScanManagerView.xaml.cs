@@ -97,7 +97,7 @@ namespace ScanNetDownloader.View.CustomControls
             addWindow.ShowDialog();
             parentWindow.Opacity = 1;
 
-            if (addWindow.Success) // TODO: Clean this
+            if (addWindow.Success)
             {
                 string urlInput = addWindow.UrlInput;
                 List<ScanData> newScansToAdd = addWindow.NewScanDatas;
@@ -120,6 +120,8 @@ namespace ScanNetDownloader.View.CustomControls
             ScanItem item = e.Source as ScanItem;
             if (item != null)
             {
+                //TODO: Add an option to let the user decide this ?
+
                 // Ask user before deleting scan item
                 //string header = "Delete scan data";
                 //string msg = $"Are you sure you want to delete {item.BookName} - Chapter {item.ChapterId} from the list?\n\nLocal files such as downloaded images and .CBZ archive won't be deleted.";
@@ -143,7 +145,6 @@ namespace ScanNetDownloader.View.CustomControls
 
                 if (cbzCreated == false)
                 {
-                    // TODO: Propose to build cbz
                     string mBoxMessage = $"Do you want to create a .cbz for {item.BookName} - Chapter {item.ChapterId} ?";
                     string mBoxCaption = "CBZ archive creation";
 
@@ -190,7 +191,7 @@ namespace ScanNetDownloader.View.CustomControls
         }
         #endregion
 
-        private void AddScanItems(List<ScanData> newScansToAdd) // TODO: Replace the refresh by a add function to prevent recreating the whole view everytime
+        private void AddScanItems(List<ScanData> newScansToAdd)
         {
             // TODO: Check for duplicated ScanData (Same BookName, chapter and url)
 
@@ -203,7 +204,7 @@ namespace ScanNetDownloader.View.CustomControls
             // Add item in list view
             foreach (ScanData scanData in newScansToAdd)
             {
-                // TODO: Add a check to prevent a double entry of the same chapter on the same website, maybe check before caliing AddScanItems ?
+                // TODO: Add a check to prevent a double entry of the same chapter on the same website, maybe check before calling AddScanItems ?
                 bool cbzAlreadyCreated = FileManagement.IsCbzArchiveCreated(scanData);
                 bool filesAlreadyDownloaded = FileManagement.AreScanFilesDownloaded(scanData, cbzAlreadyCreated);
                 ScanItem.DownloadedStatus downloadStatus = FileManagement.GetDownloadStatus(scanData, cbzAlreadyCreated);
@@ -233,8 +234,7 @@ namespace ScanNetDownloader.View.CustomControls
             if (itemToDelete.IsSelectedForDownload) SelectedCount--;
 
             // Remove item from list view
-            ScanListItems.Remove(itemToDelete);
-            
+            ScanListItems.Remove(itemToDelete);   
 
             if (ScanListItems.Count == 0 && stPanelNoScans.Visibility != Visibility.Visible)
             {
@@ -252,7 +252,7 @@ namespace ScanNetDownloader.View.CustomControls
 
         private void RefreshScanListView()
         {
-            // TODO: Why is it so long with a lot of items ? Way to optiomize this ?
+            // TODO: Why is it so long with a lot of items ? Way to optimize this ?
             Debug.WriteLine("REFRESH SCAN LIST");
             ScanListItems.Clear();
 

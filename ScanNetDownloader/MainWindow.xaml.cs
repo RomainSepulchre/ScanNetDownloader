@@ -8,7 +8,6 @@ using System.Net;
 using System.Net.Http;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media.Imaging;
 
 namespace ScanNetDownloader
 {
@@ -17,8 +16,7 @@ namespace ScanNetDownloader
     /// </summary>
     ///
 
-    // TODO: Delete unselected button
-    // TODO: Improve chapter selection visual to give a better understanding of what happening
+    // TODO: New scan manager button to multi-delete + multi-select/unselect (with shift/ctrl multi selection)
     // TODO: Warn for invalid url as soon as possible (new function chck url validity in ScanData-> url must contains at least a book name)
     // TODO: Manage weird image format from anime-same by cropping image automatically
     // TODO: Scrap a list of all the books available and create a search engine
@@ -46,11 +44,6 @@ namespace ScanNetDownloader
 #if !DEBUG
             tabDebug.Visibility = Visibility.Collapsed;       
 #endif
-            // Hide status bar that is not used yet
-            gridStatusBar.Visibility = Visibility.Collapsed;
-            gridMainContent.RowDefinitions[1].Height = new GridLength(0);
-            gridMainContent.RowDefinitions[2].Height = new GridLength(0);
-
         }
 
         #region Ui Routed Events    
@@ -90,11 +83,6 @@ namespace ScanNetDownloader
             }
         }
         
-        private void btnOpenStatusBar_Click(object sender, RoutedEventArgs e)
-        {
-            // TODO: Open a scrollable list view that allow to see all status
-        }
-
         private void scanManagerVw_StartDownload(object sender, RoutedEventArgs e)
         {
             tabCtrlNavigation.SelectedItem = tabDownload; // Switch to download tab
@@ -204,7 +192,7 @@ namespace ScanNetDownloader
             }
             catch (IOException ex)
             {
-                //TODO : Manage IO Eception
+                Debug.WriteLine(ex);
             }
         }
 

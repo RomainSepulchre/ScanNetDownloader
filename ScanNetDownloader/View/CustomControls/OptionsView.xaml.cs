@@ -1,25 +1,12 @@
 ﻿using Microsoft.Win32;
 using ScanNetDownloader.Logic;
 using ScanNetDownloader.Logic.Helpers;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Channels;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ScanNetDownloader.View.CustomControls
 {
@@ -28,7 +15,8 @@ namespace ScanNetDownloader.View.CustomControls
     /// </summary>
     /// 
 
-    // TODO: prevent to change options while downloading
+    //
+    // : prevent to change options while downloading
     public partial class OptionsView : UserControl, INotifyPropertyChanged
     {
         public bool OptionsChangesNotSaved { get; private set; } = false;
@@ -94,7 +82,6 @@ namespace ScanNetDownloader.View.CustomControls
         }
 
         private string _chooseOutputDirectoryErrorMsg;
-
         public string ChooseOutputDirectoryErrorMsg
         {
             get { return _chooseOutputDirectoryErrorMsg; }
@@ -106,7 +93,6 @@ namespace ScanNetDownloader.View.CustomControls
         }
 
         private string _openOutputDirectoryErrorMsg;
-
         public string OpenOutputDirectoryErrorMsg
         {
             get { return _openOutputDirectoryErrorMsg; }
@@ -116,11 +102,9 @@ namespace ScanNetDownloader.View.CustomControls
             }
         }
 
-
         public event PropertyChangedEventHandler? PropertyChanged;
 
         public static RoutedEvent ClearLocalDataEvent = EventManager.RegisterRoutedEvent(nameof(ClearLocalData), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(OptionsView));
-
         public event RoutedEventHandler ClearLocalData
         {
             add { AddHandler(ClearLocalDataEvent, value); }
