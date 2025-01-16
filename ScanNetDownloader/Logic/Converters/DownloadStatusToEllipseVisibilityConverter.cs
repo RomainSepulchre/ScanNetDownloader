@@ -21,7 +21,7 @@ namespace ScanNetDownloader.Logic.Converters
                     downloaded = false;
                     missingImage = false;
                     return Visibility.Collapsed;
-                case ScanItem.DownloadedStatus.Downloaded:
+                case ScanItem.DownloadedStatus.FullyDownloaded:
                     downloaded = true;
                     missingImage = false;
                     return Visibility.Collapsed;
@@ -32,10 +32,10 @@ namespace ScanNetDownloader.Logic.Converters
                 default:
                     return Visibility.Collapsed;
                 
-                case ScanItem.DownloadedStatus.OnlyImages:
+                case ScanItem.DownloadedStatus.OnlyImagesDownloaded:
                     onlyCbz = false;
                     return Visibility.Visible;
-                case ScanItem.DownloadedStatus.OnlyCbz:
+                case ScanItem.DownloadedStatus.OnlyCbzDownloaded:
                     onlyCbz = true;
                     return Visibility.Visible;
             }
@@ -47,12 +47,12 @@ namespace ScanNetDownloader.Logic.Converters
 
             if (visibility == Visibility.Visible)
             {
-                if (onlyCbz == false) return ScanItem.DownloadedStatus.OnlyImages;
-                else return ScanItem.DownloadedStatus.OnlyCbz;
+                if (onlyCbz == false) return ScanItem.DownloadedStatus.OnlyImagesDownloaded;
+                else return ScanItem.DownloadedStatus.OnlyCbzDownloaded;
             }
             else if (visibility == Visibility.Collapsed)
             {
-                if(downloaded) return ScanItem.DownloadedStatus.Downloaded;
+                if(downloaded) return ScanItem.DownloadedStatus.FullyDownloaded;
                 else if(missingImage) return ScanItem.DownloadedStatus.MissingImages;
                 else return ScanItem.DownloadedStatus.NotDownloaded;
             }

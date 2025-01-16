@@ -192,10 +192,8 @@ namespace ScanNetDownloader.View.CustomControls
             downloadedScan.IsSelectedForDownload = false; // Disable download selection since we just downloaded
 
             bool cbzCreated = FileManagement.IsCbzArchiveCreated(downloadedScan.linkedScanData);
-            bool fileSuccessfullyDownloaded = FileManagement.AreScanFilesDownloaded(downloadedScan.linkedScanData, cbzCreated);
             ScanItem.DownloadedStatus downloadStatus = FileManagement.GetDownloadStatus(downloadedScan.linkedScanData, cbzCreated);
 
-            downloadedScan.IsDownloaded = fileSuccessfullyDownloaded;
             downloadedScan.DownloadStatus = downloadStatus;
             downloadedScan.CbzArchiveCreated = cbzCreated;
 
@@ -243,27 +241,27 @@ namespace ScanNetDownloader.View.CustomControls
 
         public void OnCbzCreationStart(object sender, ScanItem cbzScan)
         {
-            DownloadItem dlItem = DownloadItems.First(x => x.linkedScanItem == cbzScan);
-            dlItem.CbzCreationStarted();
+            DownloadItem dlItem = DownloadItems.FirstOrDefault(x => x.linkedScanItem == cbzScan, null);
+            if (dlItem != null) dlItem.CbzCreationStarted(); // only trigger event if there is download item otherwise no need to update
         }
 
         public void OnCbzCreated(object sender, ScanItem cbzScan)
         {
-            DownloadItem dlItem = DownloadItems.First(x => x.linkedScanItem == cbzScan);
-            dlItem.CbzCreated();
+            DownloadItem dlItem = DownloadItems.FirstOrDefault(x => x.linkedScanItem == cbzScan, null);
+            if (dlItem != null) dlItem.CbzCreated(); // only trigger event if there is download item otherwise no need to update
         }
 
         public void OnCbzAlreadyCreated(object sender, ScanItem cbzScan)
         {
-            DownloadItem dlItem = DownloadItems.First(x => x.linkedScanItem == cbzScan);
-            dlItem.CbzAlreadyCreated();
+            DownloadItem dlItem = DownloadItems.FirstOrDefault(x => x.linkedScanItem == cbzScan, null);
+            if (dlItem != null) dlItem.CbzAlreadyCreated(); // only trigger event if there is download item otherwise no need to update
         }
 
         public void OnCbzCreationError(object sender, CbzErrorEventArgs args)
         {
             ScanItem cbzScan = args.ScanItem;
-            DownloadItem dlItem = DownloadItems.First(x => x.linkedScanItem == cbzScan);
-            dlItem.CbzCreationFailed(args.ErrorMessage, args.Exception);
+            DownloadItem dlItem = DownloadItems.FirstOrDefault(x => x.linkedScanItem == cbzScan, null);
+            if (dlItem != null) dlItem.CbzCreationFailed(args.ErrorMessage, args.Exception); // only trigger event if there is download item otherwise no need to update
         }
 
 

@@ -13,6 +13,8 @@
     <Color x:Key="BaseColor.DarkBlue" R="40" G="32" B="64" A="255"/>
     <Color x:Key="BaseColor.Red" R="252" G="62" B="62" A="255"/>
     <Color x:Key="BaseColor.Orange" R="241" G="178" B="85" A="255"/>
+    <Color x:Key="BaseColor.Orange.MouseOver" R="230" G="160" B="57" A="255"/>
+    <Color x:Key="BaseColor.Orange.Pressed" R="255" G="198" B="115" A="255"/>
     <Color x:Key="BaseColor.Green" R="16" G="188" B="119" A="255"/>
     <Color x:Key="BaseColor.Blue.Pressed" R="83" G="184" B="252" A="255"/>
     <Color x:Key="BaseColor.DarkBlue.Pressed" R="72" G="57" B="115" A="255"/>
@@ -31,6 +33,8 @@
     <SolidColorBrush x:Key="Colors.DarkBlue" Color="{StaticResource BaseColor.DarkBlue}"/>
     <SolidColorBrush x:Key="Colors.Red" Color="{StaticResource BaseColor.Red}"/>
     <SolidColorBrush x:Key="Colors.Orange" Color="{StaticResource BaseColor.Orange}"/>
+    <SolidColorBrush x:Key="Colors.Orange.Pressed" Color="{StaticResource BaseColor.Orange.Pressed}"/>
+    <SolidColorBrush x:Key="Colors.Orange.MouseOver" Color="{StaticResource BaseColor.Orange.MouseOver}"/>
     <SolidColorBrush x:Key="Colors.Green" Color="{StaticResource BaseColor.Green}"/>
 
     
@@ -214,6 +218,58 @@
                             <Setter Property="Background" Value="{StaticResource Button.Pressed.Background}"/>
                             <Setter Property="BorderBrush" Value="{StaticResource Button.Pressed.Border}"/>
                             <Setter Property="Foreground" Value="{StaticResource Button.Pressed.Foreground}"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter Property="Background" Value="{StaticResource Button.Disabled.Background}"/>
+                            <Setter Property="BorderBrush" Value="{StaticResource Button.Disabled.Border}"/>
+                            <Setter Property="Foreground" Value="{StaticResource Button.Disabled.Foreground}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Button with warning - Change the foreground colors of all the elements inside the button with an opacity mask -->
+    <Style x:Key="buttonWithWarning" TargetType="{x:Type Button}">
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
+        <Setter Property="Background" Value="{StaticResource Colors.Orange}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource Button.Static.Border}"/>
+        <!--<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>-->
+        <Setter Property="Foreground" Value="{StaticResource Colors.White}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Padding" Value="1"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ButtonBase}">
+                    <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="true">
+                        <Grid>
+                            <ContentPresenter x:Name="contentPresenter" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                            <Border Background="{TemplateBinding Background}">
+                                <Rectangle Fill="{TemplateBinding Foreground}" Width="{Binding ElementName=contentPresenter, Path=ActualWidth}" Height="{Binding ElementName=contentPresenter, Path=ActualHeight}">
+                                    <Rectangle.OpacityMask>
+                                        <VisualBrush Stretch="None" Visual="{Binding ElementName=contentPresenter}"/>
+                                    </Rectangle.OpacityMask>
+                                </Rectangle>
+                            </Border>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Button.IsDefaulted" Value="true">
+                            <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="true">
+                            <Setter Property="Background" Value="{StaticResource Colors.Orange.MouseOver}"/>
+                            <Setter Property="BorderBrush" Value="{StaticResource Button.MouseOver.Border}"/>
+                            <Setter Property="Foreground" Value="{StaticResource Colors.LightGrey}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="true">
+                            <Setter Property="Background" Value="{StaticResource Colors.Orange.Pressed}"/>
+                            <Setter Property="BorderBrush" Value="{StaticResource Button.Pressed.Border}"/>
+                            <Setter Property="Foreground" Value="{StaticResource Colors.DarkGrey}"/>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter Property="Background" Value="{StaticResource Button.Disabled.Background}"/>

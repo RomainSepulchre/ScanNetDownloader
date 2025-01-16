@@ -143,10 +143,18 @@ namespace ScanNetDownloader.View.CustomControls
                 item.CbzArchiveCreated = cbzCreated;
                 Debug.WriteLine($"CBZ CREATION BUTTON: Item={item.BookName}-{item.ChapterId}");
 
-                if (cbzCreated == false)
+                if (cbzCreated == false || item.DownloadStatus == ScanItem.DownloadedStatus.MissingImages)
                 {
-                    string mBoxMessage = $"Do you want to create a .cbz for {item.BookName} - Chapter {item.ChapterId} ?";
                     string mBoxCaption = "CBZ archive creation";
+                    string mBoxMessage;
+                    if(item.DownloadStatus == ScanItem.DownloadedStatus.MissingImages)
+                    {
+                        mBoxMessage = $"Do you want to rebuild the .cbz for {item.BookName} - Chapter {item.ChapterId} ?";
+                    }
+                    else
+                    {
+                        mBoxMessage = $"Do you want to create a .cbz for {item.BookName} - Chapter {item.ChapterId} ?";
+                    }                
 
                     YesNoWindow yesNoWindow = MsgWindow.ShowYesNoWindow(mBoxCaption, mBoxMessage, true, MsgWindow.ImageType.Question);
                     if (yesNoWindow.Success)
@@ -155,7 +163,10 @@ namespace ScanNetDownloader.View.CustomControls
                         CbzCreator.BuildCbzArchive(item, chapterPath);
 
                         bool cbzSuccessfullyCreated = FileManagement.IsCbzArchiveCreated(item.linkedScanData);
+                        ScanItem.DownloadedStatus downloadStatus = FileManagement.GetDownloadStatus(item.linkedScanData, cbzSuccessfullyCreated);
+
                         item.CbzArchiveCreated = cbzSuccessfullyCreated;
+                        item.DownloadStatus = downloadStatus;
                     }
                 }
             }
@@ -166,10 +177,7 @@ namespace ScanNetDownloader.View.CustomControls
             ScanItem item = e.Source as ScanItem;
             if (item != null)
             {
-                bool fileDownloaded = FileManagement.AreScanFilesDownloaded(item.linkedScanData, item.CbzArchiveCreated);
                 ScanItem.DownloadedStatus downloadStatus = FileManagement.GetDownloadStatus(item.linkedScanData, item.CbzArchiveCreated);
-
-                item.IsDownloaded = fileDownloaded;
                 item.DownloadStatus = downloadStatus;
             }
         }
@@ -206,10 +214,9 @@ namespace ScanNetDownloader.View.CustomControls
             {
                 // TODO: Add a check to prevent a double entry of the same chapter on the same website, maybe check before calling AddScanItems ?
                 bool cbzAlreadyCreated = FileManagement.IsCbzArchiveCreated(scanData);
-                bool filesAlreadyDownloaded = FileManagement.AreScanFilesDownloaded(scanData, cbzAlreadyCreated);
                 ScanItem.DownloadedStatus downloadStatus = FileManagement.GetDownloadStatus(scanData, cbzAlreadyCreated);
 
-                ScanItem item = new ScanItem(scanData, filesAlreadyDownloaded, cbzAlreadyCreated, downloadStatus);
+                ScanItem item = new ScanItem(scanData, cbzAlreadyCreated, downloadStatus);
                 item.DeleteScanBtnPressed += ScanItem_DeleteBtnPressed;
                 item.CreateCbzBtnPressed += ScanItem_CreateCbzBtnPressed;
                 ScanListItems.Add(item);
@@ -262,10 +269,9 @@ namespace ScanNetDownloader.View.CustomControls
                 if (scanData.IsSelectedForDownload) SelectedCount++;
 
                 bool cbzAlreadyCreated = FileManagement.IsCbzArchiveCreated(scanData);
-                bool filesAlreadyDownloaded = FileManagement.AreScanFilesDownloaded(scanData, cbzAlreadyCreated);
                 ScanItem.DownloadedStatus downloadStatus = FileManagement.GetDownloadStatus(scanData, cbzAlreadyCreated);
 
-                ScanItem item = new ScanItem(scanData, filesAlreadyDownloaded, cbzAlreadyCreated, downloadStatus);
+                ScanItem item = new ScanItem(scanData, cbzAlreadyCreated, downloadStatus);
                 item.DeleteScanBtnPressed += ScanItem_DeleteBtnPressed;
                 item.CreateCbzBtnPressed += ScanItem_CreateCbzBtnPressed;
                 item.StatusBtnPressed += ScanItem_StatusBtnPressed;

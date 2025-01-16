@@ -65,5 +65,10 @@
             public const string Start_Hover = "ImgBrush.StartHover";
         }
 
+        public static class Style
+        {
+            public const string ComplexButton = "complexButton";
+            public const string ButtonWithWarning = "buttonWithWarning";
+        }
     }
 }

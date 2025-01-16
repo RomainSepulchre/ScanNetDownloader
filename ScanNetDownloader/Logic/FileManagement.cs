@@ -134,32 +134,6 @@ namespace ScanNetDownloader.Logic
             }
         }
 
-        [Obsolete("Remove after cleaning - use Download statuts instead of this")]
-        public static bool AreScanFilesDownloaded(ScanData scanData, bool cbzCreated)
-        {
-            if (cbzCreated) return true;
-
-            string chapterDirPath = GetChapterDirectoryPath(scanData);
-            if (Directory.Exists(chapterDirPath))
-            {
-                int expectedImgsCount = scanData.PagesCount;
-                int filesInChapterDirCount = Directory.GetFiles(chapterDirPath).Length;
-
-                if (filesInChapterDirCount > 0 && expectedImgsCount == filesInChapterDirCount)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                return false;
-            }
-        }
-
         public static ScanItem.DownloadedStatus GetDownloadStatus(ScanData scanData, bool cbzCreated)
         {
             string chapterDirPath = GetChapterDirectoryPath(scanData);
@@ -170,8 +144,8 @@ namespace ScanNetDownloader.Logic
 
                 if (filesInChapterDirCount > 0 && expectedImgsCount == filesInChapterDirCount)
                 {
-                    if (cbzCreated) return ScanItem.DownloadedStatus.Downloaded;
-                    else return ScanItem.DownloadedStatus.OnlyImages;
+                    if (cbzCreated) return ScanItem.DownloadedStatus.FullyDownloaded;
+                    else return ScanItem.DownloadedStatus.OnlyImagesDownloaded;
                 }
                 else if (filesInChapterDirCount > 0 && filesInChapterDirCount < expectedImgsCount)
                 {
@@ -179,13 +153,13 @@ namespace ScanNetDownloader.Logic
                 }
                 else
                 {
-                    if(cbzCreated) return ScanItem.DownloadedStatus.OnlyCbz;
+                    if(cbzCreated) return ScanItem.DownloadedStatus.OnlyCbzDownloaded;
                     else return ScanItem.DownloadedStatus.NotDownloaded;
                 }
             }
             else
             {
-                if (cbzCreated) return ScanItem.DownloadedStatus.OnlyCbz;
+                if (cbzCreated) return ScanItem.DownloadedStatus.OnlyCbzDownloaded;
                 else return ScanItem.DownloadedStatus.NotDownloaded;
             }
         }

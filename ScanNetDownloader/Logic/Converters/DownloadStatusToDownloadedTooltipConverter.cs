@@ -21,11 +21,11 @@ namespace ScanNetDownloader.Logic.Converters
             {
                 case ScanItem.DownloadedStatus.NotDownloaded:
                     return notDownloadedText;
-                case ScanItem.DownloadedStatus.Downloaded:
+                case ScanItem.DownloadedStatus.FullyDownloaded:
                     return downloadedText;
-                case ScanItem.DownloadedStatus.OnlyImages:
+                case ScanItem.DownloadedStatus.OnlyImagesDownloaded:
                     return onlyImagesText;
-                case ScanItem.DownloadedStatus.OnlyCbz:
+                case ScanItem.DownloadedStatus.OnlyCbzDownloaded:
                     return onlyCbzText;
                 case ScanItem.DownloadedStatus.MissingImages:
                     return missingImagesText;
@@ -40,7 +40,7 @@ namespace ScanNetDownloader.Logic.Converters
 
             if (img == downloadedText)
             {
-                return ScanItem.DownloadedStatus.Downloaded;
+                return ScanItem.DownloadedStatus.FullyDownloaded;
             }
             else if (img == notDownloadedText)
             {
@@ -48,11 +48,11 @@ namespace ScanNetDownloader.Logic.Converters
             }
             else if (img == onlyImagesText)
             {
-                return ScanItem.DownloadedStatus.OnlyImages;
+                return ScanItem.DownloadedStatus.OnlyImagesDownloaded;
             }
             else if(img == onlyCbzText)
             {
-                return ScanItem.DownloadedStatus.OnlyCbz;
+                return ScanItem.DownloadedStatus.OnlyCbzDownloaded;
             }
             else if (img == missingImagesText)
             {

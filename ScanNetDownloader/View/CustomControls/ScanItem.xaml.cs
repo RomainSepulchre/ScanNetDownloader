@@ -41,24 +41,17 @@ namespace ScanNetDownloader.View.CustomControls
 
         public string Website { get; private set; }
 
-        private bool _isDownloaded;
-        public bool IsDownloaded // TODO: Clean this or link it to DownloadedStatus ? Is it still used ?
+        public bool IsDownloaded
         {
-            get { return _isDownloaded; }
-            set
-            {
-                _isDownloaded = value;
-                SetDownloadStatus(value);
-                OnPropertyChanged();
-            }
+            get { return DownloadStatusToIsDownloaded(DownloadStatus); }
         }
 
         public enum DownloadedStatus
         {
             NotDownloaded = 0,
-            Downloaded = 1,   
-            OnlyImages = 2,
-            OnlyCbz = 3,
+            FullyDownloaded = 1,   
+            OnlyImagesDownloaded = 2,
+            OnlyCbzDownloaded = 3,
             MissingImages = 4
         }
         private DownloadedStatus _downloadStatus;
@@ -68,6 +61,7 @@ namespace ScanNetDownloader.View.CustomControls
             set {
                 _downloadStatus = value;
                 OnPropertyChanged();
+                SetDownloadStatus(_downloadStatus);
             }
         }
 
@@ -122,7 +116,7 @@ namespace ScanNetDownloader.View.CustomControls
             InitializeComponent();
         }
 
-        public ScanItem(ScanData _scanData, bool fileAlreadyDownloaded=false, bool cbzAlreadyCreated=false, DownloadedStatus dlStatus=DownloadedStatus.NotDownloaded)
+        public ScanItem(ScanData _scanData, bool cbzAlreadyCreated=false, DownloadedStatus dlStatus=DownloadedStatus.NotDownloaded)
         {
             DataContext = this;
             
@@ -134,9 +128,8 @@ namespace ScanNetDownloader.View.CustomControls
             PagesCount = _scanData.PagesCount;
             Url = _scanData.Url;
             Website = _scanData.WebsiteDomain;
-            IsDownloaded = fileAlreadyDownloaded;
-            CbzArchiveCreated = cbzAlreadyCreated;
             DownloadStatus = dlStatus;
+            CbzArchiveCreated = cbzAlreadyCreated; 
             IsSelectedForDownload = _scanData.IsSelectedForDownload;           
         }
 
@@ -160,30 +153,52 @@ namespace ScanNetDownloader.View.CustomControls
             RaiseEvent(new RoutedEventArgs(DeleteBtnPressedEvent, this));
         }
 
-        private void SetDownloadStatus(bool fileDownloaded)
+        private void SetDownloadStatus(DownloadedStatus status)
         {
-            if (fileDownloaded && CbzArchiveCreated == false)
+            switch (status)
             {
-                btnCbzCreation.IsEnabled = true;
-            }
-            else
-            {
-                btnCbzCreation.IsEnabled = false;
-            }
+                case DownloadedStatus.NotDownloaded:
+                case DownloadedStatus.FullyDownloaded:
+                case DownloadedStatus.OnlyCbzDownloaded:
+                default:
+                    btnCbzCreation.IsEnabled = false;
+                    break;
+                case DownloadedStatus.OnlyImagesDownloaded:
+                case DownloadedStatus.MissingImages:
+                    btnCbzCreation.IsEnabled = true;
+                    break;
+            }     
         }
 
         private void SetCbzCreatedStatus(bool cbzCreated)
         {
             if (cbzCreated)
             {
-                if(IsDownloaded) btnCbzCreation.IsEnabled = false;
-                btnCbzCreation.Content = ".CBZ created";
-                btnCbzCreation.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.White);
-                btnCbzCreation.Background = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Green);
+                if(DownloadStatus == DownloadedStatus.MissingImages)
+                {
+                    btnCbzCreation.IsEnabled = true;
+                    btnCbzCreation.Content = ".CBZ created";
+                    btnCbzCreation.ToolTip = "CBZ created with missing images";
+                    // TODO: Create style for this
+                    btnCbzCreation.Style = (Style)FindResource(ResourcesKey.Style.ButtonWithWarning);
+                    //btnCbzCreation.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.White);
+                    //btnCbzCreation.Background = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Orange);
+                }
+                else
+                {
+                    if (btnCbzCreation.IsEnabled) btnCbzCreation.IsEnabled = false;
+                    btnCbzCreation.Content = ".CBZ created";
+                    btnCbzCreation.ClearValue(Button.ToolTipProperty);
+                    btnCbzCreation.Style = (Style)FindResource(ResourcesKey.Style.ComplexButton);
+                    btnCbzCreation.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.White);
+                    btnCbzCreation.Background = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Green);
+                }
             }
             else
             {
                 btnCbzCreation.Content = "Create .CBZ";
+                btnCbzCreation.Style = (Style)FindResource(ResourcesKey.Style.ComplexButton);
+                btnCbzCreation.ClearValue(Button.ToolTipProperty);
                 btnCbzCreation.ClearValue(Button.BackgroundProperty);
             }
         }
@@ -196,10 +211,10 @@ namespace ScanNetDownloader.View.CustomControls
                 default:
                     return false;
 
-                case DownloadedStatus.Downloaded:
+                case DownloadedStatus.FullyDownloaded:
                 case DownloadedStatus.MissingImages:
-                case DownloadedStatus.OnlyCbz:
-                case DownloadedStatus.OnlyImages:
+                case DownloadedStatus.OnlyCbzDownloaded:
+                case DownloadedStatus.OnlyImagesDownloaded:
                     return true;
             }
         }

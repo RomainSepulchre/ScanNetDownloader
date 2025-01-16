@@ -26,14 +26,14 @@ namespace ScanNetDownloader.Logic.Converters
             {
                 case ScanItem.DownloadedStatus.NotDownloaded:               
                     return notDownloadedIcon;
-                case ScanItem.DownloadedStatus.Downloaded:
+                case ScanItem.DownloadedStatus.FullyDownloaded:
                     partialDl = false;
                     return downloadedIcon;
-                case ScanItem.DownloadedStatus.OnlyImages:
+                case ScanItem.DownloadedStatus.OnlyImagesDownloaded:
                     partialDl = true;
                     isOnlyCbz = false;
                     return downloadedIcon;
-                case ScanItem.DownloadedStatus.OnlyCbz:
+                case ScanItem.DownloadedStatus.OnlyCbzDownloaded:
                     partialDl = true;
                     isOnlyCbz = true;
                     return downloadedIcon;
@@ -50,11 +50,11 @@ namespace ScanNetDownloader.Logic.Converters
 
             if (img == downloadedIcon)
             {
-                if(partialDl == false) return ScanItem.DownloadedStatus.Downloaded;
+                if(partialDl == false) return ScanItem.DownloadedStatus.FullyDownloaded;
                 else
                 {
-                    if (isOnlyCbz == false) return ScanItem.DownloadedStatus.OnlyImages;
-                    else return ScanItem.DownloadedStatus.OnlyCbz;
+                    if (isOnlyCbz == false) return ScanItem.DownloadedStatus.OnlyImagesDownloaded;
+                    else return ScanItem.DownloadedStatus.OnlyCbzDownloaded;
                 }
             }
             else if (img == notDownloadedIcon)
