@@ -58,7 +58,16 @@ namespace ScanNetDownloader
                     {
                         AskToSaveSettings();
                     }
-                }
+
+                    if (tabCtrlNavigation.SelectedItem == tabOptions && previousTabSelected == tabDownload && downloadVw.IsDownloading)
+                    {
+                        tabCtrlNavigation.SelectedItem = tabDownload;
+
+                        string header = "Download in progress...";
+                        string msg = "Please wait for the end of the download or stop the download to access the options tab.";
+                        MsgWindow.ShowOkWindow(header, msg, false, MsgWindow.ImageType.Warning);
+                    }
+                }        
 
                 if (tabCtrlNavigation.SelectedItem == tabScanManager)
                 {
@@ -66,10 +75,16 @@ namespace ScanNetDownloader
                 }
                 else if (tabCtrlNavigation.SelectedItem == tabDownload)
                 {
+                    bool refreshUi = true;
+                    if (previousTabSelected == tabDownload) refreshUi = false;
+
                     previousTabSelected = tabDownload;
-  
-                    List<ScanItem> scanItemsToDownload = scanManagerVw.ScanListItems.GetScanItemsSelectedForDownload();
-                    downloadVw.RefreshDownloadView(scanItemsToDownload);
+                    
+                    if(refreshUi)
+                    {
+                        List<ScanItem> scanItemsToDownload = scanManagerVw.ScanListItems.GetScanItemsSelectedForDownload();
+                        downloadVw.RefreshDownloadView(scanItemsToDownload);
+                    }
                 }
                 else if (tabCtrlNavigation.SelectedItem == tabOptions)
                 {
