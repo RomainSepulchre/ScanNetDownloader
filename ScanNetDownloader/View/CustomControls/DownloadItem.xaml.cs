@@ -105,6 +105,11 @@ namespace ScanNetDownloader.View.CustomControls
             }
         }
 
+        public void ClearEventItems()
+        {
+            DownloadEventItems.Clear();
+        }
+
         private void ShowDownloadDetails(bool showDetails)
         {
             if (!showDetails)
@@ -129,8 +134,15 @@ namespace ScanNetDownloader.View.CustomControls
         public void ScanDownloadStarted()
         {
             progrBarItemDownload.Visibility = Visibility.Visible;
+            progrBarItemDownload.ClearValue(ForegroundProperty);
             progrBarItemDownload.Value = 0;
             DownloadStatus = $"Downloading page 1...";
+        }
+
+        public void ScanDownloadStopped(int pageNumber)
+        {
+            DownloadStatus = $"Download stopped at page {pageNumber}.";
+            progrBarItemDownload.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.DarkGrey);
         }
 
         public void PageDownloaded(int pageNumber)

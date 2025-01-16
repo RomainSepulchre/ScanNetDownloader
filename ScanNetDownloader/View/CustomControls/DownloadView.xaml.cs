@@ -68,6 +68,7 @@ namespace ScanNetDownloader.View.CustomControls
             Downloader.OnDownloadStartedEvent += new EventHandler(OnDownloadStarted);
             Downloader.OnDownloadStoppedEvent += new EventHandler(OnDownloadStopped);
             Downloader.OnScanDownloadStartedEvent += new EventHandler<ScanItem>(OnScanDownloadStarted);
+            Downloader.OnScanDownloadStoppedEvent += new EventHandler<PageEventArgs>(OnScanDownloadStopped);
             Downloader.OnScanDownloadedEvent += new EventHandler<ScanItem>(OnScanDownloaded);
             Downloader.OnScanDownloadErrorEvent += new EventHandler<ScanErrorEventArgs>(OnScanDownloadError);
             Downloader.OnPageDownloadedEvent += new EventHandler<PageEventArgs>(OnPageDownloaded);
@@ -88,7 +89,16 @@ namespace ScanNetDownloader.View.CustomControls
 
         private void StartDownload(List<ScanItem> scanItemsToDownload)
         {
-            if (IsDownloading == false) Downloader.StartDownloader(CurrentScanItemSelection);
+            
+            if (IsDownloading == false)
+            {
+                foreach (DownloadItem item in DownloadItems) // Clean DownloadEventItems in case the download was stopped and restarted
+                {
+                    if (item.DownloadEventItems.Count > 0) item.ClearEventItems();
+                }
+
+                Downloader.StartDownloader(CurrentScanItemSelection);
+            }
         }
 
         public void StartDownloadFromMainView(List<ScanItem> scanItemsToDownload)
@@ -185,6 +195,15 @@ namespace ScanNetDownloader.View.CustomControls
         {
             DownloadItem dlItem = DownloadItems.First(x => x.linkedScanItem == scanInDownload);
             dlItem.ScanDownloadStarted();
+        }
+
+        public void OnScanDownloadStopped(object sender, PageEventArgs args)
+        {
+            ScanItem scanItem = args.ScanItem;
+            int pageNumber = args.PageIndex; // No +1 because we waant to have the actual page we were downloading
+
+            DownloadItem dlItem = DownloadItems.First(x => x.linkedScanItem == scanItem);
+            dlItem.ScanDownloadStopped(pageNumber);
         }
 
         public void OnScanDownloaded(object sender, ScanItem downloadedScan) // This happens when the Scan download finish

@@ -28,6 +28,8 @@ namespace ScanNetDownloader.Logic
 
         public static event EventHandler<ScanItem> OnScanDownloadStartedEvent;
 
+        public static event EventHandler<PageEventArgs> OnScanDownloadStoppedEvent;
+
         public static event EventHandler<ScanItem> OnScanDownloadedEvent;
 
         public static event EventHandler<ScanErrorEventArgs> OnScanDownloadErrorEvent;
@@ -181,6 +183,7 @@ namespace ScanNetDownloader.Logic
                     if(cancelToken.IsCancellationRequested)
                     {
                         // Stopping task
+                        OnScanDownloadStopped(scanItem, pageId);
                         cancelToken.ThrowIfCancellationRequested();
                     }
                 }
@@ -256,6 +259,18 @@ namespace ScanNetDownloader.Logic
             if (OnScanDownloadStartedEvent != null)
             {
                 OnScanDownloadStartedEvent(null, scanDownloaded);
+            }
+        }
+
+        private static void OnScanDownloadStopped(ScanItem scanStopped, int pageIndex)
+        {
+            if (OnScanDownloadStoppedEvent != null)
+            {
+                PageEventArgs args = new PageEventArgs();
+                args.ScanItem = scanStopped;
+                args.PageIndex = pageIndex;
+
+                OnScanDownloadStoppedEvent(null, args);
             }
         }
 
