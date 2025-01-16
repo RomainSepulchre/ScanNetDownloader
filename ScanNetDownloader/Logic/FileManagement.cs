@@ -4,6 +4,7 @@ using ScanNetDownloader.View;
 using ScanNetDownloader.View.CustomControls;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Windows;
 
 namespace ScanNetDownloader.Logic
@@ -194,6 +195,27 @@ namespace ScanNetDownloader.Logic
             string cbzFilePath = Path.Combine(GetBookDirectoryPath(scanData), $"{bookName}{Constants.CBZ_CHAPTER_PREFIX}{chapterNumber}{Constants.CBZ_EXTENSION}");
 
             return cbzFilePath;
+        }
+
+        static Guid folderDownloads = new Guid("374DE290-123F-4565-9164-39C4925E467B");
+        [DllImport("shell32.dll", CharSet = CharSet.Auto)]
+        private static extern int SHGetKnownFolderPath(ref Guid id, int flags, IntPtr token, out IntPtr path);
+
+        public static string GetUserDownloadsFolder()
+        {
+            if (Environment.OSVersion.Version.Major < 6)
+                return Environment.GetFolderPath(Environment.SpecialFolder.Desktop);// return desktop folder instead
+
+            IntPtr pathPtr = IntPtr.Zero;
+            try
+            {
+                SHGetKnownFolderPath(ref folderDownloads, 0, IntPtr.Zero, out pathPtr);
+                return Marshal.PtrToStringUni(pathPtr);
+            }
+            finally
+            {
+                Marshal.FreeCoTaskMem(pathPtr);
+            }
         }
     }
 }

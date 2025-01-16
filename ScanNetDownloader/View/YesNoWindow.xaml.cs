@@ -95,6 +95,30 @@ namespace ScanNetDownloader.View
             }
         }
 
+        public YesNoWindow(string header, string msg, bool allowQuit = true, BitmapImage? img = null)
+        {
+            DataContext = this;
+            
+            InitializeComponent();
+
+            this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            this.Title = header;
+            this.WindowStyle = WindowStyle.SingleBorderWindow;
+            Header = header;
+            Message = msg;
+            ShowQuitButton = allowQuit;
+
+            if (img != null)
+            {
+                Image = img;
+                ShowImage = true;
+            }
+            else
+            {
+                ShowImage = false;
+            }
+        }
+
         private void btnYes_Click(object sender, RoutedEventArgs e)
         {
             Success = true;

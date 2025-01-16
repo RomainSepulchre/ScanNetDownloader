@@ -14,7 +14,8 @@ namespace ScanNetDownloader.Logic
         private const string SCANSLOCALDATA_JSON_FILENAME = "ScansLocalData.json";
         public static readonly string SCANSLOCALDATA_JSON_PATH = BASE_DIRECTORY_PATH + SCANSLOCALDATA_JSON_FILENAME;
         public static readonly string USER_FOLDER_PATH = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile); // User directory path
-        public static readonly string USER_DOWNLOAD_FOLDER_PATH = Path.Combine(USER_FOLDER_PATH, "Downloads"); // Default download directory path
+        //public static readonly string USER_DOWNLOAD_FOLDER_PATH = Path.Combine(USER_FOLDER_PATH, "Downloads"); // Default download directory path
+        public static readonly string USER_DOWNLOAD_FOLDER_PATH = Path.Combine(FileManagement.GetUserDownloadsFolder(), "ScanNetDownloader"); // Actual download directory path, if it has been moved
         #endregion
 
 

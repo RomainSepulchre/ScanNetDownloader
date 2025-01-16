@@ -62,8 +62,8 @@
                     <Button Name="btnDbg3" Content="Test Dl img" Width="200" Click="btnDbg3_Click" Height="50" Margin="10" FontSize="12"/>
                     <Button Name="btnDbg4" Content="AnimeSama VA test" Width="200" Click="btnDbg4_Click" Height="50" Margin="10" FontSize="12"/>
                     <Button Name="btnDbg5" Content="YesNo window" Width="200" Click="btnDbg5_Click" Height="50" Margin="10" FontSize="12"/>
-                    <Button Name="btnDbg6" Content="Ok window" Width="200" Click="btnDbg6_Click" Height="50" Margin="10" FontSize="12" Style="{StaticResource buttonWithStartImage}">
-                    </Button>
+                    <Button Name="btnDbg6" Content="Ok window" Width="200" Click="btnDbg6_Click" Height="50" Margin="10" FontSize="12" Style="{StaticResource buttonWithStartImage}"/>
+                    <Button Name="btnDbg7" Content="Get Download folder" Width="200" Click="btnDbg7_Click" Height="50" Margin="10" FontSize="12"/>
                 </WrapPanel>
             </TabItem>
         </TabControl>

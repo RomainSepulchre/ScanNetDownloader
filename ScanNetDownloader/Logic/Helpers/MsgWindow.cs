@@ -40,6 +40,23 @@ namespace ScanNetDownloader.Logic.Helpers
             return okWindow;
         }
 
+        public static OkWindow ShowOkWindow(bool noParent, string header, string message, bool allowQuit = true, ImageType windowImg = ImageType.NoImage)
+        {
+            if (noParent)
+            {
+                BitmapImage image = GetBitmapImage(windowImg);
+
+                OkWindow okWindow = new OkWindow( header, message, allowQuit, image);
+                okWindow.ShowDialog();
+
+                return okWindow;
+            }
+            else
+            {
+                return ShowOkWindow(header, message, allowQuit, windowImg);
+            }
+        }
+
         public static YesNoWindow ShowYesNoWindow(string header, string message, bool allowQuit = true, ImageType windowImg = ImageType.NoImage)
         {
             Window parentWindow = Application.Current.MainWindow;
@@ -65,6 +82,23 @@ namespace ScanNetDownloader.Logic.Helpers
             return yesNoWindow;
         }
 
+        public static YesNoWindow ShowYesNoWindow(bool noParent, string header, string message, bool allowQuit = true, ImageType windowImg = ImageType.NoImage)
+        {
+            if (noParent)
+            {
+                BitmapImage image = GetBitmapImage(windowImg);
+
+                YesNoWindow yesNoWindow = new YesNoWindow(header, message, allowQuit, image);
+                yesNoWindow.ShowDialog();
+
+                return yesNoWindow;
+            }
+            else
+            {
+                return ShowYesNoWindow(header, message, allowQuit, windowImg);
+            }
+        }
+
         public static InputWindow ShowInputWindow(string header, string message, string inputPlaceholder, bool allowQuit = true, ImageType windowImg = ImageType.NoImage)
         {
             Window parentWindow = Application.Current.MainWindow;
@@ -88,6 +122,23 @@ namespace ScanNetDownloader.Logic.Helpers
             parentWindow.Opacity = 1;
 
             return inputWindow;
+        }
+
+        public static InputWindow ShowInputWindow(bool noParent, string header, string message, string inputPlaceholder, bool allowQuit = true, ImageType windowImg = ImageType.NoImage)
+        {
+            if (noParent)
+            {
+                BitmapImage image = GetBitmapImage(windowImg);
+
+                InputWindow inputWindow = new InputWindow(header, message, inputPlaceholder, allowQuit, image);
+                inputWindow.ShowDialog();
+
+                return inputWindow;
+            }
+            else
+            {
+                return ShowInputWindow(header, message, inputPlaceholder, allowQuit, windowImg);
+            }
         }
 
         private static BitmapImage GetBitmapImage(ImageType windowImg)

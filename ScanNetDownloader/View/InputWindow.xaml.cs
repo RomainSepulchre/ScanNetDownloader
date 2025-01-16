@@ -105,6 +105,32 @@ namespace ScanNetDownloader.View
             txtBoxInput.PlaceholderText = inputPlaceholder;
         }
 
+        public InputWindow(string header, string msg, string inputPlaceholder = "", bool allowQuit = true, BitmapImage? img = null)
+        {
+            DataContext = this;
+            
+            InitializeComponent();
+
+            this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            this.Title = header;
+            this.WindowStyle = WindowStyle.SingleBorderWindow;
+            Header = header;
+            Message = msg;
+            ShowQuitButton = allowQuit;
+
+            if (img != null)
+            {
+                Image = img;
+                ShowImage = true;
+            }
+            else
+            {
+                ShowImage = false;
+            }
+
+            txtBoxInput.PlaceholderText = inputPlaceholder;
+        }
+
         private void btnOk_Click(object sender, RoutedEventArgs e)
         {
             Input = txtBoxInput.TxtInput;

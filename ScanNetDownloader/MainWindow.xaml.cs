@@ -285,6 +285,15 @@ namespace ScanNetDownloader
 
             FileManagement.OpenFolder(Settings.Instance.OutputDirectory);
         }
+
+        private void btnDbg7_Click(object sender, RoutedEventArgs e)
+        {
+            string fileToOpen = FileManagement.GetUserDownloadsFolder();
+            Debug.WriteLine($"DOWNLOAD FOLDER PATH: {fileToOpen}");
+            FileManagement.OpenFolder(fileToOpen);
+        }
         #endregion
+
+
     }
 }

@@ -1,5 +1,6 @@
 ﻿using ScanNetDownloader.Logic.Helpers;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace ScanNetDownloader.Logic
 {
@@ -170,7 +171,7 @@ namespace ScanNetDownloader.Logic
             string mBoxCaption = "Error - missing json file";
             Debug.WriteLine($"\n{mBoxMessage}\n");
 
-            MsgWindow.ShowOkWindow(mBoxCaption, mBoxMessage, false, MsgWindow.ImageType.Warning);
+            MsgWindow.ShowOkWindow(true, mBoxCaption, mBoxMessage, false, MsgWindow.ImageType.Warning);
 
             return error;
         }

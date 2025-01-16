@@ -41,6 +41,7 @@ namespace ScanNetDownloader.Logic
                 try
                 {
                     loadedData = JsonConvert.DeserializeObject<ScansLocalData>(File.ReadAllText(Constants.SCANSLOCALDATA_JSON_PATH), serializerSettings);
+                    if (loadedData == null) throw new Exception($"Loaded scan local data should never be null, something wrong happened during json deserialization");
                     return loadedData;
                 }
                 catch (Exception ex)
@@ -51,7 +52,7 @@ namespace ScanNetDownloader.Logic
                     string mBoxCaption = "Clear local scan data ?";
                     Debug.WriteLine($"{mBoxMessage}\n {ex}");
                     
-                    YesNoWindow yesNoWindow = MsgWindow.ShowYesNoWindow(mBoxCaption, mBoxMessage, false, MsgWindow.ImageType.Warning);
+                    YesNoWindow yesNoWindow = MsgWindow.ShowYesNoWindow(true, mBoxCaption, mBoxMessage, false, MsgWindow.ImageType.Warning);
 
                     if (yesNoWindow.Success)
                     {
@@ -64,7 +65,7 @@ namespace ScanNetDownloader.Logic
                         mBoxMessage = "Please make sure nothing is wrong with the data in ScansLocalData.json, if the problem persist backup your data and reset the json to it's default values.";
                         mBoxCaption = "Scan data loading error";
                         Debug.WriteLine(mBoxMessage);
-                        MsgWindow.ShowOkWindow(mBoxCaption, mBoxMessage, false, MsgWindow.ImageType.Error);
+                        MsgWindow.ShowOkWindow(true, mBoxCaption, mBoxMessage, false, MsgWindow.ImageType.Error);
 
                         OpenJsonFile();
                         App.Quit();
