@@ -1,0 +1,33 @@
+﻿<UserControl x:Class="ScanNetDownloader.View.CustomControls.ScanDataCreationItem"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ScanNetDownloader.View.CustomControls"
+             mc:Ignorable="d" 
+             d:DesignHeight="100" d:DesignWidth="740">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.75*"/>
+            <ColumnDefinition Width="0.25*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="2"/>
+            <RowDefinition Height="2"/>
+        </Grid.RowDefinitions>
+
+        <Rectangle Grid.RowSpan="2" Grid.ColumnSpan="2" Fill="{StaticResource Colors.LightGrey}"/>
+
+        <TextBlock Text="{Binding ScanDataCreationInfos, FallbackValue=Retrieve scan data for...}" Height="20" VerticalAlignment="Center" Margin="10 3 0 0"/>
+        <TextBlock Name="txtBlockStatus" Grid.Column="1" Grid.RowSpan="2" Text="{Binding StatusMessage, FallbackValue=status}" Height="20" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0 3 10 0" FontWeight="Bold" Foreground="{StaticResource Colors.DarkGrey}"/>
+
+        <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Name="txtBlockErrorMsg" Text="{Binding ErrorMessage, FallbackValue=Error message...}" FontSize="10" Margin="10 -6 60 2" VerticalAlignment="Center" Foreground="{StaticResource Colors.Red}"  TextWrapping="Wrap" />
+
+        <Rectangle Name="rectStatusBar" Grid.Row="2" Grid.ColumnSpan="2" Fill="{StaticResource Colors.MediumGrey}"/>
+
+        <Rectangle Grid.Row="3" Grid.ColumnSpan="2" Fill="{StaticResource Colors.White}"/>
+    </Grid>
+</UserControl>

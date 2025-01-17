@@ -1,65 +1,88 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{55B72091-FA96-4395-96F6-B7799176D7CB}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>ScanNetDownloader</RootNamespace>
-    <AssemblyName>ScanNetDownloader</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Deterministic>true</Deterministic>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <ApplicationIcon>Images\appIcon.ico</ApplicationIcon>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.IO.Compression.FileSystem" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
+    <None Remove="Images\appIcon.png" />
+    <None Remove="Images\appIcon16.png" />
+    <None Remove="Images\CheckboxIcon_Black_Empty.png" />
+    <None Remove="Images\CheckboxIcon_White_Empty.png" />
+    <None Remove="Images\checkIcon.png" />
+    <None Remove="Images\crossIcon_White.png" />
+    <None Remove="Images\downloadIcon_Black.png" />
+    <None Remove="Images\downloadIcon_BorderBlack.png" />
+    <None Remove="Images\downloadIcon_Grey.png" />
+    <None Remove="Images\downloadIcon_Orange.png" />
+    <None Remove="Images\downloadIcon_White.png" />
+    <None Remove="Images\errorIcon.png" />
+    <None Remove="Images\inferiorLevelIcon.png" />
+    <None Remove="Images\infoIcon.png" />
+    <None Remove="Images\maximizeIcon.png" />
+    <None Remove="Images\minimizeIcon.png" />
+    <None Remove="Images\moreDetailsIcon_Closed.png" />
+    <None Remove="Images\moreDetailsIcon_Oppened.png" />
+    <None Remove="Images\plusIcon_Black.png" />
+    <None Remove="Images\plusIcon_White.png" />
+    <None Remove="Images\questionIcon_Black.png" />
+    <None Remove="Images\startIcon_Black.png" />
+    <None Remove="Images\startIcon_Blue.png" />
+    <None Remove="Images\startIcon_White.png" />
+    <None Remove="Images\stopIcon.png" />
+    <None Remove="Images\warningIcon.png" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="AnimeSamaFrUrl.cs" />
-    <Compile Include="Constants.cs" />
-    <Compile Include="Error.cs" />
-    <Compile Include="Extensions.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ScanVfNetUrl.cs" />
-    <Compile Include="ScanWebsiteUrl.cs" />
-    <Compile Include="Settings.cs" />
+    <Resource Include="Images\appIcon.ico" />
   </ItemGroup>
+
   <ItemGroup>
-    <None Include="App.config" />
-    <None Include="packages.config" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
+  <ItemGroup>
+    <Content Include="Images\appIcon.png" />
+    <Resource Include="Images\appIcon16.png" />
+    <Resource Include="Images\CheckboxIcon_Black_Empty.png" />
+    <Resource Include="Images\CheckboxIcon_White_Empty.png" />
+    <Resource Include="Images\crossIcon_White.png" />
+    <Resource Include="Images\downloadIcon_Black.png" />
+    <Resource Include="Images\downloadIcon_BorderBlack.png" />
+    <Resource Include="Images\downloadIcon_Grey.png" />
+    <Resource Include="Images\downloadIcon_Orange.png" />
+    <Resource Include="Images\downloadIcon_White.png" />
+    <Resource Include="Images\errorIcon.png" />
+    <Resource Include="Images\inferiorLevelIcon.png" />
+    <Resource Include="Images\infoIcon.png" />
+    <Resource Include="Images\maximizeIcon.png" />
+    <Resource Include="Images\minimizeIcon.png" />
+    <Resource Include="Images\moreDetailsIcon_Closed.png" />
+    <Resource Include="Images\moreDetailsIcon_Oppened.png" />
+    <Resource Include="Images\plusIcon_Black.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\plusIcon_White.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\questionIcon_Black.png" />
+    <Resource Include="Images\startIcon_Black.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\startIcon_Blue.png" />
+    <Resource Include="Images\startIcon_White.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\stopIcon.png" />
+    <Resource Include="Images\warningIcon.png" />
+  </ItemGroup>
+
 </Project>

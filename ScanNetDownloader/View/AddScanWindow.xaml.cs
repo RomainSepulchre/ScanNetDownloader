@@ -1,0 +1,141 @@
+﻿using ScanNetDownloader.Logic;
+using ScanNetDownloader.Logic.Helpers;
+using System.Windows;
+using System.Windows.Media;
+
+namespace ScanNetDownloader.View
+{
+    /// <summary>
+    /// Logique d'interaction pour AddScanWindow.xaml
+    /// </summary>
+    public partial class AddScanWindow : Window
+    {
+        public string UrlInput { get; set; }
+
+        private ScanData TempScanData { get; set; }
+
+        public List<ScanData> NewScanDatas { get; set; }
+
+        public List<int> ChapterSelected { get; set; }
+
+        public bool Success { get; set; } = false;
+
+        public AddScanWindow(Window parentWindow)
+        {
+            Owner = parentWindow;
+            InitializeComponent();
+        }
+
+        #region Button Events
+        private void btnUrlView_Click(object sender, RoutedEventArgs e)
+        {
+            urlSelectionVw.Visibility = Visibility.Visible;
+            chapterSelectionVw.Visibility = Visibility.Collapsed;
+            scanDataCreationVw.Visibility = Visibility.Collapsed;
+
+            headerUrlView.FontWeight = FontWeights.SemiBold;
+            headerUrlView.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Black);
+            headerFirstSeparator.FontWeight = FontWeights.SemiBold;
+            headerFirstSeparator.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Black);
+
+            headerChapterView.FontWeight = FontWeights.Light;
+            headerChapterView.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.DarkGrey);
+            headerSecondSeparator.FontWeight = FontWeights.Light;
+            headerSecondSeparator.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.DarkGrey);
+
+            headerScanDataCreationView.FontWeight = FontWeights.Light;
+            headerScanDataCreationView.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.DarkGrey);
+        }
+
+        private void btnChapterView_Click(object sender, RoutedEventArgs e)
+        {
+            urlSelectionVw.Visibility = Visibility.Collapsed;
+            chapterSelectionVw.Visibility = Visibility.Visible;
+            scanDataCreationVw.Visibility = Visibility.Collapsed;
+
+            headerUrlView.FontWeight = FontWeights.Normal;
+            headerUrlView.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Black);
+            headerFirstSeparator.FontWeight = FontWeights.Normal;
+            headerFirstSeparator.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Black);
+
+            headerChapterView.FontWeight = FontWeights.SemiBold;
+            headerChapterView.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Black);
+            headerSecondSeparator.FontWeight = FontWeights.SemiBold;
+            headerSecondSeparator.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Black);
+
+            headerScanDataCreationView.FontWeight = FontWeights.Light;
+            headerScanDataCreationView.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.DarkGrey);
+        }
+
+        private void btnClose_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+        #endregion
+
+
+        #region Custom view events
+        private void urlSelectionVw_UrlConfirmed(object sender, RoutedEventArgs e)
+        {
+            UrlInput = urlSelectionVw.UrlInput;
+            TempScanData = urlSelectionVw.TempScanData;
+
+            // Check if chapter is already specified
+            chapterSelectionVw.InitChapterSelection(TempScanData);
+
+            urlSelectionVw.Visibility = Visibility.Collapsed;
+            chapterSelectionVw.Visibility = Visibility.Visible;
+
+            headerUrlView.FontWeight = FontWeights.Normal;
+            headerUrlView.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Black);
+            headerFirstSeparator.FontWeight = FontWeights.Normal;
+            headerFirstSeparator.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Black);
+
+            headerChapterView.FontWeight = FontWeights.SemiBold;
+            headerChapterView.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Black);
+            headerSecondSeparator.FontWeight = FontWeights.SemiBold;
+            headerSecondSeparator.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Black);
+        }
+
+        private void chapterSelectionVw_BackBtnPressed(object sender, RoutedEventArgs e)
+        {
+            btnUrlView_Click(sender, e);
+        }
+
+        private async void chapterSelectionVw_ChaptersConfirmed(object sender, RoutedEventArgs e)
+        {
+            
+            ChapterSelected = chapterSelectionVw.ChaptersSelected;
+
+            chapterSelectionVw.Visibility = Visibility.Collapsed;
+            scanDataCreationVw.Visibility = Visibility.Visible;
+
+            headerUrlView.FontWeight = FontWeights.Normal;
+            headerUrlView.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Black);
+            headerFirstSeparator.FontWeight = FontWeights.Normal;
+            headerFirstSeparator.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Black);
+
+            headerChapterView.FontWeight = FontWeights.Normal;
+            headerChapterView.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Black);
+            headerSecondSeparator.FontWeight = FontWeights.Normal;
+            headerSecondSeparator.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Black);
+
+            headerScanDataCreationView.FontWeight = FontWeights.SemiBold;
+            headerScanDataCreationView.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Black);
+
+            // Create Scan Datas
+            NewScanDatas = await scanDataCreationVw.CreateScanDatas(UrlInput, ChapterSelected, TempScanData);
+
+            if (NewScanDatas != null && NewScanDatas.Count > 0)
+            {
+                Success = true;
+            }
+        }
+
+        private void scanDataCreationVw_FinishBtnPressed(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+        #endregion
+    }
+}
