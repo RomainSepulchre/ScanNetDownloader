@@ -28,8 +28,8 @@ namespace ScanNetDownloader
 
         public MainWindow()
         {
-            DataContext = this;         
-            
+            DataContext = this;
+
             // Load Settings
             Settings.InitializeAppSettings();
 
@@ -40,6 +40,8 @@ namespace ScanNetDownloader
 
             // Initialize Window
             InitializeComponent();
+
+            titleBar.InitializeTitleBar();
 
 #if !DEBUG
             tabDebug.Visibility = Visibility.Collapsed;       
@@ -307,8 +309,12 @@ namespace ScanNetDownloader
             Debug.WriteLine($"DOWNLOAD FOLDER PATH: {fileToOpen}");
             FileManagement.OpenFolder(fileToOpen);
         }
+
+        private void btnDbg8_Click(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
         #endregion
-
-
     }
 }

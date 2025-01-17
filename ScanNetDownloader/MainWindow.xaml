@@ -6,66 +6,76 @@
         xmlns:local="clr-namespace:ScanNetDownloader"
         xmlns:customControls="clr-namespace:ScanNetDownloader.View.CustomControls"
         mc:Ignorable="d"
-        Title="ScanNetDownloader" Height="720" Width="1280"
-        ResizeMode="NoResize">
+        Title="ScanNetDownloader" Height="750" Width="1280"
+        ResizeMode="CanMinimize"
+        WindowStyle="None">
     <Window.Resources>
-        
-        
     </Window.Resources>
+
     <Grid x:Name="gridMainContent">
 
-        <TabControl Style="{DynamicResource TabControlStyle}" Name="tabCtrlNavigation" SelectionChanged="tabCtrlNavigation_SelectionChanged">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="1*" />
+        </Grid.RowDefinitions>
 
-            <!--Scan Management-->
-            <TabItem Style="{DynamicResource TabItemStyle}" Name="tabScanManager" Height="50">
-                <TabItem.Header>
-                    <Border Style="{StaticResource TabItemHeaderBorderStyle_FirstTab}">
-                        <TextBlock Text="SCAN MANAGER" FontSize="24" HorizontalAlignment="Center" Style="{StaticResource TabItemHeaderTextBlockStyle}"/>
-                    </Border>
-                </TabItem.Header>
-                <customControls:ScanManagerView x:Name="scanManagerVw" StartDownload="scanManagerVw_StartDownload"/>
-            </TabItem>
+        <customControls:TitleBar x:Name="titleBar"/>
 
-            <!--Scan Download-->
-            <TabItem Style="{DynamicResource TabItemStyle}" Name="tabDownload" Height="50">
-                <TabItem.Header>
-                    <Border Style="{StaticResource TabItemHeaderBorderStyle}">
-                        <TextBlock Text="DOWNLOAD" FontSize="24" HorizontalAlignment="Center" Style="{StaticResource TabItemHeaderTextBlockStyle}"/>
-                    </Border>
-                </TabItem.Header>
-                <customControls:DownloadView x:Name="downloadVw" OnDownloadCompleted="downloadVw_OnDownloadCompleted"/>
-            </TabItem>
+        <Border Grid.Row="1" BorderThickness=" 1 0 1 1" BorderBrush="{StaticResource Colors.Black}">
+            <TabControl  Style="{DynamicResource TabControlStyle}" Name="tabCtrlNavigation" SelectionChanged="tabCtrlNavigation_SelectionChanged">
 
-            <!--Options-->
-            <TabItem Style="{DynamicResource TabItemStyle}" Name="tabOptions" Height="50">
-                <TabItem.Header>
-                    <Border Style="{StaticResource TabItemHeaderBorderStyle}">
-                        <TextBlock Text="OPTIONS" FontSize="24" HorizontalAlignment="Center" Style="{StaticResource TabItemHeaderTextBlockStyle}"/>
-                    </Border>
-                </TabItem.Header>
-                <customControls:OptionsView x:Name="optionsVw" ClearLocalData="optionsVw_ClearLocalData"/>
-            </TabItem>
+                <!--Scan Management-->
+                <TabItem Style="{DynamicResource TabItemStyle}" Name="tabScanManager" Height="50">
+                    <TabItem.Header>
+                        <Border Style="{StaticResource TabItemHeaderBorderStyle_FirstTab}">
+                            <TextBlock Text="SCAN MANAGER" FontSize="24" HorizontalAlignment="Center" Style="{StaticResource TabItemHeaderTextBlockStyle}"/>
+                        </Border>
+                    </TabItem.Header>
+                    <customControls:ScanManagerView x:Name="scanManagerVw" StartDownload="scanManagerVw_StartDownload"/>
+                </TabItem>
 
-            <!--Debug-->
-            <TabItem Style="{DynamicResource TabItemStyle}" Name="tabDebug" Height="50">
-                <TabItem.Header>
-                    <Border Style="{StaticResource TabItemHeaderBorderStyle}">
-                        <TextBlock Text="DEBUG" FontSize="24" HorizontalAlignment="Center" Style="{StaticResource TabItemHeaderTextBlockStyle}"/>
-                    </Border>
-                </TabItem.Header>
-                <WrapPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0 20 0 0">
-                    <Button Name="btnDbgSave" Content="Force Save Scan Data" Click="btnDbgSave_Click" Background="Orchid" Height="50" Width="200" Margin="10" FontSize="12"/>
-                    <Button Name="btnDbgOpenDataJson" Content="Open Scan Data Json" Click="btnDbgOpenDataJson_Click"  Background="Orchid" Height="50" Width="200" Margin="10" FontSize="12"/>
-                    <Button Name="btnDbgOpenSettingsJson" Content="Open Settings Json" Click="btnDbgOpenSettingsJson_Click"  Background="Orchid" Height="50" Width="200" Margin="10" FontSize="12"/>
-                    <Button Name="btnDbg1" Content="Save html Files" Click="btnDbg1_Click" Width="200" Height="50" Margin="10" FontSize="12"/>
-                    <Button Name="btnDbg2" Content="Test HttpClient" Width="200" Click="btnDbg2_Click" Height="50" Margin="10" FontSize="12"/>
-                    <Button Name="btnDbg3" Content="Test Dl img" Width="200" Click="btnDbg3_Click" Height="50" Margin="10" FontSize="12"/>
-                    <Button Name="btnDbg4" Content="AnimeSama VA test" Width="200" Click="btnDbg4_Click" Height="50" Margin="10" FontSize="12"/>
-                    <Button Name="btnDbg5" Content="YesNo window" Width="200" Click="btnDbg5_Click" Height="50" Margin="10" FontSize="12"/>
-                    <Button Name="btnDbg6" Content="Ok window" Width="200" Click="btnDbg6_Click" Height="50" Margin="10" FontSize="12" Style="{StaticResource buttonWithStartImage}"/>
-                    <Button Name="btnDbg7" Content="Get Download folder" Width="200" Click="btnDbg7_Click" Height="50" Margin="10" FontSize="12"/>
-                </WrapPanel>
-            </TabItem>
-        </TabControl>
+                <!--Scan Download-->
+                <TabItem Style="{DynamicResource TabItemStyle}" Name="tabDownload" Height="50">
+                    <TabItem.Header>
+                        <Border Style="{StaticResource TabItemHeaderBorderStyle}">
+                            <TextBlock Text="DOWNLOAD" FontSize="24" HorizontalAlignment="Center" Style="{StaticResource TabItemHeaderTextBlockStyle}"/>
+                        </Border>
+                    </TabItem.Header>
+                    <customControls:DownloadView x:Name="downloadVw" OnDownloadCompleted="downloadVw_OnDownloadCompleted"/>
+                </TabItem>
+
+                <!--Options-->
+                <TabItem Style="{DynamicResource TabItemStyle}" Name="tabOptions" Height="50">
+                    <TabItem.Header>
+                        <Border Style="{StaticResource TabItemHeaderBorderStyle}">
+                            <TextBlock Text="OPTIONS" FontSize="24" HorizontalAlignment="Center" Style="{StaticResource TabItemHeaderTextBlockStyle}"/>
+                        </Border>
+                    </TabItem.Header>
+                    <customControls:OptionsView x:Name="optionsVw" ClearLocalData="optionsVw_ClearLocalData"/>
+                </TabItem>
+
+                <!--Debug-->
+                <TabItem Style="{DynamicResource TabItemStyle}" Name="tabDebug" Height="50">
+                    <TabItem.Header>
+                        <Border Style="{StaticResource TabItemHeaderBorderStyle}">
+                            <TextBlock Text="DEBUG" FontSize="24" HorizontalAlignment="Center" Style="{StaticResource TabItemHeaderTextBlockStyle}"/>
+                        </Border>
+                    </TabItem.Header>
+                    <WrapPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0 20 0 0">
+                        <Button Name="btnDbgSave" Content="Force Save Scan Data" Click="btnDbgSave_Click" Background="Orchid" Height="50" Width="200" Margin="10" FontSize="12"/>
+                        <Button Name="btnDbgOpenDataJson" Content="Open Scan Data Json" Click="btnDbgOpenDataJson_Click"  Background="Orchid" Height="50" Width="200" Margin="10" FontSize="12"/>
+                        <Button Name="btnDbgOpenSettingsJson" Content="Open Settings Json" Click="btnDbgOpenSettingsJson_Click"  Background="Orchid" Height="50" Width="200" Margin="10" FontSize="12"/>
+                        <Button Name="btnDbg1" Content="Save html Files" Click="btnDbg1_Click" Width="200" Height="50" Margin="10" FontSize="12"/>
+                        <Button Name="btnDbg2" Content="Test HttpClient" Width="200" Click="btnDbg2_Click" Height="50" Margin="10" FontSize="12"/>
+                        <Button Name="btnDbg3" Content="Test Dl img" Width="200" Click="btnDbg3_Click" Height="50" Margin="10" FontSize="12"/>
+                        <Button Name="btnDbg4" Content="AnimeSama VA test" Width="200" Click="btnDbg4_Click" Height="50" Margin="10" FontSize="12"/>
+                        <Button Name="btnDbg5" Content="YesNo window" Width="200" Click="btnDbg5_Click" Height="50" Margin="10" FontSize="12"/>
+                        <Button Name="btnDbg6" Content="Ok window" Width="200" Click="btnDbg6_Click" Height="50" Margin="10" FontSize="12" Style="{StaticResource buttonWithStartImage}"/>
+                        <Button Name="btnDbg7" Content="Get Download folder" Width="200" Click="btnDbg7_Click" Height="50" Margin="10" FontSize="12"/>
+                        <Button Name="btnDbg8" Content="Get parent window" Width="200" Click="btnDbg8_Click" Height="50" Margin="10" FontSize="12"/>
+                    </WrapPanel>
+                </TabItem>
+            </TabControl>
+        </Border>
     </Grid>
 </Window>

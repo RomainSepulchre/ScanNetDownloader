@@ -57,6 +57,9 @@
             public const string DownloadBlack = "Img.downloadBlack";
             public const string DownloadOrange = "Img.downloadOrange";
             public const string DownloadBorderBlack = "Img.downloadBorderBlack";
+            public const string Maximize = "Img.maximizeIcon";
+            public const string Minimize = "Img.minimizeIcon";
+            public const string InferiorLevel = "Img.inferiorLevelIcon";
         }
 
         public static class ImageBrushes

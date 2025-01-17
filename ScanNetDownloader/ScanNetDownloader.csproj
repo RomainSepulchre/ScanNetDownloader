@@ -8,9 +8,12 @@
     <UseWPF>true</UseWPF>
     <AssemblyVersion>0.2.0.0</AssemblyVersion>
     <FileVersion>0.2.0.0</FileVersion>
+    <ApplicationIcon>Images\appIcon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Images\appIcon.png" />
+    <None Remove="Images\appIcon16.png" />
     <None Remove="Images\CheckboxIcon_Black_Empty.png" />
     <None Remove="Images\CheckboxIcon_White_Empty.png" />
     <None Remove="Images\checkIcon.png" />
@@ -21,7 +24,10 @@
     <None Remove="Images\downloadIcon_Orange.png" />
     <None Remove="Images\downloadIcon_White.png" />
     <None Remove="Images\errorIcon.png" />
+    <None Remove="Images\inferiorLevelIcon.png" />
     <None Remove="Images\infoIcon.png" />
+    <None Remove="Images\maximizeIcon.png" />
+    <None Remove="Images\minimizeIcon.png" />
     <None Remove="Images\moreDetailsIcon_Closed.png" />
     <None Remove="Images\moreDetailsIcon_Oppened.png" />
     <None Remove="Images\plusIcon_Black.png" />
@@ -35,11 +41,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Images\appIcon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Images\appIcon.png" />
+    <Resource Include="Images\appIcon16.png" />
     <Resource Include="Images\CheckboxIcon_Black_Empty.png" />
     <Resource Include="Images\CheckboxIcon_White_Empty.png" />
     <Resource Include="Images\crossIcon_White.png" />
@@ -49,7 +61,10 @@
     <Resource Include="Images\downloadIcon_Orange.png" />
     <Resource Include="Images\downloadIcon_White.png" />
     <Resource Include="Images\errorIcon.png" />
+    <Resource Include="Images\inferiorLevelIcon.png" />
     <Resource Include="Images\infoIcon.png" />
+    <Resource Include="Images\maximizeIcon.png" />
+    <Resource Include="Images\minimizeIcon.png" />
     <Resource Include="Images\moreDetailsIcon_Closed.png" />
     <Resource Include="Images\moreDetailsIcon_Oppened.png" />
     <Resource Include="Images\plusIcon_Black.png">
