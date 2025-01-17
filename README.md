@@ -5,6 +5,8 @@
 ScanNet Downloader is a simple app to automate the downloading of scans and the creation of a .cbz archive.
 You provide a scan url to download and the software will do the rest.
 
+<p align="center"><img src="ReadMe/mainWindow.png" width="768" height="450" alt="Screenshot of the main window"></p>
+
 # What are the compatible scan websites ?
 
 Currently, the compatible website are:
@@ -15,8 +17,6 @@ Currently, the compatible website are:
 > Some scan websites are well protected to prevent the user to download the scan image so some websites may never be compatible.
 
 # How to use ScanNet Downloader ?
-
-<p align="center"><img src="ReadMe/mainWindow.png" width="768" height="450" alt="Screenshot of the main window"></p>
 
 ## Add a new scan
 
