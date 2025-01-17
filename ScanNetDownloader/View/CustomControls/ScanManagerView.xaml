@@ -1,0 +1,133 @@
+﻿<UserControl x:Class="ScanNetDownloader.View.CustomControls.ScanManagerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ScanNetDownloader.View.CustomControls"
+             mc:Ignorable="d" 
+             d:DesignHeight="660" d:DesignWidth="1280">
+    
+    <UserControl.Resources>
+        
+        <CollectionViewSource x:Key="ScanItemsSource" Source="{Binding ScanListItems}">
+        </CollectionViewSource>
+        
+        <DataTemplate x:Key="gridHeaderCheckboxIcon">
+            <Image Source="{StaticResource Img.checkboxWhiteEmpty}" ToolTip="Select for download" HorizontalAlignment="Center" VerticalAlignment="Center" Width="35"/>
+        </DataTemplate>
+
+        <DataTemplate x:Key="gridHeaderDownloadIcon">
+            <Image Source="{StaticResource Img.downloadWhite}" ToolTip="Download status" HorizontalAlignment="Center" VerticalAlignment="Center" Width="35"/>
+        </DataTemplate>
+        
+    </UserControl.Resources>
+    
+    <Grid Margin="20 0 20 20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="43"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0 8 0 5">
+            <Button Name="btnAdd" Click="btnAdd_Click" Height="30" Width="150" Margin="0 0 5 0" Style="{StaticResource complexButton}">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal" Width="{Binding ElementName=btnAdd, Path=ActualWidth}">
+                        <Image Source="{StaticResource Img.plusIconWhite}" Height="30" Width="30" VerticalAlignment="Center" Margin="-5 0 2 0"/>
+                        <TextBlock Text="Add new scan" VerticalAlignment="Center" FontSize="16"></TextBlock>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+            <Button Name="btnStart" Click="btnStart_Click" Height="30" Width="163" Margin="0 0 5 0" Style="{StaticResource complexButton}">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal" Width="{Binding ElementName=btnStart, Path=ActualWidth}">
+                        <Image Source="{StaticResource Img.startIconWhite}" Height="30" Width="30" VerticalAlignment="Center" Margin="-5 0 2 0"/>
+                        <TextBlock Text="Start download" VerticalAlignment="Center" FontSize="16"></TextBlock>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+        </StackPanel>
+
+        <ListView Grid.Row="1" ItemContainerStyle="{StaticResource testForScanManager}" Name="listVwScans" ItemsSource="{Binding Source={StaticResource ScanItemsSource}, UpdateSourceTrigger=PropertyChanged}" SelectionMode="Single" HorizontalContentAlignment="Stretch" Background="{StaticResource Colors.LightGrey}" BorderThickness="0">
+            <ListView.View>
+                <GridView AllowsColumnReorder="True" ColumnHeaderContainerStyle="{StaticResource testColumnsHeader}">
+
+                    <!--Select for download column-->
+                    <GridViewColumn Width="40" HeaderTemplate="{StaticResource gridHeaderCheckboxIcon}"> 
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding Path=IsSelectedForDownload}" ToolTip="Select this scan for download" HorizontalAlignment="Center" Margin="3 0 0 0"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    
+                    <!--Download status column-->
+                    <GridViewColumn Width="40" HeaderTemplate="{StaticResource gridHeaderDownloadIcon}">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Border Height="20" Width="20" ToolTip="{Binding Path=DownloadStatus, Converter={StaticResource DownloadStatusToDownloadedTooltipConverter}, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Margin="0 -2 0 0">
+                                        <Image Source="{Binding Path=DownloadStatus, Converter={StaticResource DownloadStatusToDownloadIconConverter}, UpdateSourceTrigger=PropertyChanged}" Height="22" Width="22"/>
+                                    </Border>
+                                    <Ellipse Fill="{StaticResource Colors.Green}" Width="5" Height="5" Margin="6 0 0 12" Visibility="{Binding Path=DownloadStatus, Converter={StaticResource DownloadStatusToEllipseVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+                                </Grid>
+                            </DataTemplate> 
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    
+                    <!--Book name column-->
+                    <GridViewColumn Header="Book name" DisplayMemberBinding="{Binding Path=BookName}" Width="470"/>
+                    
+                    <!--Chapter column-->
+                    <GridViewColumn Header="Chapter" Width="100">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=ChapterId}" TextAlignment="Center" VerticalAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                        
+                    <!--Pages column-->
+                    <GridViewColumn Header="Pages" Width="100">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=PagesCount}" TextAlignment="Center" VerticalAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                        
+                    <!--Website column-->
+                    <GridViewColumn Header="Website" Width="250">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=Website}" TextAlignment="Center" VerticalAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                        
+                    <!--Options column-->
+                    <GridViewColumn Header="Options" Width="205">
+                        <!--I would love to understand why scanItem is displayed in this column and how to do it with a cell template to make it more clear
+                    but I can't find how to assign the source scanItem as the template scanItem-->
+                    </GridViewColumn>
+                    
+                    <!--Debug Column to display specific scanItem data-->
+                    <!--<GridViewColumn Header="Debug" DisplayMemberBinding="{Binding Path=DownloadStatus}"/>-->
+
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <StackPanel Grid.Row="1" Name="stPanelNoScans" VerticalAlignment="Center">
+            <TextBlock Text="No scans added yet. Add a new scan url to get the scan information and download it." VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 20 0 10" FontSize="16"/>
+            <Button x:Name="btnAdd2" Click="btnAdd_Click" Height="30" Width="150" Margin="0 0 5 0" Style="{StaticResource complexButton}">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal" Width="{Binding ElementName=btnAdd2, Path=ActualWidth}">
+                        <Image Source="{StaticResource Img.plusIconWhite}" Height="30" Width="30" VerticalAlignment="Center" Margin="-5 0 2 0"/>
+                        <TextBlock Text="Add new scan" VerticalAlignment="Center" FontSize="16"></TextBlock>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+        </StackPanel>
+        
+    </Grid>
+</UserControl>

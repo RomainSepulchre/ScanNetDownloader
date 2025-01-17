@@ -1,0 +1,51 @@
+﻿<UserControl x:Class="ScanNetDownloader.View.CustomControls.OptionsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ScanNetDownloader.View.CustomControls"
+             mc:Ignorable="d" 
+             d:DesignHeight="660" d:DesignWidth="1280">
+    <UserControl.Resources>
+    </UserControl.Resources>
+    <Grid Margin="20 8 20 20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Vertical">
+
+            <TextBlock Text="General" FontWeight="Bold" FontSize="24"/>
+
+            <StackPanel Orientation="Vertical" Margin="0 5 0 0" HorizontalAlignment="Left">
+                <TextBlock Text="Download location"/>
+                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                    <TextBox Name="txtBoxOutputDir" Text="{Binding OutputDirectoryPath, UpdateSourceTrigger=PropertyChanged}"  Width="480" Height="30" VerticalContentAlignment="Center" Style="{StaticResource DefaultTextBoxStyle}"/>
+                    <Button Name="btnChooseOutputDir" Content="Choose download location..." Click="btnChooseOutputDir_Click"  Width="200" Height="30" Margin="5 0 0 0"/>
+                    <local:ErrorAlert x:Name="errorMsgChooseOutputDir" ErrorMsg="{Binding ChooseOutputDirectoryErrorMsg}" Margin="5 0 0 0" Visibility="Collapsed"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
+                    <Button Name="btnOpenOutputDir" Content="Open download location" Click="btnOpenOutputDir_Click" Width="200" Height="30"/>
+                    <local:ErrorAlert x:Name="errorAlertOpenOutputDir" ErrorMsg="{Binding OpenOutputDirectoryErrorMsg}" Margin="5 0 0 0" Visibility="Collapsed"/>
+                </StackPanel>
+                <CheckBox Name="chBoxOpenOutputDir" Content="Open download location at the end of a download" IsChecked="{Binding OpenOutputDirAfterDownload, UpdateSourceTrigger=PropertyChanged}" Margin="0 10 0 0" />
+                <CheckBox Name="chBoxErrorPauseApp" Content="Download errors pause the download (pop-up to acknowledge)" IsChecked="{Binding ErrorPauseApp, UpdateSourceTrigger=PropertyChanged}" Margin="0 5 0 0"/>
+            </StackPanel>
+
+
+            <TextBlock Text=".CBZ Creation" FontWeight="Bold" FontSize="24" Margin="0 12 0 0"/>
+            <StackPanel Orientation="Vertical" Margin="0 5 0 0" HorizontalAlignment="Left">
+                <CheckBox Name="chBoxCreateCbz" Content="Automatically create a .CBZ archive when a scan is downloaded " IsChecked="{Binding CreateCbzAfterDownload, UpdateSourceTrigger=PropertyChanged}"/>
+                <CheckBox Name="chBoxDeleteImageAfterCbz" Content="Delete scan images once the .CBZ archive is created" IsChecked="{Binding DeleteImagesAfterCbzCreation, UpdateSourceTrigger=PropertyChanged}" Margin="0 5 0 0"/>
+            </StackPanel>
+
+            <TextBlock Text="Reset data" FontWeight="Bold" FontSize="24" Margin="0 12 0 0"/>
+            <Button Name="btnClearScanData" Content="Clear local scan data" Click="btnClearScanData_Click" Width="200" Height="30" HorizontalAlignment="Left" Margin="0 5 0 0"/>
+            
+        </StackPanel>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0 0 0 0">
+            <Button Name="btnSaveOptions" Content="Save changes" Click="btnSaveOptions_Click" Width="200" Height="50" HorizontalAlignment="Right" FontSize="16"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

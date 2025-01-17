@@ -1,0 +1,20 @@
+﻿<UserControl x:Class="ScanNetDownloader.View.CustomControls.TextInputBox"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ScanNetDownloader.View.CustomControls"
+             mc:Ignorable="d" 
+             d:DesignHeight="40" d:DesignWidth="250"
+             x:Name="userControl">
+    
+    <Grid Background="{StaticResource Colors.White}" DataContext="{Binding ElementName=userControl}">
+        <TextBox Name="txtInput"  Text="{Binding TxtInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextChanged="txtInput_TextChanged" VerticalContentAlignment="Center"  Background="Transparent" Style="{StaticResource DefaultTextBoxStyle}" />
+        <TextBlock Name="txtPlaceholder" Panel.ZIndex="-1" Text="{Binding PlaceholderText, FallbackValue=Enter something...}" FontStyle="Italic" Foreground="{StaticResource Colors.DarkGrey}" VerticalAlignment="Center" Margin="3 0 3 0"/>
+        <Button Name="btnClear" Click="btnClear_Click" Width="20" Height="20" HorizontalAlignment="Right" Margin="0 0 5 0" Style="{StaticResource closeButton}" Foreground="{StaticResource Colors.DarkGrey}">
+            <Button.Content>
+                <Image Source="{StaticResource Img.crossWhite}"/>
+            </Button.Content>
+        </Button>
+    </Grid>
+</UserControl>

@@ -1,0 +1,15 @@
+﻿<UserControl x:Class="ScanNetDownloader.View.CustomControls.DownloadEventItem"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ScanNetDownloader.View.CustomControls"
+             mc:Ignorable="d" 
+             d:DesignHeight="20" d:DesignWidth="1220">
+    <Grid>
+        <StackPanel Orientation="Horizontal" Margin="20 0 0 0">
+            <Ellipse Height="8" Width="8" Fill="{Binding CircleColor}" />
+            <TextBlock Text="{Binding MsgText}"  VerticalAlignment="Center" Margin="5 0 0 0"/>
+        </StackPanel>      
+    </Grid>
+</UserControl>
