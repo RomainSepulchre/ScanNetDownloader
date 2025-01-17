@@ -47,7 +47,7 @@ namespace ScanNetDownloader.Logic
         /// Should the program pause the app and wait for an user input when an error is triggered (Default=True)
         /// A major error requiring user input bypass this and pause the app anyway
         /// </summary>
-        public bool ErrorPauseApp { get; set; } = true;
+        public bool ErrorPauseApp { get; set; } = false;
 
         /// <summary>
         /// Do you want to create a .cbz archive of every chapter downloaded (Default=True)
