@@ -1,7 +1,11 @@
+<p align="center"><img src="ReadMe/appIcon.png" width="256" height="256" alt="Logo of the application"></p>
+
 # What is ScanNet Downloader ?
 
 ScanNet Downloader is a simple app to automate the downloading of scans and the creation of a .cbz archive.
 You provide a scan url to download and the software will do the rest.
+
+<p align="center"><img src="ReadMe/mainWindow.png" width="768" height="450" alt="Screenshot of the main window"></p>
 
 # What are the compatible scan websites ?
 
@@ -9,126 +13,65 @@ Currently, the compatible website are:
 - www.scan-vf.net
 - www.anime-sama.fr
 
-> If the scan website you use is not part of this list, send me a message and I'll do my best to make ScanNet Downloader compatible with it.
+> If the scan website you use is not part of this list, contact me or open an issue and I'll do my best to make ScanNet Downloader compatible with it.
 > Some scan websites are well protected to prevent the user to download the scan image so some websites may never be compatible.
 
 # How to use ScanNet Downloader ?
 
-## Add the url of a scan
+## Add a new scan
 
-### What is the url I need to provide ?
+<p align="center"><img src="ReadMe/mainWindowNoScans.png" width="768" height="450" alt="Screenshot of the main window without scans"></p><br>
+
+To add a new scan click on the "add new scan" button. A new window will open with a 3 steps process: entering the scan url, selecting the chapters, retrieving the scan data for the url and the chapters you specified.
+
+### Enter the scan url
+
+<p align="center"><img src="ReadMe/urlInputWindow.PNG" width="480" height="270" alt="Screenshot of the url input window"></p><br>
+
+Just enter the url of the scan in the text field and click "Next". If the url is invalid you will have an alert and you'll need to provide a valid url.
+
+>If you encounter a case where you think the url is valid but an alert is triggered please open an issue and specify the url in it. That will help me to take into account possibilities I has not expected.
+
+#### Compatibles url
 In most of the case if you copy-paste the link of the first page of the scan you want to download it should work but depending on the website you may have more options.
 
-#### Scan-vf.net
+##### Scan-vf.net
 
-For scan-vf.net you can either provide directly the url of a chapter you want to download or the url the book and choose the chapters you want to download after.<br>
-Here is an example of the 2 possibilities:
-- You want to download a single chapter, provide the url of a chapter: https://www.scan-vf.net/one_piece/chapitre-1/1.
-- You want to download several chapters, provide the url of the book: https://www.scan-vf.net/one_piece.
+>You can either provide directly the url of a chapter or the url of the book.<br>
+>Here is an example for both possibilities:
+>- Url of a chapter: https://www.scan-vf.net/one_piece/chapitre-1/1.
+>- Url of a book: https://www.scan-vf.net/one_piece.
 
-#### Anime-sama.fr
+##### Anime-sama.fr
 
-For anime-sama, open any chapter of the scan and copy-paste the url. You will choose the chapter later.<br>
-The url should look like this: https://anime-sama.fr/catalogue/one-piece/scan/vf/.
+>Open any chapter of the scan and copy-paste the url.<br>
+>The url should look like this: https://anime-sama.fr/catalogue/one-piece/scan/vf/.
 
-### Where do I need to paste the scan url ?
+### Select the chapters
 
-In the app directory (next to the .exe file), you will find Settings.json. This files keep all the settings you can parameter when using the app.<br>
-To add a the url of a scan look for the section called *ScansUrlAndCorrespondingChapters*. By default, it should look like this:
-```
- "ScansUrlAndCorrespondingChapters":
- {
-     "https://www.scan-vf.net/one_piece/chapitre-1/1": "",
-     "https://anime-sama.fr/catalogue/one-piece/scan/vf/": "2-4;5"
- },
-```
-Every line inside *ScansUrlAndCorrespondingChapters* represent a scan url and, optionnally, the chapters to download. *Providing the chapter number here is optionnal, if no chapter are specified the app will ask you the chapters before downloading*. <br>
+<p align="center"><img src="ReadMe/chapterSelectionWindow.png" width="480" height="270" alt="Screenshot of the chapter selection window"></p><br>
 
-Let's check exactly what represent each line:
-- `"https://www.scan-vf.net/one_piece/chapitre-1/1": ""`<br>
-> The first part (before :) is the url of the scan (https://www.scan-vf.net/one_piece/chapitre-1/1), in this case the url already specify a chapter<br>
-> The second part (after :) is the chapter to download (""), this is optionnal and since the chapter is already specified in the url we leave it empty.
+Add chapters one by one or directly enter a range of chapters. You can also mix both possibilities. If the url you entered was specifying a chapter the chapter should be added automatically to the chapter selection.
 
-- `"https://anime-sama.fr/catalogue/one-piece/scan/vf/": "2-4;5"`<br>
-> The first part (before :) is the url of the scan (https://anime-sama.fr/catalogue/one-piece/scan/vf/)<br>
-> The second part (after :) are the chapters to download ("2-4;5"), here we provide chapters 2 to 4 and chapter 5. [See more about Chapter selection here](#chapter-selection).
+### Retrieve scan data
 
-### Adding a new url
+<p align="center"><img src="ReadMe/retrieveDataWindow.png" width="480" height="270" alt="Screenshot of the retrieve data window"></p><br>
 
-To add a new scan in the list you just new to add a new line. For example, if I want to add the first chapter of Berserk on anime-sama.fr, I will add `"https://anime-sama.fr/catalogue/berserk/scan/vf/": "1"`.<br>
-Now the section *ScansUrlAndCorrespondingChapters* should look like this:
+In this step the app will automatically look online to collect the data necessary to download the scan for each chapters. **The scans are not downloaded during this steps we only get the necessary data to successfully download the scans later**.
+Wait for the completion of the scan data retrieval, once it's done you will be able to click the finish button and the scan data will be added in the scan manager view.<br>
 
-```
-"ScansUrlAndCorrespondingChapters":
-{
-    "https://www.scan-vf.net/one_piece/chapitre-1/1": "",
-     "https://anime-sama.fr/catalogue/one-piece/scan/vf/": "2-4;5"
-    "https://anime-sama.fr/catalogue/berserk/scan/vf/": "1"
-},
-```
+<p align="center"><img src="ReadMe/mainWindowWithScans.png" width="768" height="450" alt="Screenshot of the scan manager window with some scan data"></p>
 
-If I want to remove the default One-Piece urls, keep Berserk url and add the second chapter of Jujutsu Kaisen on scan-vf.net (`"https://www.scan-vf.net/jujutsu-kaisen": "2"`), I will have:
 
-```
- "ScansUrlAndCorrespondingChapters":
- {
-     "https://anime-sama.fr/catalogue/berserk/scan/vf/": "1",
-     "https://www.scan-vf.net/jujutsu-kaisen": "2"
- },
-```
-> **! Every line inside *ScansUrlAndCorrespondingChapters* should end with a coma except the last one.**
+## Download scans
 
-### Chapter selection
+<p align="center"><img src="ReadMe/downloadWindow.PNG" width="768" height="450" alt="Screenshot of the download window"></p><br>
 
-The syntax to provide chapter is the same in Settings.json and inside the app if you're asked to provide a chapter.<br>
-It's quite simple: either you provide a range of chapter (separated by -), either you provide single chapter and you can separate every entry with ;. Let's check some examples:
-- I want chapters 1 to 10: `1-10`.
-- I want chapter 2, 46 and 99: `2;46;99`.
-- I want chapters 9 to 20 and chapter 61, : `9-20;61`.
-- I want chapter 1, chapters 7 to 12, chapter 25 and chapters 30, : `1;7-12;25;30`.
+### Select some scans to download
 
-# Available Settings
- 
-```
-{
-  "ScansUrlAndCorrespondingChapters":
-  {
-    "https://www.scan-vf.net/one_piece/chapitre-1/1": "",
-     "https://anime-sama.fr/catalogue/one-piece/scan/vf/": "2-4;5"
-  },
+To download a scan you must first select them for download in the scan manager view. To select a scan just click on the checkbox to tick it. When you add a new scan, it is automatically selected for download by default.
 
-  "CustomFolderPath": "",
+### Download the scans
 
-  "CreateCbzArchive": true,
-
-  "DeleteImagesAfterCbzCreation": false,
-
-  "OpenOutputDirectoryWhenClosing": true,
-
-  "ErrorsPauseApp": true,
-
-  "AutoOpenJsonWhenNecessary": true
-}
-```
-This is the whole default Settings.json, as you can see there is more settings than just *ScansUrlAndCorrespondingChapters*. Here is an explanation for each settings:
-
-#### CustomFolderPath
-By default, the download directory will be the path of windows download directory but you can change it to anything by providing a custom path here.<br>
-> For example, here I set my download path to be "C:\Users\AnyUserName\ScanNetDownloader": <br>
-> `"CustomFolderPath": "C:\\Users\\AnyUserName\\ScanNetDownloader",`<br>
-> **All the \ in the path name must be doubled otherwise the path will not work correctly**
-
-#### CreateCbzArchive
-Do you to create a cbz archive once a chapter is downloaded, this can be set to **true** or **false**.
-
-#### DeleteImagesAfterCbzCreation
-When creating a cbz archive do you want to delete the image downloaded once the cbz is successfully created, this can be set to **true** or **false**.
-
-#### OpenOutputDirectoryWhenClosing
-Do you want to open the folder where everything has been downloaded when closing the app, this can be set to **true** or **false**.
-
-#### ErrorsPauseApp
-Do you to pause the app when an error happen or do you want to continue anyway, this can be set to **true** or **false**. If you select **false** a list of error will be displayed at the end of the download to let you know if some error happened during the download.
-
-#### AutoOpenJsonWhenNecessary
-Do you to automatically open Settings.json when the app require a change in it, this can be set to **true** or **false**.
+You can either directly click the "Start download" button in the scan manager view or open the download view and review the scans selected before starting the download from there. When you click to start the download a window will tell you where the scan will be download and ask you to confirm the start of the download. *If you want to change the download folder, cancel the download and change the download location in the options.*<br><br>
+After a scan is downloaded, a .cbz archive is automatically created unless you disabled it in the option. Once the download is complete, by default, an explorer window is opened at the location of the downloaded files.
