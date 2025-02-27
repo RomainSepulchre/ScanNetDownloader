@@ -10,6 +10,7 @@ You provide a scan url to download and the software will do the rest.
 # What are the compatible scan websites ?
 
 Currently, the compatible website are:
+
 - www.scan-vf.net
 - www.anime-sama.fr
 
@@ -33,12 +34,14 @@ Just enter the url of the scan in the text field and click "Next". If the url is
 >If you encounter a case where you think the url is valid but an alert is triggered please open an issue and specify the url in it. That will help me to take into account possibilities I has not expected.
 
 #### Compatibles url
+
 In most of the case if you copy-paste the link of the first page of the scan you want to download it should work but depending on the website you may have more options.
 
 ##### Scan-vf.net
 
 >You can either provide directly the url of a chapter or the url of the book.<br>
 >Here is an example for both possibilities:
+>
 >- Url of a chapter: https://www.scan-vf.net/one_piece/chapitre-1/1.
 >- Url of a book: https://www.scan-vf.net/one_piece.
 
@@ -61,7 +64,6 @@ In this step the app will automatically look online to collect the data necessar
 Wait for the completion of the scan data retrieval, once it's done you will be able to click the finish button and the scan data will be added in the scan manager view.<br>
 
 <p align="center"><img src="ReadMe/mainWindowWithScans.png" width="768" height="450" alt="Screenshot of the scan manager window with some scan data"></p>
-
 
 ## Download scans
 

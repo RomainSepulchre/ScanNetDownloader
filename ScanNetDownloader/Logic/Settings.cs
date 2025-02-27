@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using ScanNetDownloader.Logic.Helpers;
 using ScanNetDownloader.View;
+using ScanNetDownloader.View.CustomControls;
 using System.Diagnostics;
 using System.IO;
 
@@ -63,6 +64,11 @@ namespace ScanNetDownloader.Logic
         /// Should the program automatically open Settings.json when you need to check something in it (Default=True)
         /// </summary>
         public bool AutoOpenJsonWhenNecessary { get; set; } = true; // TODO: Do we still really need this, if yes add to optionsView
+
+        /// <summary>
+        /// Last property used to sort the ScanManager ListView, to use the same property next time we open the app
+        /// </summary>
+        public string ScanManagerListViewSortProperty { get; set; } = nameof(ScanItem.BookName);
 
         public static void InitializeAppSettings()
         {

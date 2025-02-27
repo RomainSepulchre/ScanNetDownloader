@@ -1,23 +1,10 @@
 ﻿using ScanNetDownloader.Logic;
 using ScanNetDownloader.Logic.Helpers;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using ScanNetDownloader.Logic.Helpers;
 
 namespace ScanNetDownloader.View.CustomControls
 {
@@ -76,6 +63,9 @@ namespace ScanNetDownloader.View.CustomControls
             {
                 RefreshScanListView(); // Populate listView based on the local data
                 // Note: Settings are refreshed at OptionsView Initialization
+
+                // Sort the list view using the book name alphabetical order
+                GridViewSorter.ApplySort(listVwScans, Settings.Instance.ScanManagerListViewSortProperty);
             }
 
             if (ScanListItems.Count == 0) stPanelNoScans.Visibility = Visibility.Visible;

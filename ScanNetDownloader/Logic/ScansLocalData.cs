@@ -24,7 +24,7 @@ namespace ScanNetDownloader.Logic
         public static void InitializeScansData()
         {
             Instance = LoadData(Constants.SCANSLOCALDATA_JSON_PATH);
-            Instance.Log();
+            //Instance.Log();
         }
 
         private static ScansLocalData LoadData(string jsonPath)

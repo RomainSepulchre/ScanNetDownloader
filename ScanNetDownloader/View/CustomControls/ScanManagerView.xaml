@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ScanNetDownloader.View.CustomControls"
+             xmlns:sorter="clr-namespace:ScanNetDownloader.Logic.Helpers"
              mc:Ignorable="d" 
              d:DesignHeight="660" d:DesignWidth="1280">
     
@@ -47,12 +48,13 @@
             </Button>
         </StackPanel>
 
-        <ListView Grid.Row="1" ItemContainerStyle="{StaticResource testForScanManager}" Name="listVwScans" ItemsSource="{Binding Source={StaticResource ScanItemsSource}, UpdateSourceTrigger=PropertyChanged}" SelectionMode="Single" HorizontalContentAlignment="Stretch" Background="{StaticResource Colors.LightGrey}" BorderThickness="0">
+        <ListView Grid.Row="1" ItemContainerStyle="{StaticResource testForScanManager}" Name="listVwScans" ItemsSource="{Binding Source={StaticResource ScanItemsSource}, UpdateSourceTrigger=PropertyChanged}" SelectionMode="Single" HorizontalContentAlignment="Stretch" Background="{StaticResource Colors.LightGrey}" BorderThickness="0"
+                  sorter:GridViewSorter.AutoSort="True">
             <ListView.View>
                 <GridView AllowsColumnReorder="True" ColumnHeaderContainerStyle="{StaticResource testColumnsHeader}">
 
                     <!--Select for download column-->
-                    <GridViewColumn Width="40" HeaderTemplate="{StaticResource gridHeaderCheckboxIcon}"> 
+                    <GridViewColumn Width="40" HeaderTemplate="{StaticResource gridHeaderCheckboxIcon}" sorter:GridViewSorter.PropertyName="IsSelectedForDownload"> 
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <CheckBox IsChecked="{Binding Path=IsSelectedForDownload}" ToolTip="Select this scan for download" HorizontalAlignment="Center" Margin="3 0 0 0"/>
@@ -61,7 +63,7 @@
                     </GridViewColumn>
                     
                     <!--Download status column-->
-                    <GridViewColumn Width="40" HeaderTemplate="{StaticResource gridHeaderDownloadIcon}">
+                    <GridViewColumn Width="40" HeaderTemplate="{StaticResource gridHeaderDownloadIcon}" sorter:GridViewSorter.PropertyName="DownloadStatus">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <Grid>
@@ -75,10 +77,10 @@
                     </GridViewColumn>
                     
                     <!--Book name column-->
-                    <GridViewColumn Header="Book name" DisplayMemberBinding="{Binding Path=BookName}" Width="470"/>
+                    <GridViewColumn Header="Book name" DisplayMemberBinding="{Binding Path=BookName}" Width="470" sorter:GridViewSorter.PropertyName="BookName"/>
                     
                     <!--Chapter column-->
-                    <GridViewColumn Header="Chapter" Width="100">
+                    <GridViewColumn Header="Chapter" Width="100" sorter:GridViewSorter.PropertyName="ChapterId">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=ChapterId}" TextAlignment="Center" VerticalAlignment="Center"/>
@@ -87,7 +89,7 @@
                     </GridViewColumn>
                         
                     <!--Pages column-->
-                    <GridViewColumn Header="Pages" Width="100">
+                    <GridViewColumn Header="Pages" Width="100" sorter:GridViewSorter.PropertyName="PagesCount">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=PagesCount}" TextAlignment="Center" VerticalAlignment="Center"/>
@@ -96,7 +98,7 @@
                     </GridViewColumn>
                         
                     <!--Website column-->
-                    <GridViewColumn Header="Website" Width="250">
+                    <GridViewColumn Header="Website" Width="250" sorter:GridViewSorter.PropertyName="Website">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Path=Website}" TextAlignment="Center" VerticalAlignment="Center"/>
