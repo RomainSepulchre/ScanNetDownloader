@@ -18,6 +18,9 @@ namespace ScanNetDownloader.Logic
                 case string s when s.Contains(Constants.ANIMESAMA_DOMAIN_NAME):
                     return await AnimeSamaFrScanData.IsUrlValid(url);
 
+                case string s when s.Contains(Constants.LELSCANS_DOMAIN_NAME):
+                    return await LelScansNetScanData.IsUrlValid(url);
+
                 default:
                     NotImplementedException exception = Exceptions.UnknownWebDomain(url);
                     Error.UnknownScanWebDomain(url, exception);
@@ -35,6 +38,9 @@ namespace ScanNetDownloader.Logic
 
                 case string s when s.Contains(Constants.ANIMESAMA_DOMAIN_NAME):
                     return new AnimeSamaFrScanData(url);
+
+                case string s when s.Contains(Constants.LELSCANS_DOMAIN_NAME):
+                    return new LelScansNetScanData(url);
 
                 default: // Default, unknown domain name
                     NotImplementedException exception = Exceptions.UnknownWebDomain(url);
@@ -54,6 +60,10 @@ namespace ScanNetDownloader.Logic
                 case string s when s.Contains(Constants.ANIMESAMA_DOMAIN_NAME):
                     ScanData animeSamaData = new AnimeSamaFrScanData(url, chapterSelected);
                     return await animeSamaData.InitScanData();
+
+                case string s when s.Contains(Constants.LELSCANS_DOMAIN_NAME):
+                    ScanData lelScanNetData = new LelScansNetScanData(url, chapterSelected);
+                    return await lelScanNetData.InitScanData();
 
                 default: // Default, unknown domain name
                     NotImplementedException exception = Exceptions.UnknownWebDomain(url);

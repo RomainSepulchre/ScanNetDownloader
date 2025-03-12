@@ -145,6 +145,29 @@ namespace ScanNetDownloader.Logic
             return result;
         }
 
+        protected async Task<HtmlContentResult> GetUrlHtmlContent(string url)
+        {
+            HtmlContentResult result = new HtmlContentResult();
+
+            HttpClient client = HttpClientSingleton.Client;
+            try
+            {
+                result.HtmlContent = await client.GetStringAsync(url);
+                result.Success = true;
+            }
+            catch (HttpRequestException ex)
+            {
+                //TODO: Check ex.StatusCode to know act depending on the type of error
+                Debug.WriteLine(ex);
+                Error.FailedHtmlDownload(ex, url);
+                result.Success = false;
+                result.StatusCode = ex.StatusCode;
+                result.Exception = ex;
+                result.HtmlContent = null;
+            }
+            return result;
+        }
+
         public static async Task<UrlLoadResult> UrlLoadCorrectlyAsync(string url, int timeout = 1500)
         {
             UrlLoadResult result = new UrlLoadResult(url);
