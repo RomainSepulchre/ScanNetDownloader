@@ -287,7 +287,7 @@ namespace ScanNetDownloader.Logic
                         imgUrl = $"{Constants.LELSCANS_IMG_URL_ROOT}{imgUrl}"; // The url we get miss the domain name so we add it back
                         imgUrls.Add(imgUrl);
                     }
-                    else // The url doesn't seems to be an image url
+                    else // There is no img url the our final split
                     {
                         // Unable to find an img url in the html, add an error tag with a msg
                         imgUrls.Add($"{Constants.ERROR_IMG_URL_TAG}Unable to find image url in html content for {pageUrl}");

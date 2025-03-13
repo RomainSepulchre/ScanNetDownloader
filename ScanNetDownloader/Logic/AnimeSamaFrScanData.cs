@@ -232,6 +232,7 @@ namespace ScanNetDownloader.Logic
                 return urlLoadResult.Success;
             }
 
+            // TODO: Improve to try next page when it fails to prevent stopping if one img url in the middle doesn't work
             while (await UrlLoadSuccessfully(imgUrl))
             {
                 imgUrls.Add(imgUrl);

@@ -106,9 +106,9 @@ namespace ScanNetDownloader.Logic
             },
             { LELSCANS_DOMAIN_NAME, new List<string>()
                 {
-                "https://lelscans.net/scan-bleach/686",
-                "https://lelscans.net/scan-bleach/686/1",
-                "https://lelscans.net/lecture-ligne-bleach.php"
+                "https://lelscans.net/scan-one-piece/1142",
+                "https://lelscans.net/scan-one-piece/1142/1",
+                "https://lelscans.net/lecture-ligne-one-piece"
                 }
             }
         };
