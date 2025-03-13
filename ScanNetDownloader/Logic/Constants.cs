@@ -81,6 +81,8 @@ namespace ScanNetDownloader.Logic
         public const string JPG_EXTENSION = ".jpg";
         public const string CBZ_EXTENSION = ".cbz";
 
+        public const string ERROR_IMG_URL_TAG = "ERROR IMG URL - ";
+
         public static readonly List<string> COMPATIBLE_SCAN_WEBSITES = new List<string>()
         {
             SCANVF_DOMAIN_NAME,
