@@ -251,8 +251,8 @@ namespace ScanNetDownloader.Logic
 
                 if(pageContentResult.Success == false) // We can get html content
                 {
-                    // TODO: Error management here
-                    // Skip url we were unable to get html from the page
+                    // Unable to get html from the page url, add an error tag with a msg
+                    imgUrls.Add($"{Constants.ERROR_IMG_URL_TAG}Unable to download html content for {pageUrl}");
                     continue;
                 }
                 else
@@ -289,8 +289,8 @@ namespace ScanNetDownloader.Logic
                     }
                     else // The url doesn't seems to be an image url
                     {
-                        // TODO: Error management here
-                        // Skip url if we were unable to find an img url
+                        // Unable to find an img url in the html, add an error tag with a msg
+                        imgUrls.Add($"{Constants.ERROR_IMG_URL_TAG}Unable to find image url in html content for {pageUrl}");
                         continue;
                     }
                 }           
