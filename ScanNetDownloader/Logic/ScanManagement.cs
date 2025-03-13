@@ -83,7 +83,6 @@ namespace ScanNetDownloader.Logic
             switch (url)
             {
                 case string s when s.Contains(Constants.SCANVF_DOMAIN_NAME):
-
                     foreach (int chapterId in chaptersSelected)
                     {
                         ScanData scanVfNetData = new ScanVfNetScanData(url, chapterId);
@@ -94,12 +93,21 @@ namespace ScanNetDownloader.Logic
                     break;
 
                 case string s when s.Contains(Constants.ANIMESAMA_DOMAIN_NAME):
-
                     foreach(int chapterId in chaptersSelected)
                     {
                         ScanData animeSamaData = new AnimeSamaFrScanData(url, chapterId);
                         ScanDataInitResult initResult = await animeSamaData.InitScanData();
                         if(initResult.Success) newScanDatas.Add(animeSamaData);
+                        //TODO: Else Error Management
+                    }
+                    break;
+
+                case string s when s.Contains(Constants.LELSCANS_DOMAIN_NAME):
+                    foreach (int chapterId in chaptersSelected)
+                    {
+                        ScanData lelScanNetData = new LelScansNetScanData(url, chapterId);
+                        ScanDataInitResult initResult = await lelScanNetData.InitScanData();
+                        if (initResult.Success) newScanDatas.Add(lelScanNetData);
                         //TODO: Else Error Management
                     }
                     break;
