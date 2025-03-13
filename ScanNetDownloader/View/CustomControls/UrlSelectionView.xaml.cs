@@ -71,7 +71,7 @@ namespace ScanNetDownloader.View.CustomControls
             // For easier debug
             //UrlInput = "https://www.scan-vf.net/jujutsu-kaisen/chapitre-18/1";
             //UrlInput = "https://anime-sama.fr/catalogue/20th-century-boys/scan-21st-century-boys/vf/";
-            UrlInput = "https://lelscans.net/scan-hunter-x-hunter/410/3";
+            UrlInput = "https://lelscans.net/scan-one-piece/1117";
 #endif
 
             btnNext.IsEnabled = string.IsNullOrEmpty(UrlInput) == false;

@@ -236,9 +236,8 @@ namespace ScanNetDownloader.Logic
                 }
             }
 
-            navUrls = navUrls.Distinct().ToList(); // remove duplicated url caused by previous and next buttons
-
-            // TODO: remove links to next chapter
+            navUrls = navUrls.Distinct().ToList(); // remove duplicated url caused by previous and next buttons            
+            navUrls.RemoveAll(s => s.Contains(ChapterId.ToString()) == false); // Remove links that point to next chapter
 
             navUrls.Log();
             Debug.WriteLine("\n");
@@ -296,7 +295,6 @@ namespace ScanNetDownloader.Logic
                 }           
             }
 
-            imgUrls.Sort();
             imgUrls.Log();
             Debug.WriteLine("\n");
 
