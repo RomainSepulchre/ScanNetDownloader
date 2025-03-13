@@ -88,11 +88,27 @@ namespace ScanNetDownloader.Logic
             LELSCANS_DOMAIN_NAME
         };
 
-        public static readonly Dictionary<string, string> EXAMPLE_URLS = new Dictionary<string, string>()
+        public static readonly Dictionary<string, List<string>> EXAMPLE_URLS = new Dictionary<string, List<string>>()
         {
-            { SCANVF_DOMAIN_NAME, "https://www.scan-vf.net/one_piece or https://www.scan-vf.net/one_piece/chapitre-1/1" },
-            { ANIMESAMA_DOMAIN_NAME, "https://anime-sama.fr/catalogue/berserk/scan/vf/" },
-            { LELSCANS_DOMAIN_NAME, "https://lelscans.net/scan-bleach/686, https://lelscans.net/scan-bleach/686/1 or https://lelscans.net/lecture-ligne-bleach.php "}
+            { SCANVF_DOMAIN_NAME, new List<string>()
+                {
+                    "https://www.scan-vf.net/one_piece",
+                    "https://www.scan-vf.net/one_piece/chapitre-1133/1"
+                }
+            },
+            { ANIMESAMA_DOMAIN_NAME, new List<string>()
+                {
+                    "https://anime-sama.fr/catalogue/one-piece/scan_noir-et-blanc/vf/ (for scan in french)",
+                    "https://anime-sama.fr/catalogue/one-piece/scan_noir-et-blanc/va/ (for scan in english)"
+                }
+            },
+            { LELSCANS_DOMAIN_NAME, new List<string>()
+                {
+                "https://lelscans.net/scan-bleach/686",
+                "https://lelscans.net/scan-bleach/686/1",
+                "https://lelscans.net/lecture-ligne-bleach.php"
+                }
+            }
         };
 
         #endregion

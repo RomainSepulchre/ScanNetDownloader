@@ -14,7 +14,7 @@ namespace ScanNetDownloader.Logic
     {
         /// <summary>
         /// This constructor only purpose is for Json deserialization.
-        /// Apparently passed variable name ABSOLUTELY must the same as its destination value name  (ex: url-> Url, websiteDomain -> WebsiteDomain).
+        /// Apparently passed variable name ABSOLUTELY must be the same as its destination value name  (ex: url-> Url, websiteDomain -> WebsiteDomain).
         /// </summary>
         /// <param name="url"></param>
         /// <param name="websiteDomain"></param>
