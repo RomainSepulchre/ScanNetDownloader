@@ -118,5 +118,75 @@ namespace ScanNetDownloader.Logic.Helpers
             }
             return scansToDownload;
         }
+
+        public static int CountDigits(this int n)
+        {
+            // if chain is apprently faster than using log10, while loop, or ToString().Count (https://stackoverflow.com/questions/4483886/how-can-i-get-a-count-of-the-total-number-of-digits-in-a-number)
+            if (n >= 0)
+            {
+                if (n < 10) return 1;
+                if (n < 100) return 2;
+                if (n < 1000) return 3;
+                if (n < 10000) return 4;
+                if (n < 100000) return 5;
+                if (n < 1000000) return 6;
+                if (n < 10000000) return 7;
+                if (n < 100000000) return 8;
+                if (n < 1000000000) return 9;
+                return 10;
+            }
+            else
+            {
+                if (n > -10) return 2;
+                if (n > -100) return 3;
+                if (n > -1000) return 4;
+                if (n > -10000) return 5;
+                if (n > -100000) return 6;
+                if (n > -1000000) return 7;
+                if (n > -10000000) return 8;
+                if (n > -100000000) return 9;
+                if (n > -1000000000) return 10;
+                return 11;
+            }
+        }
+
+        public static int GetFirstDigit(this int n)
+        {
+            int firstdigit;
+            if (n < 10)
+                firstdigit = n;
+            else if (n < 100)
+                firstdigit = n / 10;
+            else if (n < 1000)
+                firstdigit = n / 100;
+            else if (n < 10000)
+                firstdigit = n / 1000;
+            else if (n < 100000)
+                firstdigit = n / 10000;
+            else if (n < 1000000)
+                firstdigit = n / 100000;
+            else if (n < 10000000)
+                firstdigit = n / 1000000;
+            else if (n < 100000000)
+                firstdigit = n / 10000000;
+            else if (n < 1000000000)
+                firstdigit = n / 100000000;
+            else
+                firstdigit = n / 1000000000;
+
+            return firstdigit;
+        }
+
+        public static int GetFirstDigits(this int n, int count)
+        {
+            int nDigitCount = n.CountDigits();
+            if (count >= nDigitCount) return n;
+            else
+            {
+                int digitDiff = nDigitCount - count;
+
+                return n / (int)Math.Pow(10, digitDiff);
+            }
+        }
     }
 }

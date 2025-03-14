@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
-using ScanNetDownloader.Logic.Helpers;
 
 namespace ScanNetDownloader.View.CustomControls
 {
@@ -26,7 +25,6 @@ namespace ScanNetDownloader.View.CustomControls
         }
 
         private int _selectedCount;
-
         public int SelectedCount
         {
             get { return _selectedCount; }
@@ -43,14 +41,16 @@ namespace ScanNetDownloader.View.CustomControls
             }
         }
 
-
         public static RoutedEvent StartDownloadEvent = EventManager.RegisterRoutedEvent(nameof(StartDownload), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ScanManagerView));
-
         public event RoutedEventHandler StartDownload
         {
             add { AddHandler(StartDownloadEvent, value); }
             remove { RemoveHandler(StartDownloadEvent, value); }
         }
+
+        private string SortPropertyBeforeSearch = string.Empty;
+
+
 
         public ScanManagerView()
         {
@@ -270,6 +270,85 @@ namespace ScanNetDownloader.View.CustomControls
             }
 
             if(SelectedCount == 0) btnStart.IsEnabled = false;
+        }
+
+        // TODO: Clean this and place logically in code
+        private void txtBoxSearch_TextInputChanged(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(txtBoxSearch.TxtInput))
+            {
+                listVwScans.Items.Filter = null;
+
+                // Revert sort mode
+                if (string.IsNullOrEmpty(SortPropertyBeforeSearch) == false)
+                {
+                    GridViewSorter.ApplySort(listVwScans, SortPropertyBeforeSearch);
+                    Debug.WriteLine($"REVERT SORT MODE TO: {SortPropertyBeforeSearch}");
+                    SortPropertyBeforeSearch = string.Empty;
+                }
+            }
+            else
+            {
+                listVwScans.Items.Filter = FilterBookNameAndChapterId;
+
+                string currentSortProperty = listVwScans.Items.SortDescriptions[0].PropertyName;
+                if (string.IsNullOrEmpty(SortPropertyBeforeSearch))
+                {
+                    SortPropertyBeforeSearch = currentSortProperty;
+                }
+
+                bool IsNumber = int.TryParse(txtBoxSearch.TxtInput, out int searchedInt);
+                if (IsNumber)
+                {
+                    if(currentSortProperty != nameof(ScanItem.ChapterId))
+                    {
+                        GridViewSorter.ApplySort(listVwScans, nameof(ScanItem.ChapterId));
+                        Debug.WriteLine($"FORCE SORT MODE TO: {nameof(ScanItem.ChapterId)}");
+                    }
+                }
+                else
+                {
+                    if (currentSortProperty != nameof(ScanItem.BookName))
+                    {
+                        GridViewSorter.ApplySort(listVwScans, nameof(ScanItem.BookName));
+                        Debug.WriteLine($"FORCE SORT MODE TO: {nameof(ScanItem.BookName)}");
+                    } 
+                }
+            }
+        }
+
+        private bool FilterBookNameAndChapterId(object obj)
+        {
+            ScanItem item = obj as ScanItem;
+
+            string search = txtBoxSearch.TxtInput.ToLower();
+
+            bool matchingBookName = item.BookName.ToLower().Contains(search);
+            bool searchIsNumber = int.TryParse(search, out int searchedInt);
+
+            if (matchingBookName) return true;
+            else if (searchIsNumber)
+            {
+                bool matchingChapterId = item.ChapterId == searchedInt;
+
+                if(matchingChapterId) return true;
+                else
+                {
+                    int searchedIntDigitCount = searchedInt.CountDigits();
+                    int chapterIdDigitCount = item.ChapterId.CountDigits();
+                    if (searchedInt > 0 && searchedIntDigitCount < chapterIdDigitCount)
+                    {
+                        bool matchingFirstDigits = item.ChapterId.GetFirstDigits(searchedIntDigitCount) == searchedInt;
+                        if(matchingFirstDigits)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            // No matching condition 
+            return false;
         }
     }
 }
