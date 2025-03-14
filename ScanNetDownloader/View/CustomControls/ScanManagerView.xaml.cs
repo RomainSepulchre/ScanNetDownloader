@@ -1,7 +1,9 @@
 ﻿using ScanNetDownloader.Logic;
 using ScanNetDownloader.Logic.Helpers;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -10,9 +12,11 @@ namespace ScanNetDownloader.View.CustomControls
     /// <summary>
     /// Logique d'interaction pour ScanManagerView.xaml
     /// </summary>
-    public partial class ScanManagerView : UserControl
+    public partial class ScanManagerView : UserControl, INotifyPropertyChanged
     {
         private List<ScanData> ScanDatas => ScansLocalData.Instance.ScanDataList;
+
+        private string SortPropertyBeforeSearch = string.Empty;
 
         private ObservableCollection<ScanItem> _scanListItems;
         public ObservableCollection<ScanItem> ScanListItems
@@ -41,6 +45,17 @@ namespace ScanNetDownloader.View.CustomControls
             }
         }
 
+        private string _filterSearch = "";
+        public string FilterSearch
+        {
+            get { return _filterSearch; }
+            set {
+                _filterSearch = value;
+                OnPropertyChanged();
+            }
+        }
+
+
         public static RoutedEvent StartDownloadEvent = EventManager.RegisterRoutedEvent(nameof(StartDownload), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ScanManagerView));
         public event RoutedEventHandler StartDownload
         {
@@ -48,9 +63,11 @@ namespace ScanNetDownloader.View.CustomControls
             remove { RemoveHandler(StartDownloadEvent, value); }
         }
 
-        private string SortPropertyBeforeSearch = string.Empty;
-
-
+        public event PropertyChangedEventHandler? PropertyChanged;
+        private void OnPropertyChanged([CallerMemberName] string property = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+        }
 
         public ScanManagerView()
         {
@@ -275,7 +292,7 @@ namespace ScanNetDownloader.View.CustomControls
         // TODO: Clean this and place logically in code
         private void txtBoxSearch_TextInputChanged(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty(txtBoxSearch.TxtInput))
+            if (string.IsNullOrEmpty(FilterSearch))
             {
                 listVwScans.Items.Filter = null;
 
@@ -283,8 +300,13 @@ namespace ScanNetDownloader.View.CustomControls
                 if (string.IsNullOrEmpty(SortPropertyBeforeSearch) == false)
                 {
                     GridViewSorter.ApplySort(listVwScans, SortPropertyBeforeSearch);
-                    Debug.WriteLine($"REVERT SORT MODE TO: {SortPropertyBeforeSearch}");
                     SortPropertyBeforeSearch = string.Empty;
+                }
+
+                // Hide no result message if it was displayed
+                if (stPanelNoMatchingResult.Visibility == Visibility.Visible)
+                {
+                    stPanelNoMatchingResult.Visibility = Visibility.Collapsed;
                 }
             }
             else
@@ -297,13 +319,12 @@ namespace ScanNetDownloader.View.CustomControls
                     SortPropertyBeforeSearch = currentSortProperty;
                 }
 
-                bool IsNumber = int.TryParse(txtBoxSearch.TxtInput, out int searchedInt);
+                bool IsNumber = int.TryParse(FilterSearch, out int searchedInt);                
                 if (IsNumber)
                 {
                     if(currentSortProperty != nameof(ScanItem.ChapterId))
                     {
                         GridViewSorter.ApplySort(listVwScans, nameof(ScanItem.ChapterId));
-                        Debug.WriteLine($"FORCE SORT MODE TO: {nameof(ScanItem.ChapterId)}");
                     }
                 }
                 else
@@ -311,8 +332,17 @@ namespace ScanNetDownloader.View.CustomControls
                     if (currentSortProperty != nameof(ScanItem.BookName))
                     {
                         GridViewSorter.ApplySort(listVwScans, nameof(ScanItem.BookName));
-                        Debug.WriteLine($"FORCE SORT MODE TO: {nameof(ScanItem.BookName)}");
                     } 
+                }
+
+                // Display a message if no scan data match the search
+                if(listVwScans.Items.Count == 0)
+                {
+                    stPanelNoMatchingResult.Visibility = Visibility.Visible;
+                }
+                else if (stPanelNoMatchingResult.Visibility == Visibility.Visible)
+                {
+                    stPanelNoMatchingResult.Visibility = Visibility.Collapsed;
                 }
             }
         }
@@ -321,7 +351,7 @@ namespace ScanNetDownloader.View.CustomControls
         {
             ScanItem item = obj as ScanItem;
 
-            string search = txtBoxSearch.TxtInput.ToLower();
+            string search = FilterSearch.ToLower();
 
             bool matchingBookName = item.BookName.ToLower().Contains(search);
             bool searchIsNumber = int.TryParse(search, out int searchedInt);

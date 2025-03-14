@@ -46,7 +46,7 @@
                     </StackPanel>
                 </Button.Content>
             </Button>
-            <local:TextInputBox x:Name="txtBoxSearch" PlaceholderText="Search for a book or chapter..." DockPanel.Dock="Right" Width="200" TxtPadding="4 0 0 0" ShowClearBtn="True" TextInputChanged="txtBoxSearch_TextInputChanged"/>
+            <local:TextInputBox x:Name="txtBoxSearch" TxtInput="{Binding FilterSearch,Mode=OneWayToSource}" PlaceholderText="Search for a book or chapter..." DockPanel.Dock="Right" Width="200" TxtPadding="4 0 0 0" ShowClearBtn="True" TextInputChanged="txtBoxSearch_TextInputChanged"/>
         </DockPanel>
 
         <ListView Grid.Row="1" ItemContainerStyle="{StaticResource testForScanManager}" Name="listVwScans" ItemsSource="{Binding Source={StaticResource ScanItemsSource}, UpdateSourceTrigger=PropertyChanged}" SelectionMode="Single" HorizontalContentAlignment="Stretch" Background="{StaticResource Colors.LightGrey}" BorderThickness="0"
@@ -131,6 +131,12 @@
                 </Button.Content>
             </Button>
         </StackPanel>
-        
+
+        <StackPanel Grid.Row="1" Name="stPanelNoMatchingResult" VerticalAlignment="Top" Margin="0 80 0 0" Visibility="Collapsed">
+            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16">
+                <Span>No matching result for search "<Run Text="{Binding FilterSearch}" FontWeight="Bold"></Run>"...</Span>
+            </TextBlock>
+        </StackPanel>
+
     </Grid>
 </UserControl>
