@@ -119,9 +119,14 @@ namespace ScanNetDownloader.Logic.Helpers
             return scansToDownload;
         }
 
+        /// <summary>
+        /// Count the number of digits in a given int
+        /// </summary>
+        /// <param name="n">int that calls the method</param>
+        /// <returns></returns>
         public static int CountDigits(this int n)
         {
-            // if chain is apprently faster than using log10, while loop, or ToString().Count (https://stackoverflow.com/questions/4483886/how-can-i-get-a-count-of-the-total-number-of-digits-in-a-number)
+            // if chain is apparently faster than using log10, while loop, or ToString().Count (https://stackoverflow.com/questions/4483886/how-can-i-get-a-count-of-the-total-number-of-digits-in-a-number)
             if (n >= 0)
             {
                 if (n < 10) return 1;
@@ -150,36 +155,57 @@ namespace ScanNetDownloader.Logic.Helpers
             }
         }
 
+        /// <summary>
+        /// Returns the first left digit of a given int
+        /// </summary>
+        /// <param name="n">int that calls the method</param>
+        /// <returns>first left digit of the int</returns>
         public static int GetFirstDigit(this int n)
         {
             int firstdigit;
-            if (n < 10)
-                firstdigit = n;
-            else if (n < 100)
-                firstdigit = n / 10;
-            else if (n < 1000)
-                firstdigit = n / 100;
-            else if (n < 10000)
-                firstdigit = n / 1000;
-            else if (n < 100000)
-                firstdigit = n / 10000;
-            else if (n < 1000000)
-                firstdigit = n / 100000;
-            else if (n < 10000000)
-                firstdigit = n / 1000000;
-            else if (n < 100000000)
-                firstdigit = n / 10000000;
-            else if (n < 1000000000)
-                firstdigit = n / 100000000;
+            if (n >= 0)
+            {
+                if (n < 10) firstdigit = n;
+                else if (n < 100) firstdigit = n / 10;
+                else if (n < 1000) firstdigit = n / 100;
+                else if (n < 10000) firstdigit = n / 1000;
+                else if (n < 100000) firstdigit = n / 10000;
+                else if (n < 1000000) firstdigit = n / 100000;
+                else if (n < 10000000) firstdigit = n / 1000000;
+                else if (n < 100000000) firstdigit = n / 10000000;
+                else if (n < 1000000000) firstdigit = n / 100000000;
+                else firstdigit = n / 1000000000;
+            }
             else
-                firstdigit = n / 1000000000;
+            {
+                if (n < -10) firstdigit = n;
+                else if (n < -100) firstdigit = n / 10;
+                else if (n < -1000) firstdigit = n / 100;
+                else if (n < -10000) firstdigit = n / 1000;
+                else if (n < -100000) firstdigit = n / 10000;
+                else if (n < -1000000) firstdigit = n / 100000;
+                else if (n < -10000000) firstdigit = n / 1000000;
+                else if (n < -100000000) firstdigit = n / 10000000;
+                else if (n < -1000000000) firstdigit = n / 100000000;
+                else firstdigit = n / 1000000000;
+            }
 
-            return firstdigit;
+
+                return firstdigit;
         }
 
+        /// <summary>
+        /// Returns the most left digits of a given int. The number of most left digits to return is defined by count.
+        /// For negative int, - is kept but not considered to be part of the digit count (with a count of 2, -123  will return -12).
+        /// </summary>
+        /// <param name="n">int that calls the method</param>
+        /// <param name="count">number of most left digits to return</param>
+        /// <returns>int of count digits with the most left digits of input int</returns>
         public static int GetFirstDigits(this int n, int count)
         {
             int nDigitCount = n.CountDigits();
+            if (n < 0) count += 1; // Increase count by one to take into account the - before negative int
+
             if (count >= nDigitCount) return n;
             else
             {
