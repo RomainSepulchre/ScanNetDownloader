@@ -17,6 +17,8 @@ namespace ScanNetDownloader.View.CustomControls
         private List<ScanData> ScanDatas => ScansLocalData.Instance.ScanDataList;
 
         private string SortPropertyBeforeSearch = string.Empty;
+        private List<string> SearchedWords = new List<string>();
+        private List<int> SearchedNumbers = new List<int>();
 
         private ObservableCollection<ScanItem> _scanListItems;
         public ObservableCollection<ScanItem> ScanListItems
@@ -311,18 +313,62 @@ namespace ScanNetDownloader.View.CustomControls
             }
             else
             {
-                listVwScans.Items.Filter = FilterBookNameAndChapterId;
+                // Clear searched terms
+                SearchedWords.Clear();
+                SearchedNumbers.Clear();
 
+                bool IsNumber = int.TryParse(FilterSearch, out int searchedInt);
+
+                if (IsNumber)
+                {
+                    // Search for a chapter
+                    SearchedWords.Add(FilterSearch); // also add number as word in case a book name with number was searched
+                    SearchedNumbers.Add(searchedInt);
+
+                    // Use search terms to filter view
+                    listVwScans.Items.Filter = FilterBookNameAndChapterId;
+                }
+                else
+                {
+                    // Split with space then check every split for number -> no need for regex, each term separated by space should be a term of search
+                    string[] searchTermsSplit = FilterSearch.Split(Constants.SPACE, StringSplitOptions.RemoveEmptyEntries);
+
+                    if (searchTermsSplit.Count() == 1)
+                    {
+                        // Search for this string
+                        SearchedWords.Add(searchTermsSplit[0]); 
+
+                        // Use search terms to filter view
+                        listVwScans.Items.Filter = FilterBookName;
+                    }
+                    else // Checks every split to know if they are string or numbers
+                    {
+                        foreach (string searchTerm in searchTermsSplit)
+                        {
+                            SearchedWords.Add(searchTerm); // Add every term as word (even number in case a book name with number was searched)
+
+                            bool termIsNumber = int.TryParse(searchTerm, out int termAsInt);
+                            if (termIsNumber) SearchedNumbers.Add(termAsInt);
+                            // TODO: special case
+                            // numbers separated by ,
+                            // Range with -
+                        }
+
+                        // Use search terms to filter view
+                        listVwScans.Items.Filter = FilterBookNameAndChapterId;
+                    }
+                }  
+
+                // Change colums sorting
                 string currentSortProperty = listVwScans.Items.SortDescriptions[0].PropertyName;
                 if (string.IsNullOrEmpty(SortPropertyBeforeSearch))
                 {
                     SortPropertyBeforeSearch = currentSortProperty;
                 }
 
-                bool IsNumber = int.TryParse(FilterSearch, out int searchedInt);                
-                if (IsNumber)
+                if (SearchedWords.Count == SearchedNumbers.Count) // All terms are numbers order by chapter
                 {
-                    if(currentSortProperty != nameof(ScanItem.ChapterId))
+                    if (currentSortProperty != nameof(ScanItem.ChapterId))
                     {
                         GridViewSorter.ApplySort(listVwScans, nameof(ScanItem.ChapterId));
                     }
@@ -332,7 +378,7 @@ namespace ScanNetDownloader.View.CustomControls
                     if (currentSortProperty != nameof(ScanItem.BookName))
                     {
                         GridViewSorter.ApplySort(listVwScans, nameof(ScanItem.BookName));
-                    } 
+                    }
                 }
 
                 // Display a message if no scan data match the search
@@ -351,25 +397,100 @@ namespace ScanNetDownloader.View.CustomControls
         {
             ScanItem item = obj as ScanItem;
 
-            string search = FilterSearch.ToLower();
-
-            bool matchingBookName = item.BookName.ToLower().Contains(search);
-            bool searchIsNumber = int.TryParse(search, out int searchedInt);
-
-            if (matchingBookName) return true;
-            else if (searchIsNumber)
+            // Check for perfect match
+            if(SearchedWords.Count >=2 && SearchedNumbers.Count == 1)
             {
-                bool matchingChapterId = item.ChapterId == searchedInt;
 
-                if(matchingChapterId) return true;
+                int chapterSearched = SearchedNumbers[0];
+                string words = string.Join(" ", SearchedWords.Where(s => !s.Equals(chapterSearched.ToString())));
+
+                bool matchingName = item.BookName.ToLower().Contains(words.ToLower());
+                bool matchingChapter = item.ChapterId == chapterSearched;
+                if (matchingName && matchingChapter)
+                {
+                    Debug.WriteLine($"Item {item.BookName}-{item.ChapterId} :PERFECT MATCH FOR: \"{words}\" - {chapterSearched}");
+
+                    //TODO: Find a way to highlight perfect match
+
+                    // Selecting item and focusing it always focus the listview ?
+                    // can't find how to force item selection
+
+                    // Try to get border and chage it color but it doesn't seems to work.
+                    //DependencyObject itemParent = VisualTreeHelper.GetParent(item);
+                    //while (itemParent as Border == null)
+                    //{
+                    //    Debug.WriteLine($"Look For Border: {itemParent.ToString()}");
+                    //    itemParent = VisualTreeHelper.GetParent(itemParent);
+                    //    // TODO : leave while if itemparent == null;
+                    //}
+
+                    //Border itemBorder = itemParent as Border;
+                    //Debug.WriteLine($"Border Found:{itemBorder.Name} {itemBorder.Background}");
+                    //itemBorder.Background = new SolidColorBrush(Colors.Yellow);
+                    //Debug.WriteLine($"Border background changed: {itemBorder.Name} {itemBorder.Background}");
+                    return true;
+                }
+            }
+
+            if (SearchedWords.Count == SearchedNumbers.Count)
+            {
+                // Search numbers first
+                if (SearchNumberMatch(item, SearchedNumbers)) return true;
+                if (SearchWordMatch(item, SearchedWords)) return true;
+
+            }
+            else
+            {
+                // Search words first
+                if (SearchWordMatch(item, SearchedWords)) return true;
+                if (SearchNumberMatch(item, SearchedNumbers)) return true;
+            }
+
+            // No matching condition 
+            return false;
+        }
+
+        private bool FilterBookName(object obj)
+        {
+            ScanItem item = obj as ScanItem;
+
+            return SearchWordMatch(item, SearchedWords);
+        }
+
+        private bool FilterChapter(object obj)
+        {
+            ScanItem item = obj as ScanItem;
+
+            return SearchNumberMatch(item, SearchedNumbers);
+        }
+
+        private bool SearchWordMatch(ScanItem item, List<string> searchedWords)
+        {
+            foreach (string wordSearched in searchedWords)
+            {
+                if (item.BookName.ToLower().Contains(wordSearched.ToLower()))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private bool SearchNumberMatch(ScanItem item, List<int> searchedNumbers)
+        {
+            foreach (int numberSearched in searchedNumbers)
+            {
+                bool matchingChapterId = item.ChapterId == numberSearched;
+                if (matchingChapterId) return true;
                 else
                 {
-                    int searchedIntDigitCount = searchedInt.CountDigits();
+                    int searchedIntDigitCount = numberSearched.CountDigits();
                     int chapterIdDigitCount = item.ChapterId.CountDigits();
-                    if (searchedInt > 0 && searchedIntDigitCount < chapterIdDigitCount)
+                    if (numberSearched > 0 && searchedIntDigitCount < chapterIdDigitCount)
                     {
-                        bool matchingFirstDigits = item.ChapterId.GetFirstDigits(searchedIntDigitCount) == searchedInt;
-                        if(matchingFirstDigits)
+                        bool matchingFirstDigits = item.ChapterId.GetFirstDigits(searchedIntDigitCount) == numberSearched;
+                        if (matchingFirstDigits)
                         {
                             return true;
                         }
@@ -377,7 +498,6 @@ namespace ScanNetDownloader.View.CustomControls
                 }
             }
 
-            // No matching condition 
             return false;
         }
     }
