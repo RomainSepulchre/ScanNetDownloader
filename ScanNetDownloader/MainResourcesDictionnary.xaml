@@ -1264,7 +1264,7 @@
     </Style>
 
     <!--Column header-->
-    <Style x:Key="testColumnsHeader" TargetType="{x:Type GridViewColumnHeader}">
+    <Style x:Key="scanViewColumnsHeader" TargetType="{x:Type GridViewColumnHeader}">
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Foreground" Value="{StaticResource GridViewHeader.Normal.Foreground}" />
@@ -1338,7 +1338,7 @@
         
     </Style>
 
-    <Style x:Key="testForScanManager" TargetType="{x:Type ListViewItem}">
+    <Style x:Key="scanViewItem" TargetType="{x:Type ListViewItem}">
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Setter Property="Padding" Value="0"/>
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
