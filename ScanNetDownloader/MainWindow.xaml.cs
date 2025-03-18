@@ -1,4 +1,5 @@
-﻿using ScanNetDownloader.Logic;
+﻿using FlareSolverrSharp;
+using ScanNetDownloader.Logic;
 using ScanNetDownloader.Logic.Helpers;
 using ScanNetDownloader.View;
 using ScanNetDownloader.View.CustomControls;
@@ -254,7 +255,7 @@ namespace ScanNetDownloader
             }
         }
 
-        void SaveHtmlFiles(List<string> urlList=null)
+        async void SaveHtmlFiles(List<string> urlList=null)
         {
             List<string> urlToDownload;
 
@@ -282,17 +283,25 @@ namespace ScanNetDownloader
 
             foreach (string urlToDl in urlToDownload)
             {
-                // Save htlm code in a file to test
-                using (WebClient client = new WebClient())
-                {
-                    string htmlFileName="";
-                    if (urlToDl.StartsWith("http")) htmlFileName = urlToDl.Remove(0, 8); // Remove "https://"
-                    htmlFileName = htmlFileName.Replace('/', '_');
-                    htmlFileName = htmlFileName + ".html";
-                    client.DownloadFile(urlToDl, Path.Combine(Settings.Instance.OutputDirectory, htmlFileName));
+                // Define filename
+                string htmlFileName = "";
+                if (urlToDl.StartsWith("http")) htmlFileName = urlToDl.Remove(0, 8); // Remove "https://"
+                htmlFileName = htmlFileName.Replace('/', '_');
+                htmlFileName = htmlFileName + ".html";
 
-                    Debug.WriteLine($"\n {htmlFileName} downloaded...");
-                }
+                // Save htlm code in a file to test
+                var handler = new ClearanceHandler("http://localhost:8191/")
+                {
+                    MaxTimeout = 120000
+                };
+                HttpClient client = new HttpClient(handler);
+                string content = await client.GetStringAsync(urlToDl);
+
+                //FileStream fs = File.Create(Path.Combine(Settings.Instance.OutputDirectory, htmlFileName));
+
+                Debug.WriteLine($"\n PAGE CONTENT:\n {content}");
+                //Debug.WriteLine($"\n {htmlFileName} downloaded...");
+
             }
 
             string windowHeader = "Hmtl saved";
