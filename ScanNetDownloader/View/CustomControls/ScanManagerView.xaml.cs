@@ -126,6 +126,11 @@ namespace ScanNetDownloader.View.CustomControls
             }
         }
 
+        private void txtBoxSearch_TextInputChanged(object sender, RoutedEventArgs e)
+        {
+            SearchForBookOrChapter();
+        }
+
         private void ScanItem_DeleteBtnPressed(object sender, RoutedEventArgs e)
         {
             ScanItem item = e.Source as ScanItem;
@@ -294,16 +299,18 @@ namespace ScanNetDownloader.View.CustomControls
         }
 
         // TODO: Clean this and place logically in code
-        private void txtBoxSearch_TextInputChanged(object sender, RoutedEventArgs e)
+
+        #region Search Filtering
+        private void SearchForBookOrChapter()
         {
             // Reset perfect match
-            if(searchPerfectMatchs.Count > 0)
+            if (searchPerfectMatchs.Count > 0)
             {
                 foreach (ScanItem item in searchPerfectMatchs)
                 {
                     item.IsSearchPerfectMatch = false;
                 }
-                
+
                 searchPerfectMatchs.Clear();
             }
 
@@ -349,7 +356,7 @@ namespace ScanNetDownloader.View.CustomControls
                     if (searchTermsSplit.Count() == 1)
                     {
                         // Search for this string
-                        SearchedWords.Add(searchTermsSplit[0]); 
+                        SearchedWords.Add(searchTermsSplit[0]);
 
                         // Use search terms to filter view
                         listVwScans.Items.Filter = FilterBookName;
@@ -370,7 +377,7 @@ namespace ScanNetDownloader.View.CustomControls
                         // Use search terms to filter view
                         listVwScans.Items.Filter = FilterBookNameAndChapterId;
                     }
-                }  
+                }
 
                 // Change colums sorting
                 string currentSortProperty = listVwScans.Items.SortDescriptions[0].PropertyName;
@@ -395,7 +402,7 @@ namespace ScanNetDownloader.View.CustomControls
                 }
 
                 // Display a message if no scan data match the search
-                if(listVwScans.Items.Count == 0)
+                if (listVwScans.Items.Count == 0)
                 {
                     stPanelNoMatchingResult.Visibility = Visibility.Visible;
                 }
@@ -411,9 +418,8 @@ namespace ScanNetDownloader.View.CustomControls
             ScanItem item = obj as ScanItem;
 
             // Check for perfect match
-            if(SearchedWords.Count >=2 && SearchedNumbers.Count == 1)
+            if (SearchedWords.Count >= 2 && SearchedNumbers.Count == 1)
             {
-
                 int chapterSearched = SearchedNumbers[0];
                 string words = string.Join(" ", SearchedWords.Where(s => !s.Equals(chapterSearched.ToString())));
 
@@ -421,45 +427,8 @@ namespace ScanNetDownloader.View.CustomControls
                 bool matchingChapter = item.ChapterId == chapterSearched;
                 if (matchingName && matchingChapter)
                 {
-                    Debug.WriteLine($"Item {item.BookName}-{item.ChapterId} :PERFECT MATCH FOR: \"{words}\" - {chapterSearched}");
-
-                    //item.SetSearchPerfectMatch(true);
                     item.IsSearchPerfectMatch = true;
                     searchPerfectMatchs.Add(item);
-
-                    //listVwScans.SelectedItem = item;
-                    
-                    //if(lvItemToFocus != null)
-                    //{
-                    //    lvItemToFocus.Focus();
-                    //}
-                    //else
-                    //{
-                    //    Debug.WriteLine($"Item to focus == null");
-                    //}
-
-                    //int itemIndex = listVwScans.Items.IndexOf(item);
-                    // FocusItemByIndex(itemIndex);
-
-                    //listVwScans.SelectedItem = item;
-                    //TODO: Find a way to highlight perfect match
-
-                    // Selecting item and focusing it always focus the listview ?
-                    // can't find how to force item selection
-
-                    //Try to get border and change it color but it doesn't seems to work.
-                    //DependencyObject itemParent = VisualTreeHelper.GetParent(item);
-                    //while (itemParent as Grid == null)
-                    //{
-                    //    Debug.WriteLine($"Look For Grid: {itemParent.ToString()}");
-                    //    itemParent = VisualTreeHelper.GetParent(itemParent);
-                    //    // TODO : leave while if itemparent == null;
-                    //}
-
-                    //Grid itemGrid = itemParent as Grid;
-                    //Debug.WriteLine($"Grid Found:{itemGrid.Name} {itemGrid.Background}");
-                    //itemGrid.Background = new SolidColorBrush(Colors.Yellow);
-                    //Debug.WriteLine($"Grid background changed: {itemGrid.Name} {itemGrid.Background}");
                     return true;
                 }
 
@@ -535,41 +504,7 @@ namespace ScanNetDownloader.View.CustomControls
             }
 
             return false;
-        }
-
-        //private void FocusItemByIndex(int index)
-        //{
-        //    ScrollViewer scrollVw = listVwScans.FindChild<ScrollViewer>();
-        //    double firstVisible = scrollVw.VerticalOffset;
-        //    double lastVisible = firstVisible + scrollVw.VerticalOffset;
-
-        //    if (index > lastVisible)
-        //    {
-        //        double topVisible = index - scrollVw.ViewportHeight + 1;
-        //        scrollVw.ScrollToVerticalOffset(topVisible);
-        //    }
-        //    else if (index <firstVisible)
-        //    {
-        //        scrollVw.ScrollToVerticalOffset(index);
-        //    }
-
-        //    //perfectMatchToFocus = index;
-        //}
-
-        //private void listVwScans_LayoutUpdated(object sender, EventArgs e)
-        //{
-        //    if(perfectMatchToFocus != null)
-        //    {
-        //        Debug.WriteLine($"Layout updated, show perfect match...");
-        //        ItemContainerGenerator lvItems = listVwScans.ItemContainerGenerator;
-        //        ListViewItem lvItemToFocus = lvItems.ContainerFromIndex(perfectMatchToFocus.Value) as ListViewItem;
-
-        //        if (lvItemToFocus != null)
-        //        {
-        //            lvItemToFocus.Focus();
-        //            perfectMatchToFocus = null;
-        //        }
-        //    }
-        //}
+        } 
+        #endregion
     }
 }

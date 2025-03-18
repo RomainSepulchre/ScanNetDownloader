@@ -20,6 +20,7 @@
     <Color x:Key="BaseColor.DarkBlue.Pressed" R="72" G="57" B="115" A="255"/>
     <Color x:Key="BaseColor.LightGrey.Locked" R="244" G="244" B="244" A="255"/> <!--#FFF4F4F4-->
     <Color x:Key="BaseColor.Grey.Locked" R="131" G="131" B="131" A="255"/> <!--#FF838383-->
+    <Color x:Key="BaseColor.Yellow" R="200" G="230" B="98" A="255"/>
 
 
     <!--Solid Color Brushes--> 
@@ -36,6 +37,7 @@
     <SolidColorBrush x:Key="Colors.Orange.Pressed" Color="{StaticResource BaseColor.Orange.Pressed}"/>
     <SolidColorBrush x:Key="Colors.Orange.MouseOver" Color="{StaticResource BaseColor.Orange.MouseOver}"/>
     <SolidColorBrush x:Key="Colors.Green" Color="{StaticResource BaseColor.Green}"/>
+    <SolidColorBrush x:Key="Colors.Yellow" Color="{StaticResource BaseColor.Yellow}"/>
 
     
     <!--Bitmap Images-->
@@ -1391,7 +1393,7 @@
                             <Setter Property="TextElement.Foreground" TargetName="Bd" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
                         </Trigger>
                         <DataTrigger Binding="{Binding IsSearchPerfectMatch}" Value="True">
-                            <Setter Property="Background" TargetName="Bd" Value="Yellow" />
+                            <Setter Property="Background" TargetName="Bd" Value="{StaticResource Colors.Yellow}" />
                         </DataTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
