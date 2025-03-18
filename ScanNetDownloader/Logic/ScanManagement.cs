@@ -18,6 +18,9 @@ namespace ScanNetDownloader.Logic
                 case string s when s.Contains(Constants.ANIMESAMA_DOMAIN_NAME):
                     return await AnimeSamaFrScanData.IsUrlValid(url);
 
+                case string s when s.Contains(Constants.LELSCANS_DOMAIN_NAME):
+                    return await LelScansNetScanData.IsUrlValid(url);
+
                 default:
                     NotImplementedException exception = Exceptions.UnknownWebDomain(url);
                     Error.UnknownScanWebDomain(url, exception);
@@ -35,6 +38,9 @@ namespace ScanNetDownloader.Logic
 
                 case string s when s.Contains(Constants.ANIMESAMA_DOMAIN_NAME):
                     return new AnimeSamaFrScanData(url);
+
+                case string s when s.Contains(Constants.LELSCANS_DOMAIN_NAME):
+                    return new LelScansNetScanData(url);
 
                 default: // Default, unknown domain name
                     NotImplementedException exception = Exceptions.UnknownWebDomain(url);
@@ -55,6 +61,10 @@ namespace ScanNetDownloader.Logic
                     ScanData animeSamaData = new AnimeSamaFrScanData(url, chapterSelected);
                     return await animeSamaData.InitScanData();
 
+                case string s when s.Contains(Constants.LELSCANS_DOMAIN_NAME):
+                    ScanData lelScanNetData = new LelScansNetScanData(url, chapterSelected);
+                    return await lelScanNetData.InitScanData();
+
                 default: // Default, unknown domain name
                     NotImplementedException exception = Exceptions.UnknownWebDomain(url);
                     Error.UnknownScanWebDomain(url, exception, true);
@@ -73,7 +83,6 @@ namespace ScanNetDownloader.Logic
             switch (url)
             {
                 case string s when s.Contains(Constants.SCANVF_DOMAIN_NAME):
-
                     foreach (int chapterId in chaptersSelected)
                     {
                         ScanData scanVfNetData = new ScanVfNetScanData(url, chapterId);
@@ -84,12 +93,21 @@ namespace ScanNetDownloader.Logic
                     break;
 
                 case string s when s.Contains(Constants.ANIMESAMA_DOMAIN_NAME):
-
                     foreach(int chapterId in chaptersSelected)
                     {
                         ScanData animeSamaData = new AnimeSamaFrScanData(url, chapterId);
                         ScanDataInitResult initResult = await animeSamaData.InitScanData();
                         if(initResult.Success) newScanDatas.Add(animeSamaData);
+                        //TODO: Else Error Management
+                    }
+                    break;
+
+                case string s when s.Contains(Constants.LELSCANS_DOMAIN_NAME):
+                    foreach (int chapterId in chaptersSelected)
+                    {
+                        ScanData lelScanNetData = new LelScansNetScanData(url, chapterId);
+                        ScanDataInitResult initResult = await lelScanNetData.InitScanData();
+                        if (initResult.Success) newScanDatas.Add(lelScanNetData);
                         //TODO: Else Error Management
                     }
                     break;

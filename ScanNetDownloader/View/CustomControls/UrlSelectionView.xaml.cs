@@ -1,5 +1,6 @@
 ﻿using ScanNetDownloader.Logic;
 using ScanNetDownloader.Logic.Helpers;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -25,14 +26,11 @@ namespace ScanNetDownloader.View.CustomControls
             }
         }
 
-        private string _selectUrlInfos;
-        public string SelectUrlInfos
+        private ObservableCollection<WebsiteUrlWithExample> _websitesWithExampleUrls = new ObservableCollection<WebsiteUrlWithExample>();
+        public ObservableCollection<WebsiteUrlWithExample> WebsitesWithExampleUrls
         {
-            get { return _selectUrlInfos; }
-            set {
-                _selectUrlInfos = value;
-                OnPropertyChanged();
-            }
+            get { return _websitesWithExampleUrls; }
+            set { _websitesWithExampleUrls = value; }
         }
 
         private string _errorMessage;
@@ -44,7 +42,6 @@ namespace ScanNetDownloader.View.CustomControls
                 OnPropertyChanged();
             }
         }
-
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -62,18 +59,19 @@ namespace ScanNetDownloader.View.CustomControls
             DataContext = this;
             InitializeComponent();
 
-            // Setup info
-            SelectUrlInfos = "Enter a scan URL...\n";
-            SelectUrlInfos += "\nCompatibles websites are:";
+            // Setup compatible website and examples
             foreach(string website in Constants.COMPATIBLE_SCAN_WEBSITES)
             {
-                SelectUrlInfos += $"\n-{website} (ex: {Constants.EXAMPLE_URLS[website]})";
+                WebsiteUrlWithExample newWebsiteUrl = new WebsiteUrlWithExample(website, Constants.EXAMPLE_URLS[website]);
+                newWebsiteUrl.Margin = new Thickness(0, 5, 0, 2);
+                WebsitesWithExampleUrls.Add(newWebsiteUrl);
             }
 
 #if DEBUG
             // For easier debug
             //UrlInput = "https://www.scan-vf.net/jujutsu-kaisen/chapitre-18/1";
-            UrlInput = "https://anime-sama.fr/catalogue/20th-century-boys/scan-21st-century-boys/vf/";
+            //UrlInput = "https://anime-sama.fr/catalogue/20th-century-boys/scan-21st-century-boys/vf/";
+            UrlInput = "https://lelscans.net/scan-one-piece/1117";
 #endif
 
             btnNext.IsEnabled = string.IsNullOrEmpty(UrlInput) == false;

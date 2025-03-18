@@ -21,14 +21,12 @@
 
             <TextBlock Text="Compatibles websites and url examples" Margin="0 20 0 0" FontWeight="Bold" FontSize="16"/>
             <TextBlock Text="Here is the list of the scan website that are currently compatible with ScanNetDownloader. If you're not sure what url you should use, refer to the examples url:" Margin="0 12 0 0" TextWrapping="Wrap"/>
-            
-            <TextBlock Text="https://www.scan-vf.net" FontWeight="Bold" Margin="0 5 0 2"/>
-            <TextBlock Text="- https://www.scan-vf.net/one_piece" />
-            <TextBlock Text="- https://www.scan-vf.net/one_piece/chapitre-1133/1"/>
-            
-            <TextBlock Text="https://anime-sama.fr/" FontWeight="Bold" Margin="0 5 0 2"/>
-            <TextBlock Text="- https://anime-sama.fr/catalogue/one-piece/scan_noir-et-blanc/vf/ (for scan in french)" />
-            <TextBlock Text="- https://anime-sama.fr/catalogue/one-piece/scan_noir-et-blanc/va/ (for scan in english)"/>
+
+            <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="180" CanContentScroll="True">
+                <ItemsControl Name="stPanelExamples" ItemsSource="{Binding WebsitesWithExampleUrls}">
+                </ItemsControl>
+            </ScrollViewer>
+
         </StackPanel>
         
         <Button Grid.Row="2" Name="btnNext" Content="Next" Click="btnNext_Click" FontSize="22"/>

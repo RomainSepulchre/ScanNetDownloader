@@ -151,6 +151,16 @@ namespace ScanNetDownloader.Logic
                     progress = float.Lerp(minProgress, maxProgress, chapterCompletion);
                     UpdateDownloadProgress(progress);
 
+                    // Check for error tag for this url
+                    if (imgUrl.StartsWith(Constants.ERROR_IMG_URL_TAG))
+                    {
+                        string errorMsg = imgUrl.Remove(0, Constants.ERROR_IMG_URL_TAG.Length);
+                        Exception ex = new Exception(errorMsg);
+                        OnPageDownloadError(scanItem, pageIndex, ex);
+                        Error.FailedImageDownload(ex, imgUrl);
+                        continue; // Skip url
+                    }
+
                     string fileExtension = scanData.GetFileExtensionFromImgUrl(imgUrl);
                     string imgName = $"{bookName}_{chapterNumber}-{pageId.ToString("D3")}{fileExtension}";
                     string downloadFile = Path.Combine(downloadPath, imgName);
