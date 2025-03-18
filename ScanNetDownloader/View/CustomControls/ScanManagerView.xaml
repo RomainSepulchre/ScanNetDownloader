@@ -23,14 +23,14 @@
         
     </UserControl.Resources>
     
-    <Grid Margin="20 0 20 20">
+    <Grid Margin="20 0 20 20" Name="mainGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="43"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0 8 0 5">
-            <Button Name="btnAdd" Click="btnAdd_Click" Height="30" Width="150" Margin="0 0 5 0" Style="{StaticResource complexButton}">
+        <DockPanel Grid.Row="0" HorizontalAlignment="Left" Margin="0 8 0 5" Width="{Binding ActualWidth, ElementName=mainGrid}" LastChildFill="False">
+            <Button Name="btnAdd" Click="btnAdd_Click" Height="30" Width="150" Margin="0 0 5 0" DockPanel.Dock="Left" Style="{StaticResource complexButton}">
                 <Button.Content>
                     <StackPanel Orientation="Horizontal" Width="{Binding ElementName=btnAdd, Path=ActualWidth}">
                         <Image Source="{StaticResource Img.plusIconWhite}" Height="30" Width="30" VerticalAlignment="Center" Margin="-5 0 2 0"/>
@@ -38,7 +38,7 @@
                     </StackPanel>
                 </Button.Content>
             </Button>
-            <Button Name="btnStart" Click="btnStart_Click" Height="30" Width="163" Margin="0 0 5 0" Style="{StaticResource complexButton}">
+            <Button Name="btnStart" Click="btnStart_Click" Height="30" Width="163" Margin="0 0 5 0" DockPanel.Dock="Left" Style="{StaticResource complexButton}">
                 <Button.Content>
                     <StackPanel Orientation="Horizontal" Width="{Binding ElementName=btnStart, Path=ActualWidth}">
                         <Image Source="{StaticResource Img.startIconWhite}" Height="30" Width="30" VerticalAlignment="Center" Margin="-5 0 2 0"/>
@@ -46,22 +46,23 @@
                     </StackPanel>
                 </Button.Content>
             </Button>
-        </StackPanel>
+            <local:TextInputBox x:Name="txtBoxSearch" TxtInput="{Binding FilterSearch,Mode=OneWayToSource}" PlaceholderText="Search for a book or chapter..." DockPanel.Dock="Right" Width="200" TxtPadding="4 0 0 0" ShowClearBtn="True" TextInputChanged="txtBoxSearch_TextInputChanged"/>
+        </DockPanel>
 
-        <ListView Grid.Row="1" ItemContainerStyle="{StaticResource testForScanManager}" Name="listVwScans" ItemsSource="{Binding Source={StaticResource ScanItemsSource}, UpdateSourceTrigger=PropertyChanged}" SelectionMode="Single" HorizontalContentAlignment="Stretch" Background="{StaticResource Colors.LightGrey}" BorderThickness="0"
+        <ListView Grid.Row="1" ItemContainerStyle="{StaticResource scanViewItem}" Name="listVwScans" ItemsSource="{Binding Source={StaticResource ScanItemsSource}, UpdateSourceTrigger=PropertyChanged}" SelectionMode="Single" HorizontalContentAlignment="Stretch" Background="{StaticResource Colors.LightGrey}" BorderThickness="0"
                   sorter:GridViewSorter.AutoSort="True">
             <ListView.View>
-                <GridView AllowsColumnReorder="True" ColumnHeaderContainerStyle="{StaticResource testColumnsHeader}">
+                <GridView AllowsColumnReorder="True" ColumnHeaderContainerStyle="{StaticResource scanViewColumnsHeader}">
 
                     <!--Select for download column-->
-                    <GridViewColumn Width="40" HeaderTemplate="{StaticResource gridHeaderCheckboxIcon}" sorter:GridViewSorter.PropertyName="IsSelectedForDownload"> 
+                    <GridViewColumn Width="40" HeaderTemplate="{StaticResource gridHeaderCheckboxIcon}" sorter:GridViewSorter.PropertyName="IsSelectedForDownload">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <CheckBox IsChecked="{Binding Path=IsSelectedForDownload}" ToolTip="Select this scan for download" HorizontalAlignment="Center" Margin="3 0 0 0"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    
+
                     <!--Download status column-->
                     <GridViewColumn Width="40" HeaderTemplate="{StaticResource gridHeaderDownloadIcon}" sorter:GridViewSorter.PropertyName="DownloadStatus">
                         <GridViewColumn.CellTemplate>
@@ -72,13 +73,13 @@
                                     </Border>
                                     <Ellipse Fill="{StaticResource Colors.Green}" Width="5" Height="5" Margin="6 0 0 12" Visibility="{Binding Path=DownloadStatus, Converter={StaticResource DownloadStatusToEllipseVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}"/>
                                 </Grid>
-                            </DataTemplate> 
+                            </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    
+
                     <!--Book name column-->
                     <GridViewColumn Header="Book name" DisplayMemberBinding="{Binding Path=BookName}" Width="470" sorter:GridViewSorter.PropertyName="BookName"/>
-                    
+
                     <!--Chapter column-->
                     <GridViewColumn Header="Chapter" Width="100" sorter:GridViewSorter.PropertyName="ChapterId">
                         <GridViewColumn.CellTemplate>
@@ -87,7 +88,7 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                        
+
                     <!--Pages column-->
                     <GridViewColumn Header="Pages" Width="100" sorter:GridViewSorter.PropertyName="PagesCount">
                         <GridViewColumn.CellTemplate>
@@ -96,7 +97,7 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                        
+
                     <!--Website column-->
                     <GridViewColumn Header="Website" Width="250" sorter:GridViewSorter.PropertyName="Website">
                         <GridViewColumn.CellTemplate>
@@ -105,13 +106,13 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                        
+
                     <!--Options column-->
                     <GridViewColumn Header="Options" Width="205">
                         <!--I would love to understand why scanItem is displayed in this column and how to do it with a cell template to make it more clear
                     but I can't find how to assign the source scanItem as the template scanItem-->
                     </GridViewColumn>
-                    
+
                     <!--Debug Column to display specific scanItem data-->
                     <!--<GridViewColumn Header="Debug" DisplayMemberBinding="{Binding Path=DownloadStatus}"/>-->
 
@@ -130,6 +131,12 @@
                 </Button.Content>
             </Button>
         </StackPanel>
-        
+
+        <StackPanel Grid.Row="1" Name="stPanelNoMatchingResult" VerticalAlignment="Top" Margin="0 80 0 0" Visibility="Collapsed">
+            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16">
+                <Span>No matching result for search "<Run Text="{Binding FilterSearch}" FontWeight="Bold"></Run>"...</Span>
+            </TextBlock>
+        </StackPanel>
+
     </Grid>
 </UserControl>
