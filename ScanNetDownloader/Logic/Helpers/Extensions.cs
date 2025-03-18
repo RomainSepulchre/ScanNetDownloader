@@ -2,6 +2,8 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
+using System.Windows;
+using System.Windows.Media;
 
 namespace ScanNetDownloader.Logic.Helpers
 {
@@ -213,6 +215,43 @@ namespace ScanNetDownloader.Logic.Helpers
 
                 return n / (int)Math.Pow(10, digitDiff);
             }
+        }
+
+        public static T FindChild<T>(this DependencyObject parent, string name = null) where T : DependencyObject
+        {
+            if (parent == null) return null;
+            
+            int childrenCount = VisualTreeHelper.GetChildrenCount(parent);
+            T result = null;
+
+            for (int i = 0; result == null && i < childrenCount; i++)
+            {
+                DependencyObject child = VisualTreeHelper.GetChild(parent, i);
+                T tChild = child as T;
+
+                if (tChild != null)
+                {
+                    if (name == null)
+                    {
+                        result = (T)child;
+                    }
+                    else
+                    {
+                        FrameworkElement feChild = child as FrameworkElement;
+                        if (feChild != null && feChild.Name == name)
+                        {
+                            result = (T)child;
+                        }
+                    }
+                }
+
+                if (result == null)
+                {
+                    result = FindChild<T>(child, name);
+                }
+            }
+
+            return result;
         }
     }
 }

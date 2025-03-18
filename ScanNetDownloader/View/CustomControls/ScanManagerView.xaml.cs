@@ -57,6 +57,8 @@ namespace ScanNetDownloader.View.CustomControls
             }
         }
 
+        private List<ScanItem> searchPerfectMatchs = new List<ScanItem>();
+
 
         public static RoutedEvent StartDownloadEvent = EventManager.RegisterRoutedEvent(nameof(StartDownload), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ScanManagerView));
         public event RoutedEventHandler StartDownload
@@ -294,6 +296,17 @@ namespace ScanNetDownloader.View.CustomControls
         // TODO: Clean this and place logically in code
         private void txtBoxSearch_TextInputChanged(object sender, RoutedEventArgs e)
         {
+            // Reset perfect match
+            if(searchPerfectMatchs.Count > 0)
+            {
+                foreach (ScanItem item in searchPerfectMatchs)
+                {
+                    item.IsSearchPerfectMatch = false;
+                }
+                
+                searchPerfectMatchs.Clear();
+            }
+
             if (string.IsNullOrEmpty(FilterSearch))
             {
                 listVwScans.Items.Filter = null;
@@ -410,44 +423,67 @@ namespace ScanNetDownloader.View.CustomControls
                 {
                     Debug.WriteLine($"Item {item.BookName}-{item.ChapterId} :PERFECT MATCH FOR: \"{words}\" - {chapterSearched}");
 
+                    //item.SetSearchPerfectMatch(true);
+                    item.IsSearchPerfectMatch = true;
+                    searchPerfectMatchs.Add(item);
+
+                    //listVwScans.SelectedItem = item;
+                    
+                    //if(lvItemToFocus != null)
+                    //{
+                    //    lvItemToFocus.Focus();
+                    //}
+                    //else
+                    //{
+                    //    Debug.WriteLine($"Item to focus == null");
+                    //}
+
+                    //int itemIndex = listVwScans.Items.IndexOf(item);
+                    // FocusItemByIndex(itemIndex);
+
+                    //listVwScans.SelectedItem = item;
                     //TODO: Find a way to highlight perfect match
 
                     // Selecting item and focusing it always focus the listview ?
                     // can't find how to force item selection
 
-                    // Try to get border and chage it color but it doesn't seems to work.
+                    //Try to get border and change it color but it doesn't seems to work.
                     //DependencyObject itemParent = VisualTreeHelper.GetParent(item);
-                    //while (itemParent as Border == null)
+                    //while (itemParent as Grid == null)
                     //{
-                    //    Debug.WriteLine($"Look For Border: {itemParent.ToString()}");
+                    //    Debug.WriteLine($"Look For Grid: {itemParent.ToString()}");
                     //    itemParent = VisualTreeHelper.GetParent(itemParent);
                     //    // TODO : leave while if itemparent == null;
                     //}
 
-                    //Border itemBorder = itemParent as Border;
-                    //Debug.WriteLine($"Border Found:{itemBorder.Name} {itemBorder.Background}");
-                    //itemBorder.Background = new SolidColorBrush(Colors.Yellow);
-                    //Debug.WriteLine($"Border background changed: {itemBorder.Name} {itemBorder.Background}");
+                    //Grid itemGrid = itemParent as Grid;
+                    //Debug.WriteLine($"Grid Found:{itemGrid.Name} {itemGrid.Background}");
+                    //itemGrid.Background = new SolidColorBrush(Colors.Yellow);
+                    //Debug.WriteLine($"Grid background changed: {itemGrid.Name} {itemGrid.Background}");
                     return true;
                 }
-            }
 
-            if (SearchedWords.Count == SearchedNumbers.Count)
-            {
-                // Search numbers first
-                if (SearchNumberMatch(item, SearchedNumbers)) return true;
-                if (SearchWordMatch(item, SearchedWords)) return true;
-
+                return matchingName;
             }
             else
             {
-                // Search words first
-                if (SearchWordMatch(item, SearchedWords)) return true;
-                if (SearchNumberMatch(item, SearchedNumbers)) return true;
-            }
+                if (SearchedWords.Count == SearchedNumbers.Count)
+                {
+                    // Search numbers first
+                    if (SearchNumberMatch(item, SearchedNumbers)) return true;
+                    if (SearchWordMatch(item, SearchedWords)) return true;
 
-            // No matching condition 
-            return false;
+                }
+                else
+                {
+                    // Search words first
+                    if (SearchWordMatch(item, SearchedWords)) return true;
+                    if (SearchNumberMatch(item, SearchedNumbers)) return true;
+                }
+
+                // No matching condition 
+                return false;
+            }
         }
 
         private bool FilterBookName(object obj)
@@ -500,5 +536,40 @@ namespace ScanNetDownloader.View.CustomControls
 
             return false;
         }
+
+        //private void FocusItemByIndex(int index)
+        //{
+        //    ScrollViewer scrollVw = listVwScans.FindChild<ScrollViewer>();
+        //    double firstVisible = scrollVw.VerticalOffset;
+        //    double lastVisible = firstVisible + scrollVw.VerticalOffset;
+
+        //    if (index > lastVisible)
+        //    {
+        //        double topVisible = index - scrollVw.ViewportHeight + 1;
+        //        scrollVw.ScrollToVerticalOffset(topVisible);
+        //    }
+        //    else if (index <firstVisible)
+        //    {
+        //        scrollVw.ScrollToVerticalOffset(index);
+        //    }
+
+        //    //perfectMatchToFocus = index;
+        //}
+
+        //private void listVwScans_LayoutUpdated(object sender, EventArgs e)
+        //{
+        //    if(perfectMatchToFocus != null)
+        //    {
+        //        Debug.WriteLine($"Layout updated, show perfect match...");
+        //        ItemContainerGenerator lvItems = listVwScans.ItemContainerGenerator;
+        //        ListViewItem lvItemToFocus = lvItems.ContainerFromIndex(perfectMatchToFocus.Value) as ListViewItem;
+
+        //        if (lvItemToFocus != null)
+        //        {
+        //            lvItemToFocus.Focus();
+        //            perfectMatchToFocus = null;
+        //        }
+        //    }
+        //}
     }
 }

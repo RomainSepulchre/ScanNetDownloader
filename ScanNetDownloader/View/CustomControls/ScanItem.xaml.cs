@@ -46,6 +46,8 @@ namespace ScanNetDownloader.View.CustomControls
             get { return DownloadStatusToIsDownloaded(DownloadStatus); }
         }
 
+        public bool IsSearchPerfectMatch { get; set; }
+
         public enum DownloadedStatus
         {
             NotDownloaded = 0,

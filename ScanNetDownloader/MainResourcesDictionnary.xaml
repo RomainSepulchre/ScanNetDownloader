@@ -1390,6 +1390,9 @@
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="TextElement.Foreground" TargetName="Bd" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
                         </Trigger>
+                        <DataTrigger Binding="{Binding IsSearchPerfectMatch}" Value="True">
+                            <Setter Property="Background" TargetName="Bd" Value="Yellow" />
+                        </DataTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
