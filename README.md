@@ -13,6 +13,7 @@ Currently, the compatible website are:
 
 - www.scan-vf.net
 - www.anime-sama.fr
+- www.lelscans.net
 
 > If the scan website you use is not part of this list, contact me or open an issue and I'll do my best to make ScanNet Downloader compatible with it.
 > Some scan websites are well protected to prevent the user to download the scan image so some websites may never be compatible.
@@ -49,6 +50,14 @@ In most of the case if you copy-paste the link of the first page of the scan you
 
 >Open any chapter of the scan and copy-paste the url.<br>
 >The url should look like this: https://anime-sama.fr/catalogue/one-piece/scan/vf/.
+
+##### Lelscans.net
+
+>Open any chapter at any page of the scan and copy-paste the url, even the url of the home page of a book is working<br>
+>
+> - Url of a chapter: https://lelscans.net/scan-one-piece/1142
+> - Url of a chapter with page number: https://lelscans.net/scan-one-piece/1142/5
+> - Url of a book home page: https://lelscans.net/lecture-ligne-one-piece
 
 ### Select the chapters
 
