@@ -30,6 +30,17 @@ namespace ScanNetDownloader.Logic
         // Anime Sama
         public static readonly string[] ANIMESAMA_BOOK_NAME_START_SEPARATOR = new string[] { "<meta name=\"description\" content=\"" };
         public static readonly string[] ANIMESAMA_BOOK_NAME_END_SEPARATOR = new string[] { " - Scans" };
+
+        // Lel scans
+        public static readonly string[] LELSCANS_NAV_PAGE_URL_START_SEPARATOR = new string[] { "<div id=\"navigation\">" };
+        public static readonly string[] LELSCANS_NAV_PAGE_URL_END_SEPARATOR = new string[] { "<div style=\"clear:both;\"></div>" };
+        public static readonly string[] LELSCANS_CLEAN_BEFORE_NAV_LINKS_SEPARATOR = new string[] { "<strong>Pages:</strong>" };
+        public static readonly string[] LELSCANS_NAV_LINK_END_SEPARATOR = new string[] { "</a>" };
+        public static readonly string[] LELSCANS_IMG_DIV_START_SEPARATOR = new string[] { "<div id=\"image\">" };
+        public static readonly string[] LELSCANS_IMG_DIV_END_SEPARATOR = new string[] { "<div class=\"bottom\"" };
+        public static readonly string[] LELSCANS_IMG_URL_START_SEPARATOR = new string[] { "<img" };
+        public static readonly string[] LELSCANS_IMG_URL_END_SEPARATOR = new string[] { "/>" };
+
         #endregion
 
         #region Char and String
@@ -40,7 +51,7 @@ namespace ScanNetDownloader.Logic
         public const char DASH_CHAR = '-';
         public const char UNDERSCORE_CHAR = '_';
         public const char POINT_CHAR = '.';
-        public const char SEMICOLON_CHAR = ';';       
+        public const char SEMICOLON_CHAR = ';';
 
         public const string HTTP_ADDRESS = "https://";
         public const string SPACE = " ";
@@ -57,6 +68,12 @@ namespace ScanNetDownloader.Logic
         public const string ANIMESAMA_ENGLISH_SCAN_URL_MARKER = "va";
         public const string ANIMESAMA_ENGLISH_IMG_SUFFIX = " Anglais";
         public const string ANIMESAMA_ENGLISH_BOOKNAME_SUFFIX = " (English)";
+        public const string LELSCANS_DOMAIN_NAME = "https://lelscans.net";
+        public const string LELSCANS_IMG_URL_MARKER = "mangas/";
+        public const string LELSCANS_IMG_URL_ROOT = LELSCANS_DOMAIN_NAME;
+        public const string LELSCANS_SCAN_PREFIX = "scan-";
+        public const string LELSCANS_LECTURE_PREFIX = "lecture-ligne-";
+        public const string LELSCANS_LECTURE_PREFIX_2 = "lecture-en-ligne-";
 
         public const string CBZ_CHAPTER_PREFIX = " - chapter ";
 
@@ -64,16 +81,36 @@ namespace ScanNetDownloader.Logic
         public const string JPG_EXTENSION = ".jpg";
         public const string CBZ_EXTENSION = ".cbz";
 
+        public const string ERROR_IMG_URL_TAG = "ERROR IMG URL - ";
+
         public static readonly List<string> COMPATIBLE_SCAN_WEBSITES = new List<string>()
         {
             SCANVF_DOMAIN_NAME,
-            ANIMESAMA_DOMAIN_NAME
+            ANIMESAMA_DOMAIN_NAME,
+            LELSCANS_DOMAIN_NAME
         };
 
-        public static readonly Dictionary<string, string> EXAMPLE_URLS = new Dictionary<string, string>()
+        public static readonly Dictionary<string, List<string>> EXAMPLE_URLS = new Dictionary<string, List<string>>()
         {
-            { SCANVF_DOMAIN_NAME, "https://www.scan-vf.net/one_piece or https://www.scan-vf.net/one_piece/chapitre-1/1" },
-            { ANIMESAMA_DOMAIN_NAME, "https://anime-sama.fr/catalogue/berserk/scan/vf/" }
+            { SCANVF_DOMAIN_NAME, new List<string>()
+                {
+                    "https://www.scan-vf.net/one_piece",
+                    "https://www.scan-vf.net/one_piece/chapitre-1133/1"
+                }
+            },
+            { ANIMESAMA_DOMAIN_NAME, new List<string>()
+                {
+                    "https://anime-sama.fr/catalogue/one-piece/scan_noir-et-blanc/vf/ (for scan in french)",
+                    "https://anime-sama.fr/catalogue/one-piece/scan_noir-et-blanc/va/ (for scan in english)"
+                }
+            },
+            { LELSCANS_DOMAIN_NAME, new List<string>()
+                {
+                "https://lelscans.net/scan-one-piece/1142",
+                "https://lelscans.net/scan-one-piece/1142/1",
+                "https://lelscans.net/lecture-ligne-one-piece"
+                }
+            }
         };
 
         #endregion

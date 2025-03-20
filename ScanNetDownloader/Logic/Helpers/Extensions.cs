@@ -2,6 +2,8 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
+using System.Windows;
+using System.Windows.Media;
 
 namespace ScanNetDownloader.Logic.Helpers
 {
@@ -117,6 +119,139 @@ namespace ScanNetDownloader.Logic.Helpers
                 scansToDownload.Add(item.linkedScanData);
             }
             return scansToDownload;
+        }
+
+        /// <summary>
+        /// Count the number of digits in a given int
+        /// </summary>
+        /// <param name="n">int that calls the method</param>
+        /// <returns></returns>
+        public static int CountDigits(this int n)
+        {
+            // if chain is apparently faster than using log10, while loop, or ToString().Count (https://stackoverflow.com/questions/4483886/how-can-i-get-a-count-of-the-total-number-of-digits-in-a-number)
+            if (n >= 0)
+            {
+                if (n < 10) return 1;
+                if (n < 100) return 2;
+                if (n < 1000) return 3;
+                if (n < 10000) return 4;
+                if (n < 100000) return 5;
+                if (n < 1000000) return 6;
+                if (n < 10000000) return 7;
+                if (n < 100000000) return 8;
+                if (n < 1000000000) return 9;
+                return 10;
+            }
+            else
+            {
+                if (n > -10) return 2;
+                if (n > -100) return 3;
+                if (n > -1000) return 4;
+                if (n > -10000) return 5;
+                if (n > -100000) return 6;
+                if (n > -1000000) return 7;
+                if (n > -10000000) return 8;
+                if (n > -100000000) return 9;
+                if (n > -1000000000) return 10;
+                return 11;
+            }
+        }
+
+        /// <summary>
+        /// Returns the first left digit of a given int
+        /// </summary>
+        /// <param name="n">int that calls the method</param>
+        /// <returns>first left digit of the int</returns>
+        public static int GetFirstDigit(this int n)
+        {
+            int firstdigit;
+            if (n >= 0)
+            {
+                if (n < 10) firstdigit = n;
+                else if (n < 100) firstdigit = n / 10;
+                else if (n < 1000) firstdigit = n / 100;
+                else if (n < 10000) firstdigit = n / 1000;
+                else if (n < 100000) firstdigit = n / 10000;
+                else if (n < 1000000) firstdigit = n / 100000;
+                else if (n < 10000000) firstdigit = n / 1000000;
+                else if (n < 100000000) firstdigit = n / 10000000;
+                else if (n < 1000000000) firstdigit = n / 100000000;
+                else firstdigit = n / 1000000000;
+            }
+            else
+            {
+                if (n < -10) firstdigit = n;
+                else if (n < -100) firstdigit = n / 10;
+                else if (n < -1000) firstdigit = n / 100;
+                else if (n < -10000) firstdigit = n / 1000;
+                else if (n < -100000) firstdigit = n / 10000;
+                else if (n < -1000000) firstdigit = n / 100000;
+                else if (n < -10000000) firstdigit = n / 1000000;
+                else if (n < -100000000) firstdigit = n / 10000000;
+                else if (n < -1000000000) firstdigit = n / 100000000;
+                else firstdigit = n / 1000000000;
+            }
+
+
+                return firstdigit;
+        }
+
+        /// <summary>
+        /// Returns the most left digits of a given int. The number of most left digits to return is defined by count.
+        /// For negative int, - is kept but not considered to be part of the digit count (with a count of 2, -123  will return -12).
+        /// </summary>
+        /// <param name="n">int that calls the method</param>
+        /// <param name="count">number of most left digits to return</param>
+        /// <returns>int of count digits with the most left digits of input int</returns>
+        public static int GetFirstDigits(this int n, int count)
+        {
+            int nDigitCount = n.CountDigits();
+            if (n < 0) count += 1; // Increase count by one to take into account the - before negative int
+
+            if (count >= nDigitCount) return n;
+            else
+            {
+                int digitDiff = nDigitCount - count;
+
+                return n / (int)Math.Pow(10, digitDiff);
+            }
+        }
+
+        public static T FindChild<T>(this DependencyObject parent, string name = null) where T : DependencyObject
+        {
+            if (parent == null) return null;
+            
+            int childrenCount = VisualTreeHelper.GetChildrenCount(parent);
+            T result = null;
+
+            for (int i = 0; result == null && i < childrenCount; i++)
+            {
+                DependencyObject child = VisualTreeHelper.GetChild(parent, i);
+                T tChild = child as T;
+
+                if (tChild != null)
+                {
+                    if (name == null)
+                    {
+                        result = (T)child;
+                    }
+                    else
+                    {
+                        FrameworkElement feChild = child as FrameworkElement;
+                        if (feChild != null && feChild.Name == name)
+                        {
+                            result = (T)child;
+                        }
+                    }
+                }
+
+                if (result == null)
+                {
+                    result = FindChild<T>(child, name);
+                }
+            }
+
+            return result;
         }
     }
 }

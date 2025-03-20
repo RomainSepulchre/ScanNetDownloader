@@ -11,7 +11,7 @@ namespace ScanNetDownloader.Logic
 
         /// <summary>
         /// This constructor only purpose is for Json deserialization.
-        /// Apparently passed variable name ABSOLUTELY must the same as its destination value name  (ex: url-> Url, websiteDomain -> WebsiteDomain).
+        /// Apparently passed variable name ABSOLUTELY must be the same as its destination value name  (ex: url-> Url, websiteDomain -> WebsiteDomain).
         /// </summary>
         /// <param name="url"></param>
         /// <param name="websiteDomain"></param>
@@ -232,6 +232,7 @@ namespace ScanNetDownloader.Logic
                 return urlLoadResult.Success;
             }
 
+            // TODO: Improve to try next page when it fails to prevent stopping if one img url in the middle doesn't work
             while (await UrlLoadSuccessfully(imgUrl))
             {
                 imgUrls.Add(imgUrl);
