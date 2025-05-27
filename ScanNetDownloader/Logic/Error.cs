@@ -20,7 +20,8 @@ namespace ScanNetDownloader.Logic
             FailedToLoadSettingsJson = 9, // Local File
             FailedToSaveSettingsJson = 10, // Local File
             FailedToLoadScansLocalData = 11, // Local File
-            FailedToSaveScansLocalData = 12 // Local File
+            FailedToSaveScansLocalData = 12, // Local File
+            MissingScanDataJson = 13 // Local File
         }
 
         public DateTime Time
@@ -163,12 +164,28 @@ namespace ScanNetDownloader.Logic
         public static Error MissingSettingsJson(string jsonPath)
         {
             Error error = new Error();
-            error.Message = $"The settings.json file ({jsonPath}) is missing";
+            error.Message = $"The Settings.json file ({jsonPath}) is missing";
             error.Type = ErrorType.MissingSettingsJson;
             error.Exception = Exceptions.MissingSettingsJson(jsonPath);
 
-            string mBoxMessage = $"The settings.json file ({jsonPath}) is missing, a new json file will be created with the default settings.";
-            string mBoxCaption = "Error - missing json file";
+            string mBoxMessage = $"The Settings.json file ({jsonPath}) is missing, a new json file will be created with the default settings.";
+            string mBoxCaption = "Error - Missing settings json file";
+            Debug.WriteLine($"\n{mBoxMessage}\n");
+
+            MsgWindow.ShowOkWindow(true, mBoxCaption, mBoxMessage, false, MsgWindow.ImageType.Warning);
+
+            return error;
+        }
+
+        public static Error MissingScanDataJson(string jsonPath)
+        {
+            Error error = new Error();
+            error.Message = $"The ScansLocalData.json file ({jsonPath}) is missing";
+            error.Type = ErrorType.MissingScanDataJson;
+            error.Exception = Exceptions.MissingScanDataJson(jsonPath);
+
+            string mBoxMessage = $"The ScansLocalData.json file ({jsonPath}) is missing, a new json file without your previous scan data will be created.";
+            string mBoxCaption = "Error - Missing scan data json file";
             Debug.WriteLine($"\n{mBoxMessage}\n");
 
             MsgWindow.ShowOkWindow(true, mBoxCaption, mBoxMessage, false, MsgWindow.ImageType.Warning);

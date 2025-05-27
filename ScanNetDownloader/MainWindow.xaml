@@ -72,7 +72,7 @@
                         <Button Name="btnDbg5" Content="YesNo window" Width="200" Click="btnDbg5_Click" Height="50" Margin="10" FontSize="12"/>
                         <Button Name="btnDbg6" Content="Ok window" Width="200" Click="btnDbg6_Click" Height="50" Margin="10" FontSize="12" Style="{StaticResource buttonWithStartImage}"/>
                         <Button Name="btnDbg7" Content="Get Download folder" Width="200" Click="btnDbg7_Click" Height="50" Margin="10" FontSize="12"/>
-                        <Button Name="btnDbg8" Content="Get parent window" Width="200" Click="btnDbg8_Click" Height="50" Margin="10" FontSize="12"/>
+                        <Button Name="btnDbg8" Content="Log AppData Paths" Width="200" Click="btnDbg8_Click" Height="50" Margin="10" FontSize="12"/>
                     </WrapPanel>
                 </TabItem>
             </TabControl>

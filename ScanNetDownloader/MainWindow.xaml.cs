@@ -30,11 +30,14 @@ namespace ScanNetDownloader
         {
             DataContext = this;
 
+            // Handle First launch
+            bool firstLaunch = IsFirstLaunch();
+
             // Load Settings
-            Settings.InitializeAppSettings();
+            Settings.InitializeAppSettings(firstLaunch);
 
             // Load ScansLocalData
-            ScansLocalData.InitializeScansData();
+            ScansLocalData.InitializeScansData(firstLaunch);
 
             App.OnApplicationExitEvent += new EventHandler(OnApplicationExit);
 
@@ -46,6 +49,21 @@ namespace ScanNetDownloader
 #if !DEBUG
             tabDebug.Visibility = Visibility.Collapsed;       
 #endif
+        }
+
+        private bool IsFirstLaunch()
+        {
+#if DEBUG
+            string dataPath = Constants.DEBUG_DATA_FOLDER_PATH;
+#else
+            string dataPath = Constants.DATA_FOLDER_PATH;
+#endif
+            bool firstLaunch = !Directory.Exists(dataPath);
+            if (firstLaunch)
+            {
+                Directory.CreateDirectory(dataPath);
+            }
+            return firstLaunch;
         }
 
         #region Ui Routed Events    
@@ -312,9 +330,17 @@ namespace ScanNetDownloader
 
         private void btnDbg8_Click(object sender, RoutedEventArgs e)
         {
-            
+            Debug.WriteLine($"AppData path: {Constants.APPDATA_PATH}, exist:{Directory.Exists(Constants.APPDATA_PATH)}");
+            Debug.WriteLine($"Data folder path: {Constants.DATA_FOLDER_PATH}, exist:{Directory.Exists(Constants.DATA_FOLDER_PATH)}");
+            Debug.WriteLine($"ScanData file path: {Constants.SCANSLOCALDATA_JSON_PATH}, exist:{File.Exists(Constants.SCANSLOCALDATA_JSON_PATH)}");
+            Debug.WriteLine($"Settings file path: {Constants.SETTINGS_JSON_PATH}, exist:{File.Exists(Constants.SETTINGS_JSON_PATH)}");
+            Debug.WriteLine($"DEV Data folder path: {Constants.DEBUG_DATA_FOLDER_PATH}, exist:{Directory.Exists(Constants.DEBUG_DATA_FOLDER_PATH)}");
+            Debug.WriteLine($"DEV ScanData file path: {Constants.DEBUG_SCANSLOCALDATA_JSON_PATH}, exist:{File.Exists(Constants.DEBUG_SCANSLOCALDATA_JSON_PATH)}");
+            Debug.WriteLine($"DEV Settings file path: {Constants.DEBUG_SETTINGS_JSON_PATH}, exist:{File.Exists(Constants.DEBUG_SETTINGS_JSON_PATH)}");
         }
 
         #endregion
+
+
     }
 }

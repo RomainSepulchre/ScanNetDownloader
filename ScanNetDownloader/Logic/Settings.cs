@@ -70,13 +70,22 @@ namespace ScanNetDownloader.Logic
         /// </summary>
         public string ScanManagerListViewSortProperty { get; set; } = nameof(ScanItem.BookName);
 
-        public static void InitializeAppSettings()
+        private static string settingsDataPath;
+
+        public static void InitializeAppSettings(bool firstLaunch)
         {
-            Instance = LoadSettings(Constants.SETTINGS_JSON_PATH);
+#if DEBUG
+            settingsDataPath = Constants.DEBUG_SETTINGS_JSON_PATH;
+#else
+            settingsDataPath = Constants.SETTINGS_JSON_PATH;
+#endif
+            Instance = LoadSettings(firstLaunch);
             Instance.Log();
         }
 
-        private static Settings LoadSettings(string jsonPath)
+        
+
+        private static Settings LoadSettings(bool firstLaunch)
         {
             Settings loadedSettings;
 
@@ -85,17 +94,17 @@ namespace ScanNetDownloader.Logic
                 TypeNameHandling = TypeNameHandling.All
             };
 
-            if (File.Exists(jsonPath))
+            if (File.Exists(settingsDataPath))
             {
                 try
                 {
-                    loadedSettings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(Constants.SETTINGS_JSON_PATH), serializerSettings);
+                    loadedSettings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(settingsDataPath), serializerSettings);
                     if (loadedSettings == null) throw new Exception($"Loaded settings should never be null, something wrong happened during json deserialization");
                     return loadedSettings;
                 }
                 catch (Exception ex)
                 {
-                    Error.FailedToLoadSettingsJson(jsonPath, ex);
+                    Error.FailedToLoadSettingsJson(settingsDataPath, ex);
 
                     // TODO: Redo error management to fit with WPF version
                     string mBoxMessage = $"Impossible to load settings. Do you want to reset settings.json to it's default values ?";
@@ -124,7 +133,11 @@ namespace ScanNetDownloader.Logic
             }
             else // Missing Settings.json
             {
-                Error.MissingSettingsJson(jsonPath);
+                if (!firstLaunch)
+                {
+                    Error.MissingSettingsJson(settingsDataPath);
+                }
+
                 loadedSettings = ResetToDefault();
                 return loadedSettings;
             }
@@ -149,11 +162,11 @@ namespace ScanNetDownloader.Logic
 
             try
             {
-                File.WriteAllText(Constants.SETTINGS_JSON_PATH, JsonConvert.SerializeObject(Instance, serializerSettings));
+                File.WriteAllText(settingsDataPath, JsonConvert.SerializeObject(Instance, serializerSettings));
             }
             catch (Exception ex)
             {
-                Error.FailedToSaveSettingsJson(Constants.SETTINGS_JSON_PATH, ex);
+                Error.FailedToSaveSettingsJson(settingsDataPath, ex);
             }
         }
 
@@ -170,12 +183,12 @@ namespace ScanNetDownloader.Logic
             {
                 if (Instance.AutoOpenJsonWhenNecessary)
                 {
-                    new Process { StartInfo = new ProcessStartInfo(Constants.SETTINGS_JSON_PATH) { UseShellExecute = true } }.Start();
+                    new Process { StartInfo = new ProcessStartInfo(settingsDataPath) { UseShellExecute = true } }.Start();
                 }
             }
             else
             {
-                new Process { StartInfo = new ProcessStartInfo(Constants.SETTINGS_JSON_PATH) { UseShellExecute = true } }.Start();
+                new Process { StartInfo = new ProcessStartInfo(settingsDataPath) { UseShellExecute = true } }.Start();
             }  
         }
 
