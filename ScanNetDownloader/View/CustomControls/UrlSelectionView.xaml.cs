@@ -111,7 +111,7 @@ namespace ScanNetDownloader.View.CustomControls
             UrlValidityResult urlTestResult = await ScanManagement.IsValidScanUrl(UrlInput);
             if (urlTestResult.Success)
             {
-                TempScanData = ScanManagement.CreateTemporaryScanData(UrlInput);
+                TempScanData = await ScanManagement.CreateTemporaryScanData(UrlInput);
                 if (TempScanData == null)
                 {
                     ShowUrlErrorAlert("Impossible to create a ScanData object from url");

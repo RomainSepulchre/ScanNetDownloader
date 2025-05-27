@@ -29,7 +29,7 @@ namespace ScanNetDownloader.Logic
             }            
         }
 
-        public static ScanData CreateTemporaryScanData(string url)
+        public static async Task<ScanData> CreateTemporaryScanData(string url)
         {
             switch (url)
             {
@@ -37,7 +37,9 @@ namespace ScanNetDownloader.Logic
                     return new ScanVfNetScanData(url);
 
                 case string s when s.Contains(Constants.ANIMESAMA_DOMAIN_NAME):
-                    return new AnimeSamaFrScanData(url);
+                    AnimeSamaFrScanData tempAnimeSamaScanData = new AnimeSamaFrScanData(url);
+                    await tempAnimeSamaScanData.GetBookNameFromHtmlContent();
+                    return tempAnimeSamaScanData;
 
                 case string s when s.Contains(Constants.LELSCANS_DOMAIN_NAME):
                     return new LelScansNetScanData(url);
@@ -49,20 +51,20 @@ namespace ScanNetDownloader.Logic
             }
         }
 
-        public static async Task<ScanDataInitResult> CreateNewScanData(string url, int chapterSelected)
+        public static async Task<ScanDataInitResult> CreateNewScanData(string url, int chapterSelected, ScanData tempScanData)
         {
             switch (url)
             {
                 case string s when s.Contains(Constants.SCANVF_DOMAIN_NAME):
-                    ScanData scanVfNetData = new ScanVfNetScanData(url, chapterSelected);
+                    ScanData scanVfNetData = new ScanVfNetScanData(url, chapterSelected, tempScanData.BookName);
                     return await scanVfNetData.InitScanData();
 
                 case string s when s.Contains(Constants.ANIMESAMA_DOMAIN_NAME):
-                    ScanData animeSamaData = new AnimeSamaFrScanData(url, chapterSelected);
+                    ScanData animeSamaData = new AnimeSamaFrScanData(url, chapterSelected, tempScanData.BookName);
                     return await animeSamaData.InitScanData();
 
                 case string s when s.Contains(Constants.LELSCANS_DOMAIN_NAME):
-                    ScanData lelScanNetData = new LelScansNetScanData(url, chapterSelected);
+                    ScanData lelScanNetData = new LelScansNetScanData(url, chapterSelected, tempScanData.BookName);
                     return await lelScanNetData.InitScanData();
 
                 default: // Default, unknown domain name
@@ -75,7 +77,9 @@ namespace ScanNetDownloader.Logic
             }
         }
 
-        public static async Task<List<ScanData>> CreateNewScanDatas(string url, List<int> chaptersSelected) // Probably useless now, kept for potential debug purpose
+
+        // Probably useless now, kept for potential debug purpose
+        public static async Task<List<ScanData>> CreateNewScanDatas(string url, List<int> chaptersSelected, ScanData tempScanData) 
         {
             bool errorOccured = false;
             List<ScanData> newScanDatas = new List<ScanData>();
@@ -85,7 +89,7 @@ namespace ScanNetDownloader.Logic
                 case string s when s.Contains(Constants.SCANVF_DOMAIN_NAME):
                     foreach (int chapterId in chaptersSelected)
                     {
-                        ScanData scanVfNetData = new ScanVfNetScanData(url, chapterId);
+                        ScanData scanVfNetData = new ScanVfNetScanData(url, chapterId, tempScanData.BookName);
                         ScanDataInitResult initResult = await scanVfNetData.InitScanData();
                         if (initResult.Success) newScanDatas.Add(scanVfNetData);
                         //TODO: Else Error Management
@@ -95,7 +99,7 @@ namespace ScanNetDownloader.Logic
                 case string s when s.Contains(Constants.ANIMESAMA_DOMAIN_NAME):
                     foreach(int chapterId in chaptersSelected)
                     {
-                        ScanData animeSamaData = new AnimeSamaFrScanData(url, chapterId);
+                        ScanData animeSamaData = new AnimeSamaFrScanData(url, chapterId, tempScanData.BookName);
                         ScanDataInitResult initResult = await animeSamaData.InitScanData();
                         if(initResult.Success) newScanDatas.Add(animeSamaData);
                         //TODO: Else Error Management
@@ -105,7 +109,7 @@ namespace ScanNetDownloader.Logic
                 case string s when s.Contains(Constants.LELSCANS_DOMAIN_NAME):
                     foreach (int chapterId in chaptersSelected)
                     {
-                        ScanData lelScanNetData = new LelScansNetScanData(url, chapterId);
+                        ScanData lelScanNetData = new LelScansNetScanData(url, chapterId, tempScanData.BookName);
                         ScanDataInitResult initResult = await lelScanNetData.InitScanData();
                         if (initResult.Success) newScanDatas.Add(lelScanNetData);
                         //TODO: Else Error Management
