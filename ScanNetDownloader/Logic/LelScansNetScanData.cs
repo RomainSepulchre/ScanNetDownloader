@@ -51,12 +51,12 @@ namespace ScanNetDownloader.Logic
             IsTemporaryData = true;
         }
 
-        public LelScansNetScanData(string url, int chapterId) : base(url, chapterId)
+        public LelScansNetScanData(string url, int chapterId, string bookName) : base(url, chapterId, bookName)
         {
             if (UrlContainsChapter() && int.Parse(GetChapterNumberFromUrl(url)) == chapterId) Url = url;
-            else Url = GenerateAnotherChapterUrl(chapterId, GetBookNameFromUrl(url));
+            else Url = GenerateAnotherChapterUrl(chapterId, bookName);
             WebsiteDomain = Constants.LELSCANS_DOMAIN_NAME;
-            BookName = GetBookNameFromUrl(url);
+            BookName = bookName;
             ChapterId = chapterId;
             IsSelectedForDownload = true;
             IsTemporaryData = false;

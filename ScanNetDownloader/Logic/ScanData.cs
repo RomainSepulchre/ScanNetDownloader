@@ -61,10 +61,11 @@ namespace ScanNetDownloader.Logic
             Url = url;
         }
 
-        public ScanData(string url, int chapterId)
+        public ScanData(string url, int chapterId, string bookName)
         {
             Url = url;
             ChapterId = chapterId;
+            BookName = bookName;
         }
 
 

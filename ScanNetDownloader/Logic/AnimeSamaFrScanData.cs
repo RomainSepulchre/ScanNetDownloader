@@ -49,12 +49,12 @@ namespace ScanNetDownloader.Logic
             IsTemporaryData = true;
         }
 
-        public AnimeSamaFrScanData(string url, int chapterId) : base(url, chapterId)
+        public AnimeSamaFrScanData(string url, int chapterId, string bookName) : base(url, chapterId, bookName)
         {
             this.Url = url;
             WebsiteDomain = Constants.ANIMESAMA_DOMAIN_NAME;
             ChapterId = chapterId;
-            BookName = GetBookNameFromUrl(url);
+            BookName = bookName;
             IsSelectedForDownload = true;
             IsTemporaryData = false;
         }
@@ -127,6 +127,9 @@ namespace ScanNetDownloader.Logic
             // https://anime-sama.fr/s2/scans/Fairy%20Tail/1/1.jpg
             // https://anime-sama.fr/s2/scans/The%20Terminally%20Ill%20Young%20Master%20of%20the%20Baek%20Clan/1/1.jpg
             #endregion
+
+            // Note: With AnimeSama we replace this book name with one we get from the html content in GetBookNameFromHtmlContent().
+            // If we fail to get the html content this is not replaced and the book name we found here is used as fallback.
 
             int splitIdForChapterUrl = 4;
             int splitIdForImgUrl = 5;
@@ -255,23 +258,45 @@ namespace ScanNetDownloader.Logic
 
             if (string.IsNullOrEmpty(DownloadUrlBookName))
             {
-                DownloadUrlBookName = ParseToFindBookNameForImgUrl(htmlContent);
+                string htmlBookName = ParseToFindBookNameForImgUrl(htmlContent);
+                DownloadUrlBookName = htmlBookName;
+
+                // Ensure we have the correct book name (in case we failed to get it when creating temporary data)
+                BookName = GetDisplayBookName(htmlBookName);
             }
 
-            if (IsUrlForScanInEnglish() == true)
+            return $"{Constants.ANIMESAMA_IMG_URL_START}{DownloadUrlBookName}/{ChapterId}/";
+        }
+
+        public async Task GetBookNameFromHtmlContent()
+        {
+            HtmlContentResult htmlContentResult = await GetUrlHtmlContent();
+            if (htmlContentResult.Success)
             {
-                return $"{Constants.ANIMESAMA_IMG_URL_START}{DownloadUrlBookName}{Constants.ANIMESAMA_ENGLISH_IMG_SUFFIX}/{ChapterId}/";
+                string htmlBookName = ParseToFindBookNameForImgUrl(htmlContentResult.HtmlContent);
+                BookName = GetDisplayBookName(htmlBookName);
             }
-            else
+            // If we fail we use the book name we found from the URL anyway
+        }
+
+        private string GetDisplayBookName(string bookName)
+        {
+            // Deal with book name of english scan
+            if (IsUrlForScanInEnglish()) 
             {
-                return $"{Constants.ANIMESAMA_IMG_URL_START}{DownloadUrlBookName}/{ChapterId}/";
+                if (bookName.EndsWith(Constants.ANIMESAMA_ENGLISH_IMG_SUFFIX))
+                {
+                    // If end by " Anglais" replace it by a " (English)"
+                    bookName = bookName.Remove(bookName.Length - Constants.ANIMESAMA_ENGLISH_IMG_SUFFIX.Length, Constants.ANIMESAMA_ENGLISH_IMG_SUFFIX.Length);
+                }
+                bookName += Constants.ANIMESAMA_ENGLISH_BOOKNAME_SUFFIX;
             }
+
+            return bookName;
         }
 
         private string ParseToFindBookNameForImgUrl(string htmlContent)
         {
-            ThrowExceptionIfTemporaryData();
-
             // Get Book Name for download URL
             string[] splitContent = htmlContent.Split(Constants.ANIMESAMA_BOOK_NAME_START_SEPARATOR, StringSplitOptions.RemoveEmptyEntries); // Split before the meta tag with the book name
             string bookNameForUrl = splitContent[1]; // Keep the split after our separator (trim the beginning)
