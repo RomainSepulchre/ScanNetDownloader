@@ -28,8 +28,8 @@ namespace ScanNetDownloader.Logic
         public static readonly string[] SCANVF_IMG_TAG_END_SEPARATOR = new string[] { "/>" };
 
         // Anime Sama
-        public static readonly string[] ANIMESAMA_BOOK_NAME_START_SEPARATOR = new string[] { "<meta name=\"description\" content=\"" };
-        public static readonly string[] ANIMESAMA_BOOK_NAME_END_SEPARATOR = new string[] { " - Scans" };
+        public static readonly string[] ANIMESAMA_BOOK_NAME_START_SEPARATOR = new string[] { "<h3 id=\"titreOeuvre\" class=\"text-2xl md:text-4xl uppercase font-bold \">" };
+        public static readonly string[] ANIMESAMA_BOOK_NAME_END_SEPARATOR = new string[] { "</h3>" };
 
         // Lel scans
         public static readonly string[] LELSCANS_NAV_PAGE_URL_START_SEPARATOR = new string[] { "<div id=\"navigation\">" };

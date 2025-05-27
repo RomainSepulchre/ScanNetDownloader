@@ -46,12 +46,12 @@ namespace ScanNetDownloader.Logic
             IsTemporaryData = true;
         }
 
-        public ScanVfNetScanData(string url, int chapterId) : base(url, chapterId)
+        public ScanVfNetScanData(string url, int chapterId, string bookName) : base(url, chapterId, bookName)
         {
             if (UrlContainsChapter() && int.Parse(GetChapterNumberFromUrl(url)) == chapterId) Url = url;
             else Url = GenerateAnotherChapterUrl(chapterId);
             WebsiteDomain = Constants.SCANVF_DOMAIN_NAME;
-            BookName = GetBookNameFromUrl(url);
+            BookName = bookName;
             ChapterId = chapterId;
             IsSelectedForDownload = true;
             IsTemporaryData = false;

@@ -59,7 +59,7 @@ namespace ScanNetDownloader.View.CustomControls
                 ScanDataCreationItem scanDataCreationItem = new ScanDataCreationItem(tempScanData.BookName, chapter);
                 listVwCreationStatus.Children.Add(scanDataCreationItem);
 
-                ScanDataInitResult newScanDataResult = await ScanManagement.CreateNewScanData(url, chapter);
+                ScanDataInitResult newScanDataResult = await ScanManagement.CreateNewScanData(url, chapter, tempScanData);
 
                 if (newScanDataResult.Success)
                 {
