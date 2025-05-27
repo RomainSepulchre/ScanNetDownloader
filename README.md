@@ -1,5 +1,14 @@
 <p align="center"><img src="ReadMe/appIcon.png" width="256" height="256" alt="Logo of the application"></p>
 
+Summary:
+- [What is ScanNet Downloader ?](#what-is-scannet-downloader-)
+- [What are the compatible scan websites ?](#what-are-the-compatible-scan-websites-)
+- [How to use ScanNet Downloader ?](#how-to-use-scannet-downloader-)
+    - [Add a new scan](#add-a-new-scan)
+    - [Download scans](#download-scans)
+    - [Import previous data after updating to a new version](#import-previous-data-after-updating-to-a-new-version)
+
+
 # What is ScanNet Downloader ?
 
 ScanNet Downloader is a simple app to automate the downloading of scans and the creation of a .cbz archive.
@@ -86,3 +95,19 @@ To download a scan you must first select them for download in the scan manager v
 
 You can either directly click the "Start download" button in the scan manager view or open the download view and review the scans selected before starting the download from there. When you click to start the download a window will tell you where the scan will be download and ask you to confirm the start of the download. *If you want to change the download folder, cancel the download and change the download location in the options.*<br><br>
 After a scan is downloaded, a .cbz archive is automatically created unless you disabled it in the option. Once the download is complete, by default, an explorer window is opened at the location of the downloaded files.
+
+## Import previous data after updating to a new version
+
+> :warning: When we speak about data here we only speak about the scan informations and app settings. We are not talking about downloaded images, they stay where you downloaded them.
+
+I did a pretty bad decision when choosing where to save the data and settings, this means that when downloading a new version of the app you lose the data from the previous version. I intend to improve that in the next version but in the meantime here is how to import your previous data after downloading a new version.
+
+### Where are saved the data and settings ?
+
+Currently, both the data and settings are saved next to the app .exe in ***ScansLocalData.json*** and ***Settings.json***.
+
+### Import previous data
+
+To import previous data you just need to copy the ***ScansLocalData.json*** and ***Settings.json*** files from the previous version of the app and paste them next to the .exe of the app new version. By doing so, you replace the empty files of the new version by your previous data and settings.
+
+
