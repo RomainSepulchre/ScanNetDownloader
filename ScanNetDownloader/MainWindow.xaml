@@ -77,5 +77,6 @@
                 </TabItem>
             </TabControl>
         </Border>
+        <Label Name="versionNumber" Grid.Row="1" Content="0.0.0.0" FontSize="10" HorizontalAlignment="Right" VerticalAlignment="Bottom" Foreground="{StaticResource Colors.DarkGrey}"/>
     </Grid>
 </Window>

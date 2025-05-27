@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -45,6 +46,8 @@ namespace ScanNetDownloader
             InitializeComponent();
 
             titleBar.InitializeTitleBar();
+
+            versionNumber.Content = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
 #if !DEBUG
             tabDebug.Visibility = Visibility.Collapsed;       
