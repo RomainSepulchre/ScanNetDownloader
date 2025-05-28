@@ -155,10 +155,8 @@ namespace ScanNetDownloader.Logic
                 Settings settingsToImport = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(importPath), serializerSettings);
                 if(settingsToImport == null) throw new Exception($"Failed to get data from provided settings json, the data is null. Json is an empty file or something went wrong during json deserialization.");
 
-                Debug.WriteLine($"SETTINGS TO IMPORT:");
-                settingsToImport.Log();
                 // Replace settings
-                //Save(settingsToImport);
+                Save(settingsToImport);
                 return new SettingsImportResult(true);
             }
             catch (Exception ex)

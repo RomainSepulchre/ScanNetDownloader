@@ -74,11 +74,20 @@ namespace ScanNetDownloader.Logic
     {
         public bool Success = false;
         public Exception Exception = null;
+        public int ImportedCount;
 
-        public ScanDataImportResult(bool success, Exception ex=null)
+        public ScanDataImportResult(bool success, int importedCount=0, Exception ex=null)
         {
             Success = success;
             Exception = ex;
+            ImportedCount = importedCount;
+        }
+
+        public ScanDataImportResult(bool success, Exception ex)
+        {
+            Success = success;
+            Exception = ex;
+            ImportedCount = 0;
         }
     }
 

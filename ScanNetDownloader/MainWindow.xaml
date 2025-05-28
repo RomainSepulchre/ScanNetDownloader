@@ -51,7 +51,7 @@
                             <TextBlock Text="OPTIONS" FontSize="24" HorizontalAlignment="Center" Style="{StaticResource TabItemHeaderTextBlockStyle}"/>
                         </Border>
                     </TabItem.Header>
-                    <customControls:OptionsView x:Name="optionsVw" ClearLocalData="optionsVw_ClearLocalData"/>
+                    <customControls:OptionsView x:Name="optionsVw" RefreshScanData="optionsVw_RefreshScanData"/>
                 </TabItem>
 
                 <!--Debug-->

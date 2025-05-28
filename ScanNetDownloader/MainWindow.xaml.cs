@@ -134,7 +134,7 @@ namespace ScanNetDownloader
             ScansLocalData.Save();
         }
 
-        private void optionsVw_ClearLocalData(object sender, RoutedEventArgs e)
+        private void optionsVw_RefreshScanData(object sender, RoutedEventArgs e)
         {
             scanManagerVw.ForceScanDataRefresh();
         }

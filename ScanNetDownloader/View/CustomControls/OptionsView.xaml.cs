@@ -105,11 +105,11 @@ namespace ScanNetDownloader.View.CustomControls
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public static RoutedEvent ClearLocalDataEvent = EventManager.RegisterRoutedEvent(nameof(ClearLocalData), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(OptionsView));
-        public event RoutedEventHandler ClearLocalData
+        public static RoutedEvent RefreshScanDataEvent = EventManager.RegisterRoutedEvent(nameof(RefreshScanData), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(OptionsView));
+        public event RoutedEventHandler RefreshScanData
         {
-            add { AddHandler(ClearLocalDataEvent, value); }
-            remove { RemoveHandler(ClearLocalDataEvent, value); }
+            add { AddHandler(RefreshScanDataEvent, value); }
+            remove { RemoveHandler(RefreshScanDataEvent, value); }
         }
 
         public OptionsView()
@@ -174,14 +174,9 @@ namespace ScanNetDownloader.View.CustomControls
                 fileDialog.Filter = "Json files (*.json)|*.json";
 
                 bool? success = fileDialog.ShowDialog();
-
                 if (success == true)
                 {
                     string scanDataPath = fileDialog.FileName;
-
-                    Debug.WriteLine("IMPORT SCAN DATA PATH:");
-                    Debug.WriteLine(scanDataPath);
-
                     ScanDataImportResult result = ScansLocalData.ImportScanData(scanDataPath);
 
                     string resultHeader;
@@ -196,8 +191,9 @@ namespace ScanNetDownloader.View.CustomControls
                     else
                     {
                         resultHeader = "Scan data importation done";
-                        resultMessage = $"You have successfully imported scan data from: {scanDataPath}.";
+                        resultMessage = $"You have successfully imported {result.ImportedCount} scan data from: {scanDataPath}.";
                     }
+                    RaiseEvent(new RoutedEventArgs(RefreshScanDataEvent, this));
                     MsgWindow.ShowOkWindow(resultHeader, resultMessage, false, msgType);
                 }
             }            
@@ -217,14 +213,9 @@ namespace ScanNetDownloader.View.CustomControls
                 fileDialog.Filter = "Json files (*.json)|*.json";
 
                 bool? success = fileDialog.ShowDialog();
-
                 if (success == true)
                 {
                     string settingsPath = fileDialog.FileName;
-
-                    Debug.WriteLine("IMPORT SETTINGS PATH:");
-                    Debug.WriteLine(settingsPath);
-
                     SettingsImportResult result = Settings.ImportSettings(settingsPath);
 
                     string resultHeader;
@@ -241,6 +232,7 @@ namespace ScanNetDownloader.View.CustomControls
                         resultHeader = "Settings importation done";
                         resultMessage = $"You have successfully imported settings from: {settingsPath}.";
                     }
+                    RefreshSettings();
                     MsgWindow.ShowOkWindow(resultHeader, resultMessage, false, msgType);
                 }
             }
@@ -255,7 +247,7 @@ namespace ScanNetDownloader.View.CustomControls
             if (yesNoWindow.Success)
             {
                 ScansLocalData.Instance.ClearScanData();
-                RaiseEvent(new RoutedEventArgs(ClearLocalDataEvent, this));
+                RaiseEvent(new RoutedEventArgs(RefreshScanDataEvent, this));
             }
         }
 
