@@ -12,7 +12,8 @@ namespace ScanNetDownloader.Logic.Helpers
             Error,
             Warning,
             Question,
-            Information
+            Information,
+            Success
         }
 
         public static OkWindow ShowOkWindow(string header, string message, bool allowQuit = true, ImageType windowImg = ImageType.NoImage)
@@ -166,6 +167,10 @@ namespace ScanNetDownloader.Logic.Helpers
 
                 case ImageType.Information:
                     bitmapImage = (BitmapImage)Application.Current.Resources[ResourcesKey.BitmapImages.InfoIcon];
+                    break;
+
+                case ImageType.Success:
+                    bitmapImage = (BitmapImage)Application.Current.Resources[ResourcesKey.BitmapImages.SuccessIcon];
                     break;
 
             }

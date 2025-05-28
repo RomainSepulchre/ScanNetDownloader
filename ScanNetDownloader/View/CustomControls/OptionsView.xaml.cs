@@ -185,13 +185,14 @@ namespace ScanNetDownloader.View.CustomControls
                     if (!result.Success)
                     {
                         resultHeader = "Failed - Are you sure this is a scan data json ?";
-                        resultMessage = $"Failed to import scan data from: {scanDataPath}.\n\n{result.Exception.Message}";
+                        resultMessage = $"Failed to import scan data from:\n{scanDataPath}.\n\n{result.Exception.Message}";
                         msgType = MsgWindow.ImageType.Error;
                     }
                     else
                     {
                         resultHeader = "Scan data importation done";
-                        resultMessage = $"You have successfully imported {result.ImportedCount} scan data from: {scanDataPath}.";
+                        resultMessage = $"You have successfully imported {result.ImportedCount} scan data from:\n{scanDataPath}.";
+                        msgType = MsgWindow.ImageType.Success;
                     }
                     RaiseEvent(new RoutedEventArgs(RefreshScanDataEvent, this));
                     MsgWindow.ShowOkWindow(resultHeader, resultMessage, false, msgType);
@@ -224,13 +225,14 @@ namespace ScanNetDownloader.View.CustomControls
                     if (!result.Success)
                     {
                         resultHeader = "Failed - Are you sure this is a settings json ?";
-                        resultMessage = $"Failed to import settings from: {settingsPath}.\n\n{result.Exception.Message}";
+                        resultMessage = $"Failed to import settings from:\n{settingsPath}.\n\n{result.Exception.Message}";
                         msgType = MsgWindow.ImageType.Error;
                     }
                     else
                     {
                         resultHeader = "Settings importation done";
-                        resultMessage = $"You have successfully imported settings from: {settingsPath}.";
+                        resultMessage = $"You have successfully imported settings from:\n{settingsPath}.";
+                        msgType = MsgWindow.ImageType.Success;
                     }
                     RefreshSettings();
                     MsgWindow.ShowOkWindow(resultHeader, resultMessage, false, msgType);

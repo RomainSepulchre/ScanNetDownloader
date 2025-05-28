@@ -37,6 +37,7 @@
     <None Remove="Images\startIcon_Blue.png" />
     <None Remove="Images\startIcon_White.png" />
     <None Remove="Images\stopIcon.png" />
+    <None Remove="Images\successIcon.png" />
     <None Remove="Images\warningIcon.png" />
   </ItemGroup>
 
@@ -82,6 +83,7 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Images\stopIcon.png" />
+    <Resource Include="Images\successIcon.png" />
     <Resource Include="Images\warningIcon.png" />
   </ItemGroup>
 
