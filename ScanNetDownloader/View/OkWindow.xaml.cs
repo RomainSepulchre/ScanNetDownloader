@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using ScanNetDownloader.Logic.Helpers;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Media.Imaging;
@@ -79,14 +80,15 @@ namespace ScanNetDownloader.View
             InitializeComponent();
         }
 
-        public OkWindow(Window parentWindow, string header, string msg, bool allowQuit = true, BitmapImage? img = null)
+        public OkWindow(Window parentWindow, string header, string msg, bool allowQuit = true, BitmapImage? img = null, bool parseMessageAsInlines = false)
         {
             DataContext = this;
             Owner = parentWindow;
             InitializeComponent();
 
             Header = header;
-            Message = msg;
+            if (parseMessageAsInlines) txtBlockMsg.Inlines.AddRange(msg.ParseInlines());
+            else Message = msg;
             ShowQuitButton = allowQuit;
 
             if (img != null)
@@ -100,7 +102,7 @@ namespace ScanNetDownloader.View
             }
         }
 
-        public OkWindow(string header, string msg, bool allowQuit = true, BitmapImage? img = null)
+        public OkWindow(string header, string msg, bool allowQuit = true, BitmapImage? img = null, bool parseMessageAsInlines = false)
         {
             DataContext = this;
             
@@ -110,7 +112,8 @@ namespace ScanNetDownloader.View
             this.Title = header;
             this.WindowStyle = WindowStyle.SingleBorderWindow;
             Header = header;
-            Message = msg;
+            if (parseMessageAsInlines) txtBlockMsg.Inlines.AddRange(msg.ParseInlines());
+            else Message = msg;
             ShowQuitButton = allowQuit;
 
             if (img != null)

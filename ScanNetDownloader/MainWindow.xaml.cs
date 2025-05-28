@@ -245,9 +245,9 @@ namespace ScanNetDownloader
             Window parentWindow = this;
 
             string header = "Test for yes no window";
-            string msg = "Nothing will happen to the directory C:\\Users\\aRandomUserName\\IncredibleDirectoryName.\n\nDo accept that nothing will happen to this directory ?";
+            string msg = "<Bold>Nothing will happen to the directory</Bold> <Italic>C:\\Users\\aRandomUserName\\IncredibleDirectoryName.</Italic><LineBreak/><LineBreak/>Do accept that nothing will happen to this directory ?";
 
-            YesNoWindow ynWindow = MsgWindow.ShowYesNoWindow(this, header, msg, true, MsgWindow.ImageType.Question);
+            YesNoWindow ynWindow = MsgWindow.ShowYesNoWindow(this, header, msg, true, MsgWindow.ImageType.Question, true);
 
             if (ynWindow.Success)
             {
@@ -262,8 +262,8 @@ namespace ScanNetDownloader
         private void btnDbg6_Click(object sender, RoutedEventArgs e)
         {
             string header = "Ok window";
-            string msg = "Do you acknowledge something? It can be anything, just acknowledge it!";
-            OkWindow okWindow = MsgWindow.ShowOkWindow(this, header, msg, false, MsgWindow.ImageType.Warning);
+            string msg = "<Bold>Do you acknowledge something?</Bold> <Italic>It can be anything,</Italic> just acknowledge it!";
+            OkWindow okWindow = MsgWindow.ShowOkWindow(this, header, msg, false, MsgWindow.ImageType.Warning, true);
 
             if (okWindow.Success)
             {

@@ -185,17 +185,17 @@ namespace ScanNetDownloader.View.CustomControls
                     if (!result.Success)
                     {
                         resultHeader = "Failed - Are you sure this is a scan data json ?";
-                        resultMessage = $"Failed to import scan data from:\n{scanDataPath}.\n\n{result.Exception.Message}";
+                        resultMessage = $"<Bold>Failed to import scan data from:</Bold><LineBreak/><Italic>{scanDataPath}</Italic>.<LineBreak/><LineBreak/>{result.Exception.Message}";
                         msgType = MsgWindow.ImageType.Error;
                     }
                     else
                     {
                         resultHeader = "Scan data importation done";
-                        resultMessage = $"You have successfully imported {result.ImportedCount} scan data from:\n{scanDataPath}.";
+                        resultMessage = $"<Bold>You have successfully imported {result.ImportedCount} scan data from:</Bold><LineBreak/><Italic>{scanDataPath}</Italic>.";
                         msgType = MsgWindow.ImageType.Success;
                     }
                     RaiseEvent(new RoutedEventArgs(RefreshScanDataEvent, this));
-                    MsgWindow.ShowOkWindow(resultHeader, resultMessage, false, msgType);
+                    MsgWindow.ShowOkWindow(resultHeader, resultMessage, false, msgType, true);
                 }
             }            
         }
@@ -225,17 +225,17 @@ namespace ScanNetDownloader.View.CustomControls
                     if (!result.Success)
                     {
                         resultHeader = "Failed - Are you sure this is a settings json ?";
-                        resultMessage = $"Failed to import settings from:\n{settingsPath}.\n\n{result.Exception.Message}";
+                        resultMessage = $"<Bold>Failed to import settings from:</Bold><LineBreak/><Italic>{settingsPath}</Italic>.<LineBreak/><LineBreak/>{result.Exception.Message}";
                         msgType = MsgWindow.ImageType.Error;
                     }
                     else
                     {
                         resultHeader = "Settings importation done";
-                        resultMessage = $"You have successfully imported settings from:\n{settingsPath}.";
+                        resultMessage = $"<Bold>You have successfully imported settings from:</Bold><LineBreak/><Italic>{settingsPath}</Italic>.";
                         msgType = MsgWindow.ImageType.Success;
                     }
                     RefreshSettings();
-                    MsgWindow.ShowOkWindow(resultHeader, resultMessage, false, msgType);
+                    MsgWindow.ShowOkWindow(resultHeader, resultMessage, false, msgType, true);
                 }
             }
         }

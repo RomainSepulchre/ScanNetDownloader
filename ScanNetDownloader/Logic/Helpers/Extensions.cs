@@ -3,6 +3,9 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Markup;
 using System.Windows.Media;
 
 namespace ScanNetDownloader.Logic.Helpers
@@ -12,6 +15,12 @@ namespace ScanNetDownloader.Logic.Helpers
         public static string ToTitleCase(this string title)
         {
             return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(title.ToLower());
+        }
+
+        public static IEnumerable<Inline> ParseInlines(this string stringToParse)
+        {
+            TextBlock txtBlock = (TextBlock)XamlReader.Parse($"<TextBlock xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\">{stringToParse}</TextBlock>");
+            return txtBlock.Inlines.ToList();
         }
 
         public static bool StartsWithAny(this string s, List<string> listOfStrings)
