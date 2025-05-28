@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using Newtonsoft.Json;
 using ScanNetDownloader.Logic;
 using ScanNetDownloader.Logic.Helpers;
 using System.ComponentModel;
@@ -130,15 +131,15 @@ namespace ScanNetDownloader.View.CustomControls
 
         private void btnChooseOutputDir_Click(object sender, RoutedEventArgs e)
         {
-            OpenFolderDialog fileDialog = new OpenFolderDialog();
-            fileDialog.Title = "Select download directory";
-            fileDialog.Multiselect = false;
+            OpenFolderDialog folderDialog = new OpenFolderDialog();
+            folderDialog.Title = "Select download directory";
+            folderDialog.Multiselect = false;
 
-            bool? success = fileDialog.ShowDialog();
+            bool? success = folderDialog.ShowDialog();
 
             if (success == true)
             {
-                OutputDirectoryPath = fileDialog.FolderName;
+                OutputDirectoryPath = folderDialog.FolderName;
                 HideErrorMessages();
 
                 SaveSettings();
@@ -156,6 +157,92 @@ namespace ScanNetDownloader.View.CustomControls
             {
                 OpenOutputDirectoryErrorMsg = "Directory doesn't exist, impossible to open it";
                 errorAlertOpenOutputDir.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void btnImportScanData_Click(object sender, RoutedEventArgs e)
+        {
+            // Give user some informations before importing scan data
+            string header = "Import scan data";
+            string msg = $"Select a ScanLocalData.json file to import its data, the data will be merged to your current data.\n\nIf you want to replace your current data rather than merge, clear your scan data before doing the data importation.\n\nAre you ready to import scan data?";
+            YesNoWindow yesNoWindow = MsgWindow.ShowYesNoWindow(header, msg, true, MsgWindow.ImageType.Information);
+            if (yesNoWindow.Success)
+            {
+                OpenFileDialog fileDialog = new OpenFileDialog();
+                fileDialog.Title = "Select the scan data json file";
+                fileDialog.Multiselect = false;
+                fileDialog.Filter = "Json files (*.json)|*.json";
+
+                bool? success = fileDialog.ShowDialog();
+
+                if (success == true)
+                {
+                    string scanDataPath = fileDialog.FileName;
+
+                    Debug.WriteLine("IMPORT SCAN DATA PATH:");
+                    Debug.WriteLine(scanDataPath);
+
+                    ScanDataImportResult result = ScansLocalData.ImportScanData(scanDataPath);
+
+                    string resultHeader;
+                    string resultMessage;
+                    MsgWindow.ImageType msgType = MsgWindow.ImageType.Information;
+                    if (!result.Success)
+                    {
+                        resultHeader = "Failed - Are you sure this is a scan data json ?";
+                        resultMessage = $"Failed to import scan data from: {scanDataPath}.\n\n{result.Exception.Message}";
+                        msgType = MsgWindow.ImageType.Error;
+                    }
+                    else
+                    {
+                        resultHeader = "Scan data importation done";
+                        resultMessage = $"You have successfully imported scan data from: {scanDataPath}.";
+                    }
+                    MsgWindow.ShowOkWindow(resultHeader, resultMessage, false, msgType);
+                }
+            }            
+        }
+
+        private void btnImportSettings_Click(object sender, RoutedEventArgs e)
+        {
+            // Give user some informations before importing settings
+            string header = "Import settings";
+            string msg = $"Select a Settings.json file to import its data, your current settings will be replaced by the settings from the json file.\n\nAre you ready to import settings?";
+            YesNoWindow yesNoWindow = MsgWindow.ShowYesNoWindow(header, msg, true, MsgWindow.ImageType.Information);
+            if (yesNoWindow.Success)
+            {
+                OpenFileDialog fileDialog = new OpenFileDialog();
+                fileDialog.Title = "Select the settings json file";
+                fileDialog.Multiselect = false;
+                fileDialog.Filter = "Json files (*.json)|*.json";
+
+                bool? success = fileDialog.ShowDialog();
+
+                if (success == true)
+                {
+                    string settingsPath = fileDialog.FileName;
+
+                    Debug.WriteLine("IMPORT SETTINGS PATH:");
+                    Debug.WriteLine(settingsPath);
+
+                    SettingsImportResult result = Settings.ImportSettings(settingsPath);
+
+                    string resultHeader;
+                    string resultMessage;
+                    MsgWindow.ImageType msgType = MsgWindow.ImageType.Information;
+                    if (!result.Success)
+                    {
+                        resultHeader = "Failed - Are you sure this is a settings json ?";
+                        resultMessage = $"Failed to import settings from: {settingsPath}.\n\n{result.Exception.Message}";
+                        msgType = MsgWindow.ImageType.Error;
+                    }
+                    else
+                    {
+                        resultHeader = "Settings importation done";
+                        resultMessage = $"You have successfully imported settings from: {settingsPath}.";
+                    }
+                    MsgWindow.ShowOkWindow(resultHeader, resultMessage, false, msgType);
+                }
             }
         }
 

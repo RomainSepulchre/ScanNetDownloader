@@ -92,6 +92,29 @@ namespace ScanNetDownloader.Logic
             }
         }
 
+        public static ScanDataImportResult ImportScanData(string importPath)
+        {
+            JsonSerializerSettings serializerSettings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All
+            };
+
+            try
+            {
+                ScansLocalData scanDataToImport = JsonConvert.DeserializeObject<ScansLocalData>(File.ReadAllText(importPath), serializerSettings);
+                if (scanDataToImport == null) throw new Exception($"Failed to get data from provided scan data json, the data is null. Json is an empty file or something went wrong during json deserialization.");
+
+                Debug.WriteLine($"SCAN DATA TO IMPORT:");
+                scanDataToImport.Log();
+                // TODO: Merge with current data
+                return new ScanDataImportResult(true);
+            }
+            catch (Exception ex)
+            {
+                return new ScanDataImportResult(false, ex);
+            }
+        }
+
         public static void Save(ScansLocalData newScanLocalData=null)
         {
             // If we specify newScanLocalData, they replace the instance otherwise we save our ScansLocalData instance

@@ -143,6 +143,30 @@ namespace ScanNetDownloader.Logic
             }
         }
 
+        public static SettingsImportResult ImportSettings(string importPath)
+        {
+            JsonSerializerSettings serializerSettings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All
+            };
+
+            try
+            {
+                Settings settingsToImport = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(importPath), serializerSettings);
+                if(settingsToImport == null) throw new Exception($"Failed to get data from provided settings json, the data is null. Json is an empty file or something went wrong during json deserialization.");
+
+                Debug.WriteLine($"SETTINGS TO IMPORT:");
+                settingsToImport.Log();
+                // Replace settings
+                //Save(settingsToImport);
+                return new SettingsImportResult(true);
+            }
+            catch (Exception ex)
+            {
+                return new SettingsImportResult(false, ex);
+            }
+        }
+
         public static void Save(Settings newSettings=null)
         {
             // If we specify newSettings, they replace the instance otherwise we save our Settings instance
