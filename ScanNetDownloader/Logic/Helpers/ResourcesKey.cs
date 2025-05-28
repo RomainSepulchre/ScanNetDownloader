@@ -60,6 +60,7 @@
             public const string Maximize = "Img.maximizeIcon";
             public const string Minimize = "Img.minimizeIcon";
             public const string InferiorLevel = "Img.inferiorLevelIcon";
+            public const string SuccessIcon = "Img.successIcon";
         }
 
         public static class ImageBrushes

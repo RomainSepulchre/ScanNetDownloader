@@ -69,4 +69,37 @@ namespace ScanNetDownloader.Logic
             HtmlContentResult = _htmlContentResult;
         }
     }
+
+    public class ScanDataImportResult
+    {
+        public bool Success = false;
+        public Exception Exception = null;
+        public int ImportedCount;
+
+        public ScanDataImportResult(bool success, int importedCount=0, Exception ex=null)
+        {
+            Success = success;
+            Exception = ex;
+            ImportedCount = importedCount;
+        }
+
+        public ScanDataImportResult(bool success, Exception ex)
+        {
+            Success = success;
+            Exception = ex;
+            ImportedCount = 0;
+        }
+    }
+
+    public class SettingsImportResult
+    {
+        public bool Success = false;
+        public Exception Exception = null;
+
+        public SettingsImportResult(bool success, Exception ex = null)
+        {
+            Success = success;
+            Exception = ex;
+        }
+    }
 }

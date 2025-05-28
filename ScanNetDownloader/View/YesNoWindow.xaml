@@ -38,7 +38,7 @@
             <Image Height="50" Width="50" Source="{Binding Image}" Visibility="{Binding ShowImage, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
             <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
-                <TextBlock TextWrapping="Wrap" Text="{Binding Message, FallbackValue=no message set}"/>
+                <TextBlock Name="txtBlockMsg" TextWrapping="Wrap" Text="{Binding Message, FallbackValue=no message set}"/>
             </StackPanel>
         </Grid>
         

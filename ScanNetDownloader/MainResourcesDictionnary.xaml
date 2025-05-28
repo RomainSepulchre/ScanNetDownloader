@@ -67,6 +67,7 @@
     <BitmapImage x:Key="Img.minimizeIcon" UriSource="/Images/minimizeIcon.png"></BitmapImage>
     <BitmapImage x:Key="Img.maximizeIcon" UriSource="/Images/maximizeIcon.png"></BitmapImage>
     <BitmapImage x:Key="Img.inferiorLevelIcon" UriSource="/Images/inferiorLevelIcon.png"></BitmapImage>
+    <BitmapImage x:Key="Img.successIcon" UriSource="/Images/successIcon.png"></BitmapImage>
 
 
     <!--Image Brushes-->

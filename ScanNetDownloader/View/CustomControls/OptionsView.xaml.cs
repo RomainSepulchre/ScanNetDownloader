@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using Newtonsoft.Json;
 using ScanNetDownloader.Logic;
 using ScanNetDownloader.Logic.Helpers;
 using System.ComponentModel;
@@ -104,11 +105,11 @@ namespace ScanNetDownloader.View.CustomControls
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public static RoutedEvent ClearLocalDataEvent = EventManager.RegisterRoutedEvent(nameof(ClearLocalData), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(OptionsView));
-        public event RoutedEventHandler ClearLocalData
+        public static RoutedEvent RefreshScanDataEvent = EventManager.RegisterRoutedEvent(nameof(RefreshScanData), RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(OptionsView));
+        public event RoutedEventHandler RefreshScanData
         {
-            add { AddHandler(ClearLocalDataEvent, value); }
-            remove { RemoveHandler(ClearLocalDataEvent, value); }
+            add { AddHandler(RefreshScanDataEvent, value); }
+            remove { RemoveHandler(RefreshScanDataEvent, value); }
         }
 
         public OptionsView()
@@ -130,15 +131,15 @@ namespace ScanNetDownloader.View.CustomControls
 
         private void btnChooseOutputDir_Click(object sender, RoutedEventArgs e)
         {
-            OpenFolderDialog fileDialog = new OpenFolderDialog();
-            fileDialog.Title = "Select download directory";
-            fileDialog.Multiselect = false;
+            OpenFolderDialog folderDialog = new OpenFolderDialog();
+            folderDialog.Title = "Select download directory";
+            folderDialog.Multiselect = false;
 
-            bool? success = fileDialog.ShowDialog();
+            bool? success = folderDialog.ShowDialog();
 
             if (success == true)
             {
-                OutputDirectoryPath = fileDialog.FolderName;
+                OutputDirectoryPath = folderDialog.FolderName;
                 HideErrorMessages();
 
                 SaveSettings();
@@ -159,6 +160,86 @@ namespace ScanNetDownloader.View.CustomControls
             }
         }
 
+        private void btnImportScanData_Click(object sender, RoutedEventArgs e)
+        {
+            // Give user some informations before importing scan data
+            string header = "Import scan data";
+            string msg = $"Select a ScanLocalData.json file to import its data, the data will be merged to your current data.\n\nIf you want to replace your current data rather than merge, clear your scan data before doing the data importation.\n\nAre you ready to import scan data?";
+            YesNoWindow yesNoWindow = MsgWindow.ShowYesNoWindow(header, msg, true, MsgWindow.ImageType.Information);
+            if (yesNoWindow.Success)
+            {
+                OpenFileDialog fileDialog = new OpenFileDialog();
+                fileDialog.Title = "Select the scan data json file";
+                fileDialog.Multiselect = false;
+                fileDialog.Filter = "Json files (*.json)|*.json";
+
+                bool? success = fileDialog.ShowDialog();
+                if (success == true)
+                {
+                    string scanDataPath = fileDialog.FileName;
+                    ScanDataImportResult result = ScansLocalData.ImportScanData(scanDataPath);
+
+                    string resultHeader;
+                    string resultMessage;
+                    MsgWindow.ImageType msgType = MsgWindow.ImageType.Information;
+                    if (!result.Success)
+                    {
+                        resultHeader = "Failed - Are you sure this is a scan data json ?";
+                        resultMessage = $"<Bold>Failed to import scan data from:</Bold><LineBreak/><Italic>{scanDataPath}</Italic>.<LineBreak/><LineBreak/>{result.Exception.Message}";
+                        msgType = MsgWindow.ImageType.Error;
+                    }
+                    else
+                    {
+                        resultHeader = "Scan data importation done";
+                        resultMessage = $"<Bold>You have successfully imported {result.ImportedCount} scan data from:</Bold><LineBreak/><Italic>{scanDataPath}</Italic>.";
+                        msgType = MsgWindow.ImageType.Success;
+                    }
+                    RaiseEvent(new RoutedEventArgs(RefreshScanDataEvent, this));
+                    MsgWindow.ShowOkWindow(resultHeader, resultMessage, false, msgType, true);
+                }
+            }            
+        }
+
+        private void btnImportSettings_Click(object sender, RoutedEventArgs e)
+        {
+            // Give user some informations before importing settings
+            string header = "Import settings";
+            string msg = $"Select a Settings.json file to import its data, your current settings will be replaced by the settings from the json file.\n\nAre you ready to import settings?";
+            YesNoWindow yesNoWindow = MsgWindow.ShowYesNoWindow(header, msg, true, MsgWindow.ImageType.Information);
+            if (yesNoWindow.Success)
+            {
+                OpenFileDialog fileDialog = new OpenFileDialog();
+                fileDialog.Title = "Select the settings json file";
+                fileDialog.Multiselect = false;
+                fileDialog.Filter = "Json files (*.json)|*.json";
+
+                bool? success = fileDialog.ShowDialog();
+                if (success == true)
+                {
+                    string settingsPath = fileDialog.FileName;
+                    SettingsImportResult result = Settings.ImportSettings(settingsPath);
+
+                    string resultHeader;
+                    string resultMessage;
+                    MsgWindow.ImageType msgType = MsgWindow.ImageType.Information;
+                    if (!result.Success)
+                    {
+                        resultHeader = "Failed - Are you sure this is a settings json ?";
+                        resultMessage = $"<Bold>Failed to import settings from:</Bold><LineBreak/><Italic>{settingsPath}</Italic>.<LineBreak/><LineBreak/>{result.Exception.Message}";
+                        msgType = MsgWindow.ImageType.Error;
+                    }
+                    else
+                    {
+                        resultHeader = "Settings importation done";
+                        resultMessage = $"<Bold>You have successfully imported settings from:</Bold><LineBreak/><Italic>{settingsPath}</Italic>.";
+                        msgType = MsgWindow.ImageType.Success;
+                    }
+                    RefreshSettings();
+                    MsgWindow.ShowOkWindow(resultHeader, resultMessage, false, msgType, true);
+                }
+            }
+        }
+
         private void btnClearScanData_Click(object sender, RoutedEventArgs e)
         {
             // Ask user before deleting scan item
@@ -168,7 +249,7 @@ namespace ScanNetDownloader.View.CustomControls
             if (yesNoWindow.Success)
             {
                 ScansLocalData.Instance.ClearScanData();
-                RaiseEvent(new RoutedEventArgs(ClearLocalDataEvent, this));
+                RaiseEvent(new RoutedEventArgs(RefreshScanDataEvent, this));
             }
         }
 

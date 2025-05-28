@@ -40,8 +40,12 @@
                 <CheckBox Name="chBoxDeleteImageAfterCbz" Content="Delete scan images once the .CBZ archive is created" IsChecked="{Binding DeleteImagesAfterCbzCreation, UpdateSourceTrigger=PropertyChanged}" Margin="0 5 0 0"/>
             </StackPanel>
 
-            <TextBlock Text="Reset data" FontWeight="Bold" FontSize="24" Margin="0 12 0 0"/>
-            <Button Name="btnClearScanData" Content="Clear local scan data" Click="btnClearScanData_Click" Width="200" Height="30" HorizontalAlignment="Left" Margin="0 5 0 0"/>
+            <TextBlock Text="Data management" FontWeight="Bold" FontSize="24" Margin="0 12 0 0"/>
+            <StackPanel Orientation="Horizontal">
+                <Button Name="btnImportScanData" Content="Import scan data" Click="btnImportScanData_Click" Width="200" Height="30" HorizontalAlignment="Left" Margin="0 5 0 0"/>
+                <Button Name="btnImportSettings" Content="Import settings" Click="btnImportSettings_Click" Width="200" Height="30" HorizontalAlignment="Left" Margin="5 5 0 0"/>
+            </StackPanel>
+            <Button Name="btnClearScanData" Content="Clear local scan data" Click="btnClearScanData_Click" Width="200" Height="30" HorizontalAlignment="Left" Margin="0 5 0 0" Background="{StaticResource Colors.Red}"/>
             
         </StackPanel>
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0 0 0 0">

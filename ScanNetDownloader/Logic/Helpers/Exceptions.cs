@@ -11,7 +11,12 @@ namespace ScanNetDownloader.Logic.Helpers
 
         public static FileNotFoundException MissingSettingsJson(string jsonPath)
         {
-            return new FileNotFoundException($"The settings.json file ({jsonPath}) is missing");
+            return new FileNotFoundException($"The Settings.json file ({jsonPath}) is missing");
+        }
+
+        public static FileNotFoundException MissingScanDataJson(string jsonPath)
+        {
+            return new FileNotFoundException($"The ScansLocalData.json file ({jsonPath}) is missing");
         }
     }
 }

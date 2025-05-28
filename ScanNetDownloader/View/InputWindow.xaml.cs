@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using ScanNetDownloader.Logic.Helpers;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Media.Imaging;
@@ -81,7 +82,7 @@ namespace ScanNetDownloader.View
             InitializeComponent();
         }
 
-        public InputWindow(Window parentWindow, string header, string msg, string inputPlaceholder="", bool allowQuit=true, BitmapImage? img=null)
+        public InputWindow(Window parentWindow, string header, string msg, string inputPlaceholder="", bool allowQuit=true, BitmapImage? img=null, bool parseMessageAsInlines = false)
         {
             Owner = parentWindow;
             
@@ -89,7 +90,8 @@ namespace ScanNetDownloader.View
             InitializeComponent();
 
             Header = header;
-            Message = msg;
+            if (parseMessageAsInlines) txtBlockMsg.Inlines.AddRange(msg.ParseInlines());
+            else Message = msg;
             ShowQuitButton = allowQuit;
 
             if (img != null)
@@ -105,7 +107,7 @@ namespace ScanNetDownloader.View
             txtBoxInput.PlaceholderText = inputPlaceholder;
         }
 
-        public InputWindow(string header, string msg, string inputPlaceholder = "", bool allowQuit = true, BitmapImage? img = null)
+        public InputWindow(string header, string msg, string inputPlaceholder = "", bool allowQuit = true, BitmapImage? img = null, bool parseMessageAsInlines = false)
         {
             DataContext = this;
             
@@ -115,7 +117,8 @@ namespace ScanNetDownloader.View
             this.Title = header;
             this.WindowStyle = WindowStyle.SingleBorderWindow;
             Header = header;
-            Message = msg;
+            if (parseMessageAsInlines) txtBlockMsg.Inlines.AddRange(msg.ParseInlines());
+            else Message = msg;
             ShowQuitButton = allowQuit;
 
             if (img != null)

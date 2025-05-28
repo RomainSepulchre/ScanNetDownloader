@@ -12,15 +12,16 @@ namespace ScanNetDownloader.Logic.Helpers
             Error,
             Warning,
             Question,
-            Information
+            Information,
+            Success
         }
 
-        public static OkWindow ShowOkWindow(string header, string message, bool allowQuit = true, ImageType windowImg = ImageType.NoImage)
+        public static OkWindow ShowOkWindow(string header, string message, bool allowQuit = true, ImageType windowImg = ImageType.NoImage, bool parseMessageAsInlines = false)
         {
             Window parentWindow = Application.Current.MainWindow;
             BitmapImage image = GetBitmapImage(windowImg);
 
-            OkWindow okWindow = new OkWindow(parentWindow, header, message, allowQuit, image);
+            OkWindow okWindow = new OkWindow(parentWindow, header, message, allowQuit, image, parseMessageAsInlines);
             parentWindow.Opacity = 0.4;
             okWindow.ShowDialog();
             parentWindow.Opacity = 1;
@@ -28,11 +29,11 @@ namespace ScanNetDownloader.Logic.Helpers
             return okWindow;
         }
 
-        public static OkWindow ShowOkWindow(Window parentWindow, string header, string message, bool allowQuit = true, ImageType windowImg = ImageType.NoImage)
+        public static OkWindow ShowOkWindow(Window parentWindow, string header, string message, bool allowQuit = true, ImageType windowImg = ImageType.NoImage, bool parseMessageAsInlines = false)
         {
             BitmapImage image = GetBitmapImage(windowImg);
 
-            OkWindow okWindow = new OkWindow(parentWindow, header, message, allowQuit, image);
+            OkWindow okWindow = new OkWindow(parentWindow, header, message, allowQuit, image, parseMessageAsInlines);
             parentWindow.Opacity = 0.4;
             okWindow.ShowDialog();
             parentWindow.Opacity = 1;
@@ -40,29 +41,29 @@ namespace ScanNetDownloader.Logic.Helpers
             return okWindow;
         }
 
-        public static OkWindow ShowOkWindow(bool noParent, string header, string message, bool allowQuit = true, ImageType windowImg = ImageType.NoImage)
+        public static OkWindow ShowOkWindow(bool noParent, string header, string message, bool allowQuit = true, ImageType windowImg = ImageType.NoImage, bool parseMessageAsInlines = false)
         {
             if (noParent)
             {
                 BitmapImage image = GetBitmapImage(windowImg);
 
-                OkWindow okWindow = new OkWindow( header, message, allowQuit, image);
+                OkWindow okWindow = new OkWindow( header, message, allowQuit, image, parseMessageAsInlines);
                 okWindow.ShowDialog();
 
                 return okWindow;
             }
             else
             {
-                return ShowOkWindow(header, message, allowQuit, windowImg);
+                return ShowOkWindow(header, message, allowQuit, windowImg, parseMessageAsInlines);
             }
         }
 
-        public static YesNoWindow ShowYesNoWindow(string header, string message, bool allowQuit = true, ImageType windowImg = ImageType.NoImage)
+        public static YesNoWindow ShowYesNoWindow(string header, string message, bool allowQuit = true, ImageType windowImg = ImageType.NoImage, bool parseMessageAsInlines = false)
         {
             Window parentWindow = Application.Current.MainWindow;
             BitmapImage image = GetBitmapImage(windowImg);
 
-            YesNoWindow yesNoWindow = new YesNoWindow(parentWindow, header, message, allowQuit, image);
+            YesNoWindow yesNoWindow = new YesNoWindow(parentWindow, header, message, allowQuit, image, parseMessageAsInlines);
             parentWindow.Opacity = 0.4;
             yesNoWindow.ShowDialog();
             parentWindow.Opacity = 1;
@@ -70,11 +71,11 @@ namespace ScanNetDownloader.Logic.Helpers
             return yesNoWindow;
         }
 
-        public static YesNoWindow ShowYesNoWindow(Window parentWindow, string header, string message, bool allowQuit = true, ImageType windowImg = ImageType.NoImage)
+        public static YesNoWindow ShowYesNoWindow(Window parentWindow, string header, string message, bool allowQuit = true, ImageType windowImg = ImageType.NoImage, bool parseMessageAsInlines = false)
         {
             BitmapImage image = GetBitmapImage(windowImg);
 
-            YesNoWindow yesNoWindow = new YesNoWindow(parentWindow, header, message, allowQuit, image);
+            YesNoWindow yesNoWindow = new YesNoWindow(parentWindow, header, message, allowQuit, image, parseMessageAsInlines);
             parentWindow.Opacity = 0.4;
             yesNoWindow.ShowDialog();
             parentWindow.Opacity = 1;
@@ -82,29 +83,29 @@ namespace ScanNetDownloader.Logic.Helpers
             return yesNoWindow;
         }
 
-        public static YesNoWindow ShowYesNoWindow(bool noParent, string header, string message, bool allowQuit = true, ImageType windowImg = ImageType.NoImage)
+        public static YesNoWindow ShowYesNoWindow(bool noParent, string header, string message, bool allowQuit = true, ImageType windowImg = ImageType.NoImage, bool parseMessageAsInlines = false)
         {
             if (noParent)
             {
                 BitmapImage image = GetBitmapImage(windowImg);
 
-                YesNoWindow yesNoWindow = new YesNoWindow(header, message, allowQuit, image);
+                YesNoWindow yesNoWindow = new YesNoWindow(header, message, allowQuit, image, parseMessageAsInlines);
                 yesNoWindow.ShowDialog();
 
                 return yesNoWindow;
             }
             else
             {
-                return ShowYesNoWindow(header, message, allowQuit, windowImg);
+                return ShowYesNoWindow(header, message, allowQuit, windowImg, parseMessageAsInlines);
             }
         }
 
-        public static InputWindow ShowInputWindow(string header, string message, string inputPlaceholder, bool allowQuit = true, ImageType windowImg = ImageType.NoImage)
+        public static InputWindow ShowInputWindow(string header, string message, string inputPlaceholder, bool allowQuit = true, ImageType windowImg = ImageType.NoImage, bool parseMessageAsInlines = false)
         {
             Window parentWindow = Application.Current.MainWindow;
             BitmapImage image = GetBitmapImage(windowImg);
 
-            InputWindow inputWindow = new InputWindow(parentWindow, header, message, inputPlaceholder, allowQuit, image);
+            InputWindow inputWindow = new InputWindow(parentWindow, header, message, inputPlaceholder, allowQuit, image, parseMessageAsInlines);
             parentWindow.Opacity = 0.4;
             inputWindow.ShowDialog();
             parentWindow.Opacity = 1;
@@ -112,11 +113,11 @@ namespace ScanNetDownloader.Logic.Helpers
             return inputWindow;
         }
 
-        public static InputWindow ShowInputWindow(Window parentWindow, string header, string message, string inputPlaceholder, bool allowQuit = true, ImageType windowImg = ImageType.NoImage)
+        public static InputWindow ShowInputWindow(Window parentWindow, string header, string message, string inputPlaceholder, bool allowQuit = true, ImageType windowImg = ImageType.NoImage, bool parseMessageAsInlines = false)
         {
             BitmapImage image = GetBitmapImage(windowImg);
 
-            InputWindow inputWindow = new InputWindow(parentWindow, header, message, inputPlaceholder, allowQuit, image);
+            InputWindow inputWindow = new InputWindow(parentWindow, header, message, inputPlaceholder, allowQuit, image, parseMessageAsInlines);
             parentWindow.Opacity = 0.4;
             inputWindow.ShowDialog();
             parentWindow.Opacity = 1;
@@ -124,20 +125,20 @@ namespace ScanNetDownloader.Logic.Helpers
             return inputWindow;
         }
 
-        public static InputWindow ShowInputWindow(bool noParent, string header, string message, string inputPlaceholder, bool allowQuit = true, ImageType windowImg = ImageType.NoImage)
+        public static InputWindow ShowInputWindow(bool noParent, string header, string message, string inputPlaceholder, bool allowQuit = true, ImageType windowImg = ImageType.NoImage, bool parseMessageAsInlines = false)
         {
             if (noParent)
             {
                 BitmapImage image = GetBitmapImage(windowImg);
 
-                InputWindow inputWindow = new InputWindow(header, message, inputPlaceholder, allowQuit, image);
+                InputWindow inputWindow = new InputWindow(header, message, inputPlaceholder, allowQuit, image, parseMessageAsInlines);
                 inputWindow.ShowDialog();
 
                 return inputWindow;
             }
             else
             {
-                return ShowInputWindow(header, message, inputPlaceholder, allowQuit, windowImg);
+                return ShowInputWindow(header, message, inputPlaceholder, allowQuit, windowImg, parseMessageAsInlines);
             }
         }
 
@@ -166,6 +167,10 @@ namespace ScanNetDownloader.Logic.Helpers
 
                 case ImageType.Information:
                     bitmapImage = (BitmapImage)Application.Current.Resources[ResourcesKey.BitmapImages.InfoIcon];
+                    break;
+
+                case ImageType.Success:
+                    bitmapImage = (BitmapImage)Application.Current.Resources[ResourcesKey.BitmapImages.SuccessIcon];
                     break;
 
             }
