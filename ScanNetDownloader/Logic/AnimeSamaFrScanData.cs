@@ -22,8 +22,8 @@ namespace ScanNetDownloader.Logic
         /// <param name="isTemporaryData"></param>
         /// <param name="downloadUrlBookName"></param>
         [JsonConstructor]
-        public AnimeSamaFrScanData(string url, string websiteDomain, string bookName, int chapterId, bool isSelectedForDownload, List<string> pagesUrl, bool isTemporaryData, string downloadUrlBookName)
-            : base(url, websiteDomain, bookName, chapterId, isSelectedForDownload, pagesUrl, isTemporaryData)
+        public AnimeSamaFrScanData(string url, string websiteDomain, string bookName, int chapterId, bool isSelectedForDownload, List<string> pagesUrl, bool isTemporaryData, string path, string downloadUrlBookName)
+            : base(url, websiteDomain, bookName, chapterId, isSelectedForDownload, pagesUrl, isTemporaryData, path)
         {
             Url = url;
             WebsiteDomain = websiteDomain;
@@ -32,6 +32,7 @@ namespace ScanNetDownloader.Logic
             IsSelectedForDownload = isSelectedForDownload;
             PagesUrl = pagesUrl;
             IsTemporaryData = isTemporaryData;
+            LocationPath = path;
             DownloadUrlBookName = downloadUrlBookName;
         }
 
@@ -57,6 +58,7 @@ namespace ScanNetDownloader.Logic
             BookName = bookName;
             IsSelectedForDownload = true;
             IsTemporaryData = false;
+            LocationPath = string.Empty;
         }
 
 

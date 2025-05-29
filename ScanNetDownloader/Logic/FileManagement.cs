@@ -137,6 +137,10 @@ namespace ScanNetDownloader.Logic
 
         public static ScanItem.DownloadedStatus GetDownloadStatus(ScanData scanData, bool cbzCreated)
         {
+            // TODO: Change the way we check if file is downloaded by using location path and handle retrocompatibility
+            // if null -> try to find a path with download dir
+            // if string.empty -> no downloaded yet
+            // if path -> open path and test pageCount vs fileCount
             string chapterDirPath = GetChapterDirectoryPath(scanData);
             if (Directory.Exists(chapterDirPath))
             {
@@ -167,6 +171,7 @@ namespace ScanNetDownloader.Logic
 
         public static bool IsCbzArchiveCreated(ScanData scanData)
         {
+            // TODO: Check if cbz exist using location path
             string cbzPath = GetCbzFilePath(scanData);
             return File.Exists(cbzPath) && File.ReadAllBytes(cbzPath).Length > 0;
         }

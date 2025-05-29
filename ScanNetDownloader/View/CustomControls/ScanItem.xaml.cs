@@ -1,6 +1,7 @@
 ﻿using ScanNetDownloader.Logic;
 using ScanNetDownloader.Logic.Helpers;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -220,5 +221,23 @@ namespace ScanNetDownloader.View.CustomControls
                     return true;
             }
         }
+
+        #region Debug
+        private void btnDebugLocation_Click(object sender, RoutedEventArgs e)
+        {
+            bool locIsNull = linkedScanData.LocationPath == null;
+            string loc = locIsNull ? "Is null" : linkedScanData.LocationPath;
+            Debug.WriteLine($"{BookName} - {ChapterId}: location = {loc}");
+
+            if(locIsNull)
+            {
+                string newLoc = "I'm am the path who loc";
+                linkedScanData.LocationPath = newLoc;
+                Debug.WriteLine($"{BookName} - {ChapterId}: Set new location = {newLoc}");
+                ScansLocalData.Save();
+            }
+
+        }
+        #endregion
     }
 }

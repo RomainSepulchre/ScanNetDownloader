@@ -16,6 +16,8 @@
                     <Image Source="{StaticResource Img.crossWhite}" Height="20" Width="20"/>
                 </Button.Content>
             </Button>
+
+            <Button x:Name="btnDebugLocation" Content="🐛" Click="btnDebugLocation_Click" Height="20" Width="20" />
         </StackPanel>
 
     </Grid>
