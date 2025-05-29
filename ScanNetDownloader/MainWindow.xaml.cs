@@ -132,6 +132,8 @@ namespace ScanNetDownloader
         {
             // Save the scans local data
             ScansLocalData.Save();
+
+            // TODO: should we also save earlier to make be sure we keep location or is this triggered even when download failed ?
         }
 
         private void optionsVw_RefreshScanData(object sender, RoutedEventArgs e)

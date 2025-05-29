@@ -166,6 +166,8 @@ namespace ScanNetDownloader.View.CustomControls
             DownloadLabelTxt = "Download stopped";
             btnStartDl.Visibility = Visibility.Visible;
             btnStopDl.Visibility = Visibility.Collapsed;
+
+            // TODO: Should we save scan data here to make sure we keep location path ?
         }
 
         public void OnPageDownloaded(object sender, PageEventArgs args)

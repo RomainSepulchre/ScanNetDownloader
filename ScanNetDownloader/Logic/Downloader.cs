@@ -140,6 +140,8 @@ namespace ScanNetDownloader.Logic
                 // Create output folder if necessary
                 string downloadPath = FileManagement.CreateChapterDirectory(bookName, chapterNumber);
 
+                // TODO: Save location path here ?
+
                 int pageId = 1;
 
                 OnScanDownloadStarted(scanItem);
