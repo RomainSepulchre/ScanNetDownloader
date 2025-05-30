@@ -137,7 +137,7 @@ namespace ScanNetDownloader.Logic.Helpers
 
         public static bool OnlyImageDownloaded(this ScanItem.DownloadedStatus status)
         {
-            return status == ScanItem.DownloadedStatus.MissingImages;
+            return status == ScanItem.DownloadedStatus.OnlyImagesDownloaded;
         }
 
         public static bool MissingImages(this ScanItem.DownloadedStatus status)

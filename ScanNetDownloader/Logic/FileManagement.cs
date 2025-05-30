@@ -188,7 +188,7 @@ namespace ScanNetDownloader.Logic
             int filesInChapterDirCount = Directory.GetFiles(scanPath).Length;
 
             // Are all images downloaded ?
-            if (filesInChapterDirCount > 0 && expectedImgsCount == filesInChapterDirCount)
+            if (filesInChapterDirCount > 0 && filesInChapterDirCount >= expectedImgsCount) // if more image than expected just consider image are downloaded
             {
                 // All images downloaded
                 if (cbzCreated) return ScanItem.DownloadedStatus.FullyDownloaded;
