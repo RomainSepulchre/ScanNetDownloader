@@ -227,16 +227,15 @@ namespace ScanNetDownloader.View.CustomControls
         {
             bool locIsNull = linkedScanData.LocationPath == null;
             string loc = locIsNull ? "Is null" : linkedScanData.LocationPath;
-            Debug.WriteLine($"{BookName} - {ChapterId}: location = {loc}");
+            Debug.WriteLine($"{BookName} - {ChapterId}: location = \"{loc}\"");
 
-            if(locIsNull)
-            {
-                string newLoc = "I'm am the path who loc";
-                linkedScanData.LocationPath = newLoc;
-                Debug.WriteLine($"{BookName} - {ChapterId}: Set new location = {newLoc}");
-                ScansLocalData.Save();
-            }
-
+            //if(locIsNull)
+            //{
+            //    string newLoc = "I'm am the path who loc";
+            //    linkedScanData.LocationPath = newLoc;
+            //    Debug.WriteLine($"{BookName} - {ChapterId}: Set new location = {newLoc}");
+            //    ScansLocalData.Save();
+            //}
         }
         #endregion
     }

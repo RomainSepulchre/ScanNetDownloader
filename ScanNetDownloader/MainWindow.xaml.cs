@@ -141,21 +141,44 @@ namespace ScanNetDownloader
 
         private void OnApplicationExit(object sender, EventArgs e)
         {
-            // Save the scans local data
-            ScansLocalData.Save();
-
-            if(tabCtrlNavigation.SelectedItem == tabOptions && optionsVw.OptionsChangesNotSaved)
+            // Fallback save in case the app quit in an unconventionnal way
+            // Only save the scans local data if they weren't saved recently
+            Debug.WriteLine($"App exit - Time before last save: {ScansLocalData.TimeInSecondsSinceLastSave()}, save={ScansLocalData.TimeInSecondsSinceLastSave() > 1}");
+            if (ScansLocalData.TimeInSecondsSinceLastSave() > 1) // Was last save more than 1 second ago
             {
-                AskToSaveSettings();
+                ScansLocalData.Save();
             }
         }
         #endregion
 
-        private void AskToSaveSettings()
+        public void SaveBeforeQuit()
         {
-            string mBoxMessage = "Do you want to save your settings changes ?";
+            
+            if (tabCtrlNavigation.SelectedItem == tabOptions && optionsVw.OptionsChangesNotSaved)
+            {
+                AskToSaveSettings(true); 
+            }
+
+            ScansLocalData.Save(); // Save after any pop-up that needs user input to keep delay between last save as low as possible for OnApplicationExit() check
+
+            App.Quit();
+        }
+
+        private void AskToSaveSettings(bool quitApp=false)
+        {
+            string mBoxMessage = quitApp ? "Before quitting, do you want to save your settings changes ?" : "Do you want to save your settings changes ?";
             string mBoxCaption = "Save settings ?";
-            YesNoWindow yesNoWindow = MsgWindow.ShowYesNoWindow(mBoxCaption, mBoxMessage, true, MsgWindow.ImageType.Question);
+
+            YesNoWindow yesNoWindow;
+            if (Application.Current.MainWindow == null)
+            {
+                yesNoWindow = MsgWindow.ShowYesNoWindow(true, mBoxCaption, mBoxMessage, true, MsgWindow.ImageType.Question);
+            }
+            else
+            {
+                yesNoWindow = MsgWindow.ShowYesNoWindow(mBoxCaption, mBoxMessage, true, MsgWindow.ImageType.Question);
+            }
+                 
             if (yesNoWindow.Success) optionsVw.SaveSettings();
         }
 

@@ -134,7 +134,7 @@ namespace ScanNetDownloader.View.CustomControls
             Window parentWindow = Window.GetWindow(this);
             if(parentWindow is MainWindow)
             {
-                App.Quit();
+                App.SaveAndQuit();
             }
             else
             {
