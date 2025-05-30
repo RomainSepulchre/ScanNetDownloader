@@ -1,4 +1,5 @@
 ﻿using ScanNetDownloader.Logic;
+using ScanNetDownloader.Logic.Helpers;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -160,14 +161,14 @@ namespace ScanNetDownloader.View.CustomControls
         }
 
         public void OnDownloadStopped(object sender, EventArgs args)
-        {
+        {         
+            if (IsDownloading) ScansLocalData.Save(); // If downloaded started, save scan data to ensure we save assigned location path
+
             IsDownloading = false;
             DownloadProgress = 0;
             DownloadLabelTxt = "Download stopped";
             btnStartDl.Visibility = Visibility.Visible;
             btnStopDl.Visibility = Visibility.Collapsed;
-
-            // TODO: Should we save scan data here to make sure we keep location path ?
         }
 
         public void OnPageDownloaded(object sender, PageEventArgs args)
@@ -212,11 +213,10 @@ namespace ScanNetDownloader.View.CustomControls
         {
             downloadedScan.IsSelectedForDownload = false; // Disable download selection since we just downloaded
 
-            bool cbzCreated = FileManagement.IsCbzArchiveCreated(downloadedScan.linkedScanData);
-            ScanItem.DownloadedStatus downloadStatus = FileManagement.GetDownloadStatus(downloadedScan.linkedScanData, cbzCreated);
+            ScanItem.DownloadedStatus downloadStatus = FileManagement.GetDownloadStatus(downloadedScan.linkedScanData);
 
             downloadedScan.DownloadStatus = downloadStatus;
-            downloadedScan.CbzArchiveCreated = cbzCreated;
+            downloadedScan.CbzArchiveCreated = downloadStatus.IsCbzCreated();
 
             DownloadItem dlItem = DownloadItems.First(x => x.linkedScanItem == downloadedScan);
             dlItem.ScanDownloaded();

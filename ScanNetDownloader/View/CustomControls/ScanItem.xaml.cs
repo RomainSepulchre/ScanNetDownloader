@@ -52,9 +52,9 @@ namespace ScanNetDownloader.View.CustomControls
         public enum DownloadedStatus
         {
             NotDownloaded = 0,
-            FullyDownloaded = 1,   
-            OnlyImagesDownloaded = 2,
-            OnlyCbzDownloaded = 3,
+            FullyDownloaded = 1, // Images + Cbz 
+            OnlyImagesDownloaded = 2, // Images 
+            OnlyCbzDownloaded = 3, // Cbz
             MissingImages = 4
         }
         private DownloadedStatus _downloadStatus;

@@ -84,7 +84,6 @@ namespace ScanNetDownloader.Logic
             }
             finally
             {
-                Debug.WriteLine($"DL FINNALY");
                 downloadCancelToken.Dispose();
                 downloadInProgress = false;
             }
@@ -93,7 +92,7 @@ namespace ScanNetDownloader.Logic
 
             if (CurrentSettings.OpenOutputDirectoryAfterDownload)
             {
-                FileManagement.OpenRelevantFolder(scansToDownload);
+                FileManagement.OpenRelevantFolderAfterDownload(scansToDownload);
             }
 
             OnDownloadsFinished();
@@ -139,8 +138,7 @@ namespace ScanNetDownloader.Logic
 
                 // Create output folder if necessary
                 string downloadPath = FileManagement.CreateChapterDirectory(bookName, chapterNumber);
-
-                // TODO: Save location path here ?
+                scanData.LocationPath = downloadPath;
 
                 int pageId = 1;
 
@@ -203,7 +201,7 @@ namespace ScanNetDownloader.Logic
 
                 if (CurrentSettings.CreateCbzArchive)
                 {
-                    CbzCreator.BuildCbzArchive(scanItem, downloadPath);
+                    CbzCreator.BuildCbzArchive(scanItem);
                 }
 
                 // Deselect since we just downloaded it

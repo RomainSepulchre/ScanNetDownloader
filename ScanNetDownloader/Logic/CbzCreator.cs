@@ -17,17 +17,25 @@ namespace ScanNetDownloader.Logic
 
         public static event EventHandler<CbzErrorEventArgs> OnCbzCreationErrorEvent;
 
-        public static void BuildCbzArchive(ScanItem scanItem, string downloadPath)
+        public static void BuildCbzArchive(ScanItem scanItem)
         {
             OnCbzCreationStart(scanItem);
 
             ScanData scanData = scanItem.linkedScanData;
 
+            string folderToArchive = scanData.LocationPath;
             string bookName = scanData.BookName;
             string chapterNumber = scanData.ChapterId.ToString();
 
-            string folderToArchive = downloadPath;
-            string cbzFilePath = Path.Combine(Directory.GetParent(downloadPath).FullName, $"{bookName}{Constants.CBZ_CHAPTER_PREFIX}{chapterNumber}{Constants.CBZ_EXTENSION}");
+            if (string.IsNullOrEmpty(folderToArchive))
+            {
+                Exception noLocationPathEx = new Exception($"Location path for {bookName}-{chapterNumber} is null or empty. This should only happen when the scan was never downloaded in the first place. CBZ creation will be skipped!");
+                OnCbzCreationError(scanItem, "Error while creating new cbz archive", noLocationPathEx);
+                return;
+            }
+
+            string cbzFolderPath = Path.Combine(folderToArchive, ".."); // Get parent
+            string cbzFilePath = Path.Combine(cbzFolderPath, $"{bookName}{Constants.CBZ_CHAPTER_PREFIX}{chapterNumber}{Constants.CBZ_EXTENSION}");
 
             if (Directory.EnumerateFileSystemEntries(folderToArchive).Any() == false)
             {
@@ -79,7 +87,7 @@ namespace ScanNetDownloader.Logic
 
             if (Settings.Instance.DeleteImagesAfterCbzCreation)
             {
-                if (Directory.Exists(downloadPath)) Directory.Delete(downloadPath, true);
+                if (Directory.Exists(folderToArchive)) Directory.Delete(folderToArchive, true);
             }
         }
 
