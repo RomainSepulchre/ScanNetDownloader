@@ -130,6 +130,21 @@ namespace ScanNetDownloader.Logic.Helpers
             return scansToDownload;
         }
 
+        public static bool IsCbzCreated (this ScanItem.DownloadedStatus status)
+        {
+            return status == ScanItem.DownloadedStatus.FullyDownloaded || status == ScanItem.DownloadedStatus.OnlyCbzDownloaded;
+        }
+
+        public static bool OnlyImageDownloaded(this ScanItem.DownloadedStatus status)
+        {
+            return status == ScanItem.DownloadedStatus.OnlyImagesDownloaded;
+        }
+
+        public static bool MissingImages(this ScanItem.DownloadedStatus status)
+        {
+            return status == ScanItem.DownloadedStatus.MissingImages;
+        }
+
         /// <summary>
         /// Count the number of digits in a given int
         /// </summary>

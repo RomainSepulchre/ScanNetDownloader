@@ -23,6 +23,8 @@ namespace ScanNetDownloader.Logic
 
         private static string scansDataPath;
 
+        private static DateTime lastSaveTime = DateTime.Now;
+
         public static void InitializeScansData(bool firstLaunch)
         {
 #if DEBUG
@@ -135,11 +137,17 @@ namespace ScanNetDownloader.Logic
             try
             {
                 File.WriteAllText(scansDataPath, JsonConvert.SerializeObject(Instance, serializerSettings));
+                lastSaveTime = DateTime.Now;
             }
             catch (Exception ex)
             {
                 Error.FailedToSaveScansLocalData(scansDataPath, ex);
             }
+        }
+
+        public static double TimeInSecondsSinceLastSave()
+        {
+            return (DateTime.Now - lastSaveTime).TotalSeconds;
         }
 
         private static ScansLocalData ClearLocalData()
