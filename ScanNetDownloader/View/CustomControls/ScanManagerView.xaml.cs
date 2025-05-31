@@ -175,7 +175,7 @@ namespace ScanNetDownloader.View.CustomControls
                     YesNoWindow yesNoWindow = MsgWindow.ShowYesNoWindow(mBoxCaption, mBoxMessage, true, MsgWindow.ImageType.Question);
                     if (yesNoWindow.Success)
                     {
-                        CbzCreator.BuildCbzArchive(item);
+                        CbzCreator.BuildCbzArchive(item, false);
 
                         ScanItem.DownloadedStatus downloadStatus = FileManagement.GetDownloadStatus(item.linkedScanData);
                         bool cbzSuccessfullyCreated = downloadStatus.IsCbzCreated();

@@ -201,7 +201,7 @@ namespace ScanNetDownloader.Logic
 
                 if (CurrentSettings.CreateCbzArchive)
                 {
-                    CbzCreator.BuildCbzArchive(scanItem);
+                    CbzCreator.BuildCbzArchive(scanItem, true);
                 }
 
                 // Deselect since we just downloaded it

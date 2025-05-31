@@ -13,15 +13,16 @@ namespace ScanNetDownloader.Logic
             NoOutputDirectory = 2, // Download
             FailedHtmlDownload = 3, // ScanData Creation
             FailedImageDownload = 4, // Download
-            FailedCbzCreation = 5, // Download
-            FailedToReplaceEmptyCbz = 6, // Download
+            FailedCbzCreation = 5, // Cbz
+            FailedToReplaceEmptyCbz = 6, // Cbz
             ChapterDoesntExist = 7, // ScanData Creation
             MissingSettingsJson = 8, // Local File
             FailedToLoadSettingsJson = 9, // Local File
             FailedToSaveSettingsJson = 10, // Local File
             FailedToLoadScansLocalData = 11, // Local File
             FailedToSaveScansLocalData = 12, // Local File
-            MissingScanDataJson = 13 // Local File
+            MissingScanDataJson = 13, // Local File
+            FailedToFindCbzContent = 14 // Cbz and Local File
         }
 
         public DateTime Time
@@ -124,7 +125,28 @@ namespace ScanNetDownloader.Logic
             return error;
         }
 
-        public static Error FailedCbzCreation(Exception ex, ScanData scanData, bool deleteImagesAfterCbzCreation)
+        public static Error FailedToFindCbzContent(Exception ex, ScanData scanData, bool deleteImagesAfterCbzCreation, bool duringDownload)
+        {
+            Error error = new Error();
+            error.Message = $"{scanData.BookName}-{scanData.ChapterId} | Failed to find content to create cbz archive";
+            error.Type = ErrorType.FailedToFindCbzContent;
+            error.Exception = ex;
+
+            Debug.WriteLine($"An error occured while creating the CBZ archive for {scanData.BookName}-{scanData.ChapterId}: {ex}");
+            Debug.WriteLine($"Exception: {ex}\n");
+
+            if (!duringDownload)
+            {
+                string mBoxMessage = ex.Message;
+                string mBoxCaption = "Error - Failed find content for CBZ";
+
+                MsgWindow.ShowOkWindow(mBoxCaption, mBoxMessage, false, MsgWindow.ImageType.Error);
+            }
+
+            return error;
+        }
+
+        public static Error FailedCbzCreation(Exception ex, ScanData scanData, bool deleteImagesAfterCbzCreation, bool duringDownload)
         {
             Error error = new Error();
             error.Message = $"{scanData.BookName}-{scanData.ChapterId} | Failed to create cbz archive";
@@ -134,10 +156,18 @@ namespace ScanNetDownloader.Logic
             Debug.WriteLine($"An error occured while creating the CBZ archive for {scanData.BookName}-{scanData.ChapterId}: {ex}");
             Debug.WriteLine($"Exception: {ex}\n");
 
+            if (!duringDownload)
+            {
+                string mBoxMessage = ex.Message;
+                string mBoxCaption = "Error - Failed to create CBZ";
+
+                MsgWindow.ShowOkWindow(mBoxCaption, mBoxMessage, false, MsgWindow.ImageType.Error);
+            }
+
             return error;
         }
 
-        public static Error FailedToReplaceEmptyCbz(Exception ex, ScanData scanData, bool deleteImagesAfterCbzCreation)
+        public static Error FailedToReplaceEmptyCbz(Exception ex, ScanData scanData, bool deleteImagesAfterCbzCreation, bool duringDownload)
         {
             Error error = new Error();
             error.Message = $"{scanData.BookName}-{scanData.ChapterId} | Failed to replace empty cbz archive";
@@ -146,6 +176,14 @@ namespace ScanNetDownloader.Logic
 
             Debug.WriteLine($"An error occured while replacing an empty CBZ archive for {scanData.BookName}-{scanData.ChapterId}!");
             Debug.WriteLine($"=> Exception: {ex}\n");
+
+            if (!duringDownload)
+            {
+                string mBoxMessage = ex.Message;
+                string mBoxCaption = "Error - Failed to replace CBZ";
+
+                MsgWindow.ShowOkWindow(mBoxCaption, mBoxMessage, false, MsgWindow.ImageType.Error);
+            }
 
             return error;
         }
