@@ -24,6 +24,7 @@
     <None Remove="Images\downloadIcon_Orange.png" />
     <None Remove="Images\downloadIcon_White.png" />
     <None Remove="Images\errorIcon.png" />
+    <None Remove="Images\folderIcon.png" />
     <None Remove="Images\inferiorLevelIcon.png" />
     <None Remove="Images\infoIcon.png" />
     <None Remove="Images\maximizeIcon.png" />
@@ -62,6 +63,7 @@
     <Resource Include="Images\downloadIcon_Orange.png" />
     <Resource Include="Images\downloadIcon_White.png" />
     <Resource Include="Images\errorIcon.png" />
+    <Resource Include="Images\folderIcon.png" />
     <Resource Include="Images\inferiorLevelIcon.png" />
     <Resource Include="Images\infoIcon.png" />
     <Resource Include="Images\maximizeIcon.png" />

@@ -21,6 +21,8 @@
     <Color x:Key="BaseColor.LightGrey.Locked" R="244" G="244" B="244" A="255"/> <!--#FFF4F4F4-->
     <Color x:Key="BaseColor.Grey.Locked" R="131" G="131" B="131" A="255"/> <!--#FF838383-->
     <Color x:Key="BaseColor.Yellow" R="200" G="230" B="98" A="255"/>
+    <Color x:Key="BaseColor.Folder" R="219" G="200" B="129" A="255"/>
+    <Color x:Key="BaseColor.Folder.Pressed" R="186" G="170" B="110" A="255"/>
 
 
     <!--Solid Color Brushes--> 
@@ -38,8 +40,10 @@
     <SolidColorBrush x:Key="Colors.Orange.MouseOver" Color="{StaticResource BaseColor.Orange.MouseOver}"/>
     <SolidColorBrush x:Key="Colors.Green" Color="{StaticResource BaseColor.Green}"/>
     <SolidColorBrush x:Key="Colors.Yellow" Color="{StaticResource BaseColor.Yellow}"/>
+    <SolidColorBrush x:Key="Colors.Folder" Color="{StaticResource BaseColor.Folder}"/>
+    <SolidColorBrush x:Key="Colors.Folder.Pressed" Color="{StaticResource BaseColor.Folder.Pressed}"/>
 
-    
+
     <!--Bitmap Images-->
 
     <BitmapImage x:Key="Img.appIcon" UriSource="/Images/appIcon.ico"></BitmapImage>
@@ -68,6 +72,7 @@
     <BitmapImage x:Key="Img.maximizeIcon" UriSource="/Images/maximizeIcon.png"></BitmapImage>
     <BitmapImage x:Key="Img.inferiorLevelIcon" UriSource="/Images/inferiorLevelIcon.png"></BitmapImage>
     <BitmapImage x:Key="Img.successIcon" UriSource="/Images/successIcon.png"></BitmapImage>
+    <BitmapImage x:Key="Img.folderIcon" UriSource="/Images/folderIcon.png"></BitmapImage>
 
 
     <!--Image Brushes-->
@@ -329,6 +334,53 @@
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter Property="Background" Value="{StaticResource Button.Disabled.Background}"/>
+                            <Setter Property="BorderBrush" Value="{StaticResource Button.Disabled.Border}"/>
+                            <Setter Property="Foreground" Value="{StaticResource Button.Disabled.Foreground}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Folder button - Change the foreground colors of all the elements inside the button with an opacity mask -->
+    <Style x:Key="folderButton" TargetType="{x:Type Button}">
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="{StaticResource Button.Static.Border}"/>
+        <!--<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>-->
+        <Setter Property="Foreground" Value="{StaticResource Colors.Black}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Padding" Value="1"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ButtonBase}">
+                    <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="true">
+                        <Grid>
+                            <ContentPresenter x:Name="contentPresenter" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                            <Border Background="{TemplateBinding Background}">
+                                <Rectangle Fill="{TemplateBinding Foreground}" Width="{Binding ElementName=contentPresenter, Path=ActualWidth}" Height="{Binding ElementName=contentPresenter, Path=ActualHeight}">
+                                    <Rectangle.OpacityMask>
+                                        <VisualBrush Stretch="None" Visual="{Binding ElementName=contentPresenter}"/>
+                                    </Rectangle.OpacityMask>
+                                </Rectangle>
+                            </Border>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Button.IsDefaulted" Value="true">
+                            <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="true">
+                            <Setter Property="Foreground" Value="{StaticResource Colors.Folder}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="true">
+                            <Setter Property="Foreground" Value="{StaticResource Colors.Folder.Pressed}"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="false">
                             <Setter Property="BorderBrush" Value="{StaticResource Button.Disabled.Border}"/>
                             <Setter Property="Foreground" Value="{StaticResource Button.Disabled.Foreground}"/>
                         </Trigger>

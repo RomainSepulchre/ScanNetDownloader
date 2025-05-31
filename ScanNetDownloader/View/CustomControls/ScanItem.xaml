@@ -8,9 +8,16 @@
              d:DesignHeight="20" d:DesignWidth="190">
     <Grid>
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 -2 0 2">
-            <Button Name="btnCbzCreation" Content="Create .CBZ" FontWeight="Normal" ToolTip="Is the cbz archive created ?" Click="btnCbzCreation_Click" Width="80" Height="20"  FontSize="12"  Margin="0 0 0 0" Style="{StaticResource complexButton}">
+
+            <Button Name="btnOpenFolder" Click="btnOpenFolder_Click" ToolTip="Open folder" Height="20" Width="20" FontSize="9" Style="{StaticResource folderButton}">
+                <Button.Content>
+                    <Image Source="{StaticResource Img.folderIcon}" Height="18" Width="18"/>
+                </Button.Content>
             </Button>
-            
+
+            <Button Name="btnCbzCreation" Content="Create .CBZ" FontWeight="Normal" ToolTip="Is the cbz archive created ?" Click="btnCbzCreation_Click" Width="80" Height="18"  FontSize="10"  Margin="10 0 0 0" Style="{StaticResource complexButton}">
+            </Button>
+
             <Button Name="btnDelete" Click="btnDelete_Click" ToolTip="Delete scan from list" Height="20" Width="20" FontSize="9"  Margin="10 0 0 0" Style="{StaticResource closeButton}">
                 <Button.Content>
                     <Image Source="{StaticResource Img.crossWhite}" Height="20" Width="20"/>
