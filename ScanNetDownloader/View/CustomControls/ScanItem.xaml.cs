@@ -117,6 +117,10 @@ namespace ScanNetDownloader.View.CustomControls
         {
             DataContext = this;
             InitializeComponent();
+
+#if !DEBUG
+            btnDebug.Visibility = Visibility.Collapsed;   
+#endif
         }
 
         public ScanItem(ScanData _scanData, bool cbzAlreadyCreated=false, DownloadedStatus dlStatus=DownloadedStatus.NotDownloaded)
@@ -133,7 +137,11 @@ namespace ScanNetDownloader.View.CustomControls
             Website = _scanData.WebsiteDomain;
             DownloadStatus = dlStatus;
             CbzArchiveCreated = cbzAlreadyCreated; 
-            IsSelectedForDownload = _scanData.IsSelectedForDownload;           
+            IsSelectedForDownload = _scanData.IsSelectedForDownload;
+
+#if !DEBUG
+            btnDebug.Visibility = Visibility.Collapsed;
+#endif
         }
 
         private void OnPropertyChanged([CallerMemberName] string property = null)
@@ -223,7 +231,7 @@ namespace ScanNetDownloader.View.CustomControls
         }
 
         #region Debug
-        private void btnDebugLocation_Click(object sender, RoutedEventArgs e)
+        private void btnDebug_Click(object sender, RoutedEventArgs e)
         {
             bool locIsNull = linkedScanData.LocationPath == null;
             string loc = locIsNull ? "Is null" : linkedScanData.LocationPath;

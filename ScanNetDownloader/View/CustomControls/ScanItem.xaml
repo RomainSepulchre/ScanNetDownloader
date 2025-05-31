@@ -17,7 +17,7 @@
                 </Button.Content>
             </Button>
 
-            <Button x:Name="btnDebugLocation" Content="🐛" Click="btnDebugLocation_Click" Height="20" Width="20" />
+            <Button x:Name="btnDebug" Content="🐛" Click="btnDebug_Click" Height="20" Width="20" Margin="10 0 0 0"/>
         </StackPanel>
 
     </Grid>
