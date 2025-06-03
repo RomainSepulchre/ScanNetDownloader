@@ -4,7 +4,7 @@ using System.Net.Http;
 
 namespace ScanNetDownloader.Logic
 {
-    public abstract class ScanData
+    public abstract class ScanData : IComparable<ScanData>
     {
         public string Url
         {
@@ -222,6 +222,20 @@ namespace ScanNetDownloader.Logic
             }
 
             return result;
+        }
+        #endregion
+
+        #region IComparable
+        public int CompareTo(ScanData? other)
+        {
+            if(BookName != other.BookName)
+            {
+                return BookName.CompareTo(other.BookName);
+            }
+            else
+            {
+                return ChapterId.CompareTo(other.ChapterId);
+            }
         }
         #endregion
     }

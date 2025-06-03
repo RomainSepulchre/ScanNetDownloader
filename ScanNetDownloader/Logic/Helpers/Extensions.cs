@@ -35,11 +35,19 @@ namespace ScanNetDownloader.Logic.Helpers
             return startWithAny;
         }
 
-        public static void Log<T>(this List<T> list)
+        public static void Log<T>(this IList<T> list)
         {
             foreach (T item in list)
             {
-                Debug.WriteLine($"- {item}");
+                if (typeof(T) == typeof(ScanData))
+                {
+                    ScanData data = item as ScanData;
+                    Debug.WriteLine($"{data.BookName} #{data.ChapterId}");
+                }
+                else
+                {
+                    Debug.WriteLine($"- {item}");
+                } 
             }
         }
 

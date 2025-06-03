@@ -133,5 +133,43 @@ namespace ScanNetDownloader.Logic
 
             return newScanDatas;
         }
+
+        public static bool IsADuplicate(ScanData data, List<ScanData> sortedList = null)
+        {
+            if(sortedList == null) // If sorted list is not specified automatically create an instance of the list and sort it
+            {
+                sortedList = new List<ScanData>(ScansLocalData.Instance.ScanDataList);
+                sortedList.Sort();
+            }
+
+            // Binary search
+            int searchResult = sortedList.BinarySearch(data);
+            Debug.WriteLine($"IsADuplicate | BINARY SEARCH RESULT: {searchResult} (if no match found, closest entry:{~searchResult})");
+
+            return searchResult > 0;
+        }
+
+        public static List<ScanData> FindDuplicate(List<ScanData> dataToCheck, List<ScanData> sortedList = null)
+        {
+            if (sortedList == null) // If sorted list is not specified automatically create an instance of the list and sort it
+            {
+                sortedList = new List<ScanData>(ScansLocalData.Instance.ScanDataList);
+                sortedList.Sort();
+            }
+
+            List<ScanData> duplicateData = new List<ScanData>();
+
+            foreach (ScanData data in dataToCheck)
+            {
+                int searchResult = sortedList.BinarySearch(data);
+                Debug.WriteLine($"IsADuplicate | BINARY SEARCH RESULT: {searchResult} (if no match found, closest entry:{~searchResult})");
+                if (searchResult > 0)
+                {
+                    duplicateData.Add(data);
+                }
+            }         
+            
+            return duplicateData;
+        }
     }
 }
