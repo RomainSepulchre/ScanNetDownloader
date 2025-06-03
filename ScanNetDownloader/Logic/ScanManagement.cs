@@ -146,7 +146,7 @@ namespace ScanNetDownloader.Logic
             int searchResult = sortedList.BinarySearch(data);
             Debug.WriteLine($"IsADuplicate | BINARY SEARCH RESULT: {searchResult} (if no match found, closest entry:{~searchResult})");
 
-            return searchResult > 0;
+            return searchResult >= 0;
         }
 
         public static List<ScanData> FindDuplicate(List<ScanData> dataToCheck, List<ScanData> sortedList = null)
@@ -163,7 +163,7 @@ namespace ScanNetDownloader.Logic
             {
                 int searchResult = sortedList.BinarySearch(data);
                 Debug.WriteLine($"IsADuplicate | BINARY SEARCH RESULT: {searchResult} (if no match found, closest entry:{~searchResult})");
-                if (searchResult > 0)
+                if (searchResult >= 0)
                 {
                     duplicateData.Add(data);
                 }
