@@ -142,9 +142,7 @@ namespace ScanNetDownloader.Logic
                 sortedList.Sort();
             }
 
-            // Binary search
-            int searchResult = sortedList.BinarySearch(data);
-            Debug.WriteLine($"IsADuplicate | BINARY SEARCH RESULT: {searchResult} (if no match found, closest entry:{~searchResult})");
+            int searchResult = sortedList.BinarySearch(data); // Binary search need to be called on sorted list
 
             return searchResult >= 0;
         }
@@ -161,8 +159,7 @@ namespace ScanNetDownloader.Logic
 
             foreach (ScanData data in dataToCheck)
             {
-                int searchResult = sortedList.BinarySearch(data);
-                Debug.WriteLine($"IsADuplicate | BINARY SEARCH RESULT: {searchResult} (if no match found, closest entry:{~searchResult})");
+                int searchResult = sortedList.BinarySearch(data); // Binary search need to be called on sorted list
                 if (searchResult >= 0)
                 {
                     duplicateData.Add(data);

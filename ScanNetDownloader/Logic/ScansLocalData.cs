@@ -3,6 +3,7 @@ using ScanNetDownloader.Logic.Helpers;
 using ScanNetDownloader.View;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 
 namespace ScanNetDownloader.Logic
 {
@@ -105,6 +106,28 @@ namespace ScanNetDownloader.Logic
             {
                 ScansLocalData scanDataToImport = JsonConvert.DeserializeObject<ScansLocalData>(File.ReadAllText(importPath), serializerSettings);
                 if (scanDataToImport == null) throw new Exception($"Failed to get data from provided scan data json, the data is null. Json is an empty file or something went wrong during json deserialization.");
+
+                List<ScanData> currentData = new List<ScanData>(Instance.ScanDataList);
+                currentData.Sort();
+                List<ScanData> duplicateFound = ScanManagement.FindDuplicate(scanDataToImport.ScanDataList, currentData);
+                if (duplicateFound.Count > 0)
+                {
+                    string header = $"Duplicate found";
+                    StringBuilder sb = new StringBuilder();
+                    sb.Append($"{duplicateFound.Count} duplicate found on {scanDataToImport.ScanDataList.Count} scan data to import.");
+                    foreach (ScanData data in duplicateFound)
+                    {
+                        sb.Append($"\n- {data.BookName}, Chapter {data.ChapterId}, {data.PagesCount} pages ({data.WebsiteDomain})");
+                    }
+                    sb.AppendLine($"\n\nDo you to remove duplicated data ?");
+                    string message = sb.ToString();
+                    YesNoWindow duplicateWindow = MsgWindow.ShowYesNoWindow(header, message, false, MsgWindow.ImageType.Question);
+                    if (duplicateWindow.Success)
+                    {
+                        foreach (ScanData data in duplicateFound) scanDataToImport.ScanDataList.Remove(data);
+                    }
+                }
+
 
                 // Merge with current scan data
                 Instance.ScanDataList.AddRange(scanDataToImport.ScanDataList);

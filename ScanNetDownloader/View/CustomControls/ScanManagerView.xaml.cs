@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -217,6 +218,27 @@ namespace ScanNetDownloader.View.CustomControls
         private void AddScanItems(List<ScanData> newScansToAdd)
         {
             // TODO: Check for duplicated ScanData (Same BookName, chapter and url)
+            List<ScanData> currentData = new List<ScanData>(ScansLocalData.Instance.ScanDataList); // create new instance of scan data list to sort it
+            currentData.Sort();
+            List<ScanData> duplicateFound = ScanManagement.FindDuplicate(newScansToAdd, currentData);
+
+            if(duplicateFound.Count > 0)
+            {
+                string header = $"Duplicate found";
+                StringBuilder sb = new StringBuilder();
+                sb.Append($"{duplicateFound.Count} duplicate found on {newScansToAdd.Count} scan data to add.");
+                foreach (ScanData data in duplicateFound)
+                {
+                    sb.Append($"\n- {data.BookName}, Chapter {data.ChapterId}, {data.PagesCount} pages ({data.WebsiteDomain})");
+                }
+                sb.AppendLine($"\n\nDo you to remove duplicated data ?");
+                string message = sb.ToString();
+                YesNoWindow duplicateWindow = MsgWindow.ShowYesNoWindow(header, message, false, MsgWindow.ImageType.Question);
+                if(duplicateWindow.Success)
+                {
+                    foreach(ScanData data in duplicateFound) newScansToAdd.Remove(data);
+                }
+            }
 
             // Add in saved data
             ScanDatas.AddRange(newScansToAdd);
