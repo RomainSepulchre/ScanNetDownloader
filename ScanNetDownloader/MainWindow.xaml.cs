@@ -364,6 +364,8 @@ namespace ScanNetDownloader
             //Debug.WriteLine($"DEV ScanData file path: {Constants.DEBUG_SCANSLOCALDATA_JSON_PATH}, exist:{File.Exists(Constants.DEBUG_SCANSLOCALDATA_JSON_PATH)}");
             //Debug.WriteLine($"DEV Settings file path: {Constants.DEBUG_SETTINGS_JSON_PATH}, exist:{File.Exists(Constants.DEBUG_SETTINGS_JSON_PATH)}");
 
+            MsgWindow.ShowDuplicateWindow();
+
             List<ScanData> sortedData = new List<ScanData>(ScansLocalData.Instance.ScanDataList);
             sortedData.Sort();
             sortedData.Log();
