@@ -73,6 +73,8 @@
     <BitmapImage x:Key="Img.inferiorLevelIcon" UriSource="/Images/inferiorLevelIcon.png"></BitmapImage>
     <BitmapImage x:Key="Img.successIcon" UriSource="/Images/successIcon.png"></BitmapImage>
     <BitmapImage x:Key="Img.folderIcon" UriSource="/Images/folderIcon.png"></BitmapImage>
+    <BitmapImage x:Key="Img.eyeIcon" UriSource="/Images/eyeIcon.png"></BitmapImage>
+    <BitmapImage x:Key="Img.eyeIconBlue" UriSource="/Images/eyeIcon_Blue.png"></BitmapImage>
 
 
     <!--Image Brushes-->

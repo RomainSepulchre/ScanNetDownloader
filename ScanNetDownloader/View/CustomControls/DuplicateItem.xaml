@@ -15,23 +15,23 @@
 
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="25" />
+                <ColumnDefinition Width="30" />
                 <ColumnDefinition Width="78" />
                 <ColumnDefinition Width="1*" />
                 <ColumnDefinition Width="200" />
             </Grid.ColumnDefinitions>
 
-            <Image Name="imgSeeCurrent"  Source="{StaticResource Img.questionBlack}" Width="18" Height="18" MouseEnter="imgSeeCurrent_MouseEnter" MouseLeave="imgSeeCurrent_MouseLeave"/>
+            <Image Name="imgSeeCurrent" Source="{StaticResource Img.eyeIcon}" Width="22" Height="22" MouseEnter="imgSeeCurrent_MouseEnter" MouseLeave="imgSeeCurrent_MouseLeave" RenderOptions.BitmapScalingMode="HighQuality"/>
 
-            <Rectangle Grid.Column="1" Name="labelRect" Fill="{StaticResource Colors.Orange}" Height="20"/>
-            <TextBlock Grid.Column="1" Name="txtBlockLabel" Text="{Binding ItemLabel, FallbackValue=Duplicate}" VerticalAlignment="Center" HorizontalAlignment="Center" FontStyle="Italic"/>
+            <Rectangle Grid.Column="1" Name="labelRect" Fill="{StaticResource Colors.Black}" Height="20" MouseEnter="imgSeeCurrent_MouseEnter" MouseLeave="imgSeeCurrent_MouseLeave"/>
+            <TextBlock Grid.Column="1" Name="txtBlockLabel" Text="{Binding ItemLabel, FallbackValue=Duplicate}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White" FontStyle="Italic" MouseEnter="imgSeeCurrent_MouseEnter" MouseLeave="imgSeeCurrent_MouseLeave"/>
 
             <StackPanel Grid.Column="2" VerticalAlignment="Center" Orientation="Vertical" Margin="5 0 0 0">
                 <TextBlock Text="{Binding DuplicateScanInfo, FallbackValue=Book name - Chapter 999 (99 pages)}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="5 0 0 0"/>
                 <TextBlock Text="{Binding DuplicateScanUrl, FallbackValue=https://some-url.fr}" VerticalAlignment="Center" FontSize="10" FontStyle="Italic" Margin="5 0 0 0" TextWrapping="Wrap"/>
             </StackPanel>
 
-            <StackPanel Grid.Column="2" x:Name="stPanelCurrentData" VerticalAlignment="Center" Orientation="Vertical" Margin="5 0 0 0" Background="{StaticResource Colors.MediumGrey}" Visibility="Hidden">
+            <StackPanel Grid.Column="2" x:Name="stPanelCurrentData" VerticalAlignment="Center" Orientation="Vertical" Margin="5 0 0 0" Background="{StaticResource Colors.Blue}" Visibility="Hidden">
                 <TextBlock Text="{Binding CurrentScanInfo, FallbackValue=Book name - Chapter 999 (99 pages)}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="5 10 0 0"/>
                 <TextBlock Text="{Binding CurrentScanUrl, FallbackValue=https://some-url.fr}" VerticalAlignment="Center" FontSize="10" FontStyle="Italic" Margin="5 0 0 10" TextWrapping="Wrap"/>
             </StackPanel>

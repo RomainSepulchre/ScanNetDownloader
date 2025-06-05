@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace ScanNetDownloader.View.CustomControls
 {
@@ -122,15 +123,19 @@ namespace ScanNetDownloader.View.CustomControls
         private void imgSeeCurrent_MouseEnter(object sender, MouseEventArgs e)
         {
             ItemLabel = "Current data";
-            labelRect.Fill = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Green);
+            labelRect.Fill = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Blue);
+            txtBlockLabel.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Black);
             stPanelCurrentData.Visibility = Visibility.Visible;
+            imgSeeCurrent.Source = (BitmapImage)FindResource(ResourcesKey.BitmapImages.EyeIconBlue);
         }
 
         private void imgSeeCurrent_MouseLeave(object sender, MouseEventArgs e)
         {
             ItemLabel = "Duplicate";
-            labelRect.Fill = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Orange);
+            labelRect.Fill = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.Black);
+            txtBlockLabel.Foreground = (SolidColorBrush)FindResource(ResourcesKey.ColorBrushes.White);
             stPanelCurrentData.Visibility = Visibility.Hidden;
+            imgSeeCurrent.Source = (BitmapImage)FindResource(ResourcesKey.BitmapImages.EyeIcon);
         }
 
         public void SetComboBoxSelection(DuplicateOptions newOption)

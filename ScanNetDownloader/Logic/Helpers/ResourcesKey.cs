@@ -72,6 +72,8 @@
             public const string InferiorLevel = "Img.inferiorLevelIcon";
             public const string SuccessIcon = "Img.successIcon";
             public const string FolderIcon = "Img.folderIcon";
+            public const string EyeIcon = "Img.eyeIcon";
+            public const string EyeIconBlue = "Img.eyeIconBlue";
         }
 
         public static class ImageBrushes

@@ -17,6 +17,8 @@
     <None Remove="Images\CheckboxIcon_Black_Empty.png" />
     <None Remove="Images\CheckboxIcon_White_Empty.png" />
     <None Remove="Images\checkIcon.png" />
+    <None Remove="Images\compareOffIcon.png" />
+    <None Remove="Images\compareOnIcon.png" />
     <None Remove="Images\crossIcon_White.png" />
     <None Remove="Images\downloadIcon_Black.png" />
     <None Remove="Images\downloadIcon_BorderBlack.png" />
@@ -24,6 +26,8 @@
     <None Remove="Images\downloadIcon_Orange.png" />
     <None Remove="Images\downloadIcon_White.png" />
     <None Remove="Images\errorIcon.png" />
+    <None Remove="Images\eyeIcon.png" />
+    <None Remove="Images\eyeIcon_Blue.png" />
     <None Remove="Images\folderIcon.png" />
     <None Remove="Images\inferiorLevelIcon.png" />
     <None Remove="Images\infoIcon.png" />
@@ -63,6 +67,8 @@
     <Resource Include="Images\downloadIcon_Orange.png" />
     <Resource Include="Images\downloadIcon_White.png" />
     <Resource Include="Images\errorIcon.png" />
+    <Resource Include="Images\eyeIcon.png" />
+    <Resource Include="Images\eyeIcon_Blue.png" />
     <Resource Include="Images\folderIcon.png" />
     <Resource Include="Images\inferiorLevelIcon.png" />
     <Resource Include="Images\infoIcon.png" />
