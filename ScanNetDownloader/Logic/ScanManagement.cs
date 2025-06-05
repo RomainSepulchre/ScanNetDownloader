@@ -1,4 +1,6 @@
 ﻿using ScanNetDownloader.Logic.Helpers;
+using ScanNetDownloader.View;
+using ScanNetDownloader.View.CustomControls;
 using System.Diagnostics;
 
 namespace ScanNetDownloader.Logic
@@ -147,7 +149,7 @@ namespace ScanNetDownloader.Logic
             return searchResult >= 0;
         }
 
-        public static List<ScanData> FindDuplicate(List<ScanData> dataToCheck, List<ScanData> sortedList = null)
+        public static List<DuplicatedScanData> FindDuplicate(List<ScanData> dataToCheck, List<ScanData> sortedList = null)
         {
             if (sortedList == null) // If sorted list is not specified automatically create an instance of the list and sort it
             {
@@ -155,18 +157,41 @@ namespace ScanNetDownloader.Logic
                 sortedList.Sort();
             }
 
-            List<ScanData> duplicateData = new List<ScanData>();
+            List<DuplicatedScanData> duplicateData = new List<DuplicatedScanData>();
 
             foreach (ScanData data in dataToCheck)
             {
                 int searchResult = sortedList.BinarySearch(data); // Binary search need to be called on sorted list
                 if (searchResult >= 0)
                 {
-                    duplicateData.Add(data);
+                    DuplicatedScanData duplicatedData = new DuplicatedScanData(data, sortedList[searchResult]);
+                    duplicateData.Add(duplicatedData);
                 }
             }         
             
             return duplicateData;
+        }
+
+        public static void ProcessDeduplication(DuplicateWindow windowResult, List<ScanData> dataToCheck)
+        {
+            foreach (var item in windowResult.DuplicateItems)
+            {
+                switch (item.DuplicateOption)
+                {
+                    case DuplicateItem.DuplicateOptions.Delete:
+                        dataToCheck.Remove(item.duplicateScanData);
+                        break;
+                    case DuplicateItem.DuplicateOptions.Keep: // Don't do anything
+                        break;
+                    case DuplicateItem.DuplicateOptions.Replace:
+                        // Remove current + keep in scan to add
+                        // Manage location path
+                        break;
+                    default:
+                        Debug.WriteLine($"Unknown DuplicateOptions, nothing will be done with this duplicate");
+                        break;
+                }
+            }
         }
     }
 }

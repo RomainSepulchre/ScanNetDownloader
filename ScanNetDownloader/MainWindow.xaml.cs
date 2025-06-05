@@ -364,17 +364,15 @@ namespace ScanNetDownloader
             //Debug.WriteLine($"DEV ScanData file path: {Constants.DEBUG_SCANSLOCALDATA_JSON_PATH}, exist:{File.Exists(Constants.DEBUG_SCANSLOCALDATA_JSON_PATH)}");
             //Debug.WriteLine($"DEV Settings file path: {Constants.DEBUG_SETTINGS_JSON_PATH}, exist:{File.Exists(Constants.DEBUG_SETTINGS_JSON_PATH)}");
 
-            MsgWindow.ShowDuplicateWindow();
-
             List<ScanData> sortedData = new List<ScanData>(ScansLocalData.Instance.ScanDataList);
             sortedData.Sort();
             sortedData.Log();
 
-            ScanData dataA = new LelScansNetScanData("", 120, "One Punch Man");
-            ScanData dataB = new LelScansNetScanData("", 235, "Naruto");
-            ScanData dataC = new AnimeSamaFrScanData("", 10, "One Punch Man");
-            ScanData dataD = new ScanVfNetScanData("", 1117, "One Piece");
-            ScanData dataE = new ScanVfNetScanData("", 126, "Naruto");
+            ScanData dataA = new LelScansNetScanData("No URL", 120, "One Punch Man");
+            ScanData dataB = new LelScansNetScanData("No URL", 235, "Naruto");
+            ScanData dataC = new AnimeSamaFrScanData("No URL", 10, "One Punch Man");
+            ScanData dataD = new ScanVfNetScanData("No URL", 1117, "One Piece");
+            ScanData dataE = new ScanVfNetScanData("No URL", 126, "Naruto");
 
             // Check a list of data
 
@@ -385,21 +383,21 @@ namespace ScanNetDownloader
             datas.Add(dataD);
             datas.Add(dataE);
 
-            List<ScanData> duplicateFound = ScanManagement.FindDuplicate(datas, sortedData);
+            List<DuplicatedScanData> duplicateFound = ScanManagement.FindDuplicate(datas, sortedData);
 
             Debug.WriteLine($"Duplicate found:");
 
-            foreach (ScanData data in duplicateFound)
+            foreach (DuplicatedScanData duplicate in duplicateFound)
             {
+                ScanData data = duplicate.DuplicatedData;
                 Debug.WriteLine($"{data.BookName}#{data.ChapterId} is duplicate");
             }
 
-            Debug.WriteLine($"Remove duplicate:");
-            foreach (ScanData data in duplicateFound)
-            {
-                Debug.WriteLine($"Remove {data.BookName}#{data.ChapterId}");
-                datas.Remove(data);
-            }
+            DuplicateWindow duplicateWindow = MsgWindow.ShowDuplicateWindow(duplicateFound);
+
+            ScanManagement.ProcessDeduplication(duplicateWindow, datas);
+
+            Debug.WriteLine($"Process de-duplicate:");
             datas.Log();
 
             // Check specific scan data

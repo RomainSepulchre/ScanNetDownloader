@@ -142,11 +142,11 @@ namespace ScanNetDownloader.Logic.Helpers
             }
         }
 
-        public static DuplicateWindow ShowDuplicateWindow()
+        public static DuplicateWindow ShowDuplicateWindow(List<DuplicatedScanData> duplicateFound)
         {
             Window parentWindow = Application.Current.MainWindow;
 
-            DuplicateWindow duplicateWindow = new DuplicateWindow(parentWindow);
+            DuplicateWindow duplicateWindow = new DuplicateWindow(parentWindow, duplicateFound);
 
             parentWindow.Opacity = 0.4;
             duplicateWindow.ShowDialog();
@@ -155,9 +155,9 @@ namespace ScanNetDownloader.Logic.Helpers
             return duplicateWindow;
         }
 
-        public static DuplicateWindow ShowDuplicateWindow(Window parentWindow)
+        public static DuplicateWindow ShowDuplicateWindow(Window parentWindow, List<DuplicatedScanData> duplicateFound)
         {
-            DuplicateWindow duplicateWindow = new DuplicateWindow(parentWindow);
+            DuplicateWindow duplicateWindow = new DuplicateWindow(parentWindow, duplicateFound);
 
             parentWindow.Opacity = 0.4;
             duplicateWindow.ShowDialog();

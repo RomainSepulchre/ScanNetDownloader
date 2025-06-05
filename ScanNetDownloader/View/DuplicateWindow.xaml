@@ -9,6 +9,10 @@
         WindowStyle="None" WindowStartupLocation="CenterOwner"
         Title="Manage duplicated scan" Height="450" Width="800"
         ResizeMode="NoResize">
+    <Window.Resources>
+        <CollectionViewSource x:Key="DuplicateItemSource" Source="{Binding DuplicateItems}">
+        </CollectionViewSource>
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="38"/>
@@ -17,45 +21,38 @@
         </Grid.RowDefinitions>
 
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="20 10 16 0">
-            <TextBlock Text="Choose what to do with duplicate scan data" FontWeight="SemiBold" Foreground="{StaticResource Colors.Black}" FontSize="16"/>
+            <TextBlock Text="Choose what to do with scan data duplicate" FontWeight="SemiBold" Foreground="{StaticResource Colors.Black}" FontSize="16"/>
         </StackPanel>
 
-        <Grid Grid.Row="1" Margin="20 13 20 20">
+        <Grid Grid.Row="1" Margin="20 5 20 20">
             <Grid.RowDefinitions>
+                <RowDefinition Height="0.12*" />
                 <RowDefinition Height="30" />
-                <RowDefinition Height="1*" />
+                <RowDefinition Height="0.88*" />
             </Grid.RowDefinitions>
 
-            <StackPanel Orientation="Horizontal">
-                <Button Name="btnIgnoreAll" Content="Delete all duplicate" Height="30" Width="150" Margin="0 0 5 0" Style="{StaticResource complexButton}"/>
-                <Button Name="btnKeepAll" Content="Keep all duplicate" Height="30" Width="150" Margin="0 0 5 0" Style="{StaticResource complexButton}"/>
-                <Button Name="btnReplaceAll" Content="Replace by duplicate (all)" Height="30" Width="180" Margin="0 0 5 0" Style="{StaticResource complexButton}"/>
+            <TextBlock>
+                <Span>Some of the scans you want to add seems to have been already added.</Span><LineBreak/>
+                <Span>Here is the list of the duplicated scans, choose what you want to do with them.</Span>
+            </TextBlock>
+
+            <StackPanel Grid.Row="1" Orientation="Horizontal">
+                <Button Name="btnDeleteAll" Content="Delete all duplicate" Click="btnDeleteAll_Click" Height="30" Width="150" Margin="0 0 5 0" Style="{StaticResource complexButton}"/>
+                <Button Name="btnKeepAll" Content="Keep all duplicate" Click="btnKeepAll_Click" Height="30" Width="150" Margin="0 0 5 0" Style="{StaticResource complexButton}"/>
+                <Button Name="btnReplaceAll" Content="Replace by duplicate (all)" Click="btnReplaceAll_Click" Height="30" Width="180" Margin="0 0 5 0" Style="{StaticResource complexButton}"/>
             </StackPanel>
 
-            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" CanContentScroll="True">
-                <StackPanel Orientation="Vertical"  Margin="0 5 0 0" Background="{StaticResource Colors.LightGrey}">
-                    <customControls:DuplicateItem/>
-                    <customControls:DuplicateItem/>
-                    <customControls:DuplicateItem/>
-                    <customControls:DuplicateItem/>
-                    <customControls:DuplicateItem/>
-                    <customControls:DuplicateItem/>
-                    <customControls:DuplicateItem/>
-                    <customControls:DuplicateItem/>
-                    <customControls:DuplicateItem/>
-                    <customControls:DuplicateItem/>
-                    <customControls:DuplicateItem/>
-                    <customControls:DuplicateItem/>
-
-                </StackPanel>
+            <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" CanContentScroll="True"  Margin="0 5 0 0">
+                <ItemsControl x:Name="stPanelDuplicatedScan" ItemsSource="{Binding Source={StaticResource DuplicateItemSource}}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel IsItemsHost="True" Orientation="Vertical" Background="{StaticResource Colors.LightGrey}">
+                            </StackPanel>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
             </ScrollViewer>
-            
-
-            <!--<ListView Grid.Row="1" Margin="0 5 0 0" Background="{StaticResource Colors.LightGrey}" BorderThickness="0">
-                
-            </ListView>-->
         </Grid>
-
 
         <Grid Grid.Row="2">
             <Button Name="btnFinish" Content="Finish" Click="btnFinish_Click" FontSize="22"/>

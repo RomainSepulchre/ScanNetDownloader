@@ -220,15 +220,16 @@ namespace ScanNetDownloader.View.CustomControls
             // TODO: Check for duplicated ScanData (Same BookName, chapter and url)
             List<ScanData> currentData = new List<ScanData>(ScansLocalData.Instance.ScanDataList); // create new instance of scan data list to sort it
             currentData.Sort();
-            List<ScanData> duplicateFound = ScanManagement.FindDuplicate(newScansToAdd, currentData);
+            List<DuplicatedScanData> duplicateFound = ScanManagement.FindDuplicate(newScansToAdd, currentData);
 
             if(duplicateFound.Count > 0)
             {
                 string header = $"Duplicate found";
                 StringBuilder sb = new StringBuilder();
                 sb.Append($"{duplicateFound.Count} duplicate found on {newScansToAdd.Count} scan data to add.");
-                foreach (ScanData data in duplicateFound)
+                foreach (DuplicatedScanData duplicate in duplicateFound)
                 {
+                    ScanData data = duplicate.DuplicatedData;
                     sb.Append($"\n- {data.BookName}, Chapter {data.ChapterId}, {data.PagesCount} pages ({data.WebsiteDomain})");
                 }
                 sb.AppendLine($"\n\nDo you to remove duplicated data ?");
@@ -236,7 +237,7 @@ namespace ScanNetDownloader.View.CustomControls
                 YesNoWindow duplicateWindow = MsgWindow.ShowYesNoWindow(header, message, false, MsgWindow.ImageType.Question);
                 if(duplicateWindow.Success)
                 {
-                    foreach(ScanData data in duplicateFound) newScansToAdd.Remove(data);
+                    foreach(DuplicatedScanData duplicate in duplicateFound) newScansToAdd.Remove(duplicate.DuplicatedData);
                 }
             }
 

@@ -1,19 +1,7 @@
 ﻿using ScanNetDownloader.Logic;
 using ScanNetDownloader.View.CustomControls;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace ScanNetDownloader.View
 {
@@ -22,37 +10,67 @@ namespace ScanNetDownloader.View
     /// </summary>
     public partial class DuplicateWindow : Window
     {
-        //private ObservableCollection<DuplicateItem> _duplicateItems;
-        //public ObservableCollection<DuplicateItem> DuplicateItems
-        //{
-        //    get { return _duplicateItems; }
-        //    set
-        //    {
-        //        _duplicateItems = value;
-        //    }
-        //}
+        private ObservableCollection<DuplicateItem> _duplicateItems;
+        public ObservableCollection<DuplicateItem> DuplicateItems
+        {
+            get { return _duplicateItems; }
+            set
+            {
+                _duplicateItems = value;
+            }
+        }
 
         public DuplicateWindow()
         {
             InitializeComponent();
+
+            DataContext = this;
         }
 
-        public DuplicateWindow(Window parentWindow)
+        public DuplicateWindow(Window parentWindow, List<DuplicatedScanData> duplicateFound)
         {
             Owner = parentWindow;
-            InitializeComponent();
-        }
+            DuplicateItems = new ObservableCollection<DuplicateItem>();
 
-        public DuplicateWindow(Window parentWindow, List<ScanData> duplicateFound)
-        {
-            Owner = parentWindow;
             InitializeComponent();
+
+            foreach (DuplicatedScanData duplicate in duplicateFound)
+            {
+                DuplicateItem item = new DuplicateItem(duplicate);
+                DuplicateItems.Add(item);
+            }
+
+            DataContext = this;
         }
 
 
         private void btnFinish_Click(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        private void btnDeleteAll_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (DuplicateItem item in DuplicateItems)
+            {
+                item.SetComboBoxSelection(DuplicateItem.DuplicateOptions.Delete);
+            }
+        }
+
+        private void btnKeepAll_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (DuplicateItem item in DuplicateItems)
+            {
+                item.SetComboBoxSelection(DuplicateItem.DuplicateOptions.Keep);
+            }
+        }
+
+        private void btnReplaceAll_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (DuplicateItem item in DuplicateItems)
+            {
+                item.SetComboBoxSelection(DuplicateItem.DuplicateOptions.Replace);
+            }
         }
     }
 }

@@ -109,14 +109,16 @@ namespace ScanNetDownloader.Logic
 
                 List<ScanData> currentData = new List<ScanData>(Instance.ScanDataList);
                 currentData.Sort();
-                List<ScanData> duplicateFound = ScanManagement.FindDuplicate(scanDataToImport.ScanDataList, currentData);
+                List<DuplicatedScanData> duplicateFound = ScanManagement.FindDuplicate(scanDataToImport.ScanDataList, currentData);
+
                 if (duplicateFound.Count > 0)
                 {
                     string header = $"Duplicate found";
                     StringBuilder sb = new StringBuilder();
                     sb.Append($"{duplicateFound.Count} duplicate found on {scanDataToImport.ScanDataList.Count} scan data to import.");
-                    foreach (ScanData data in duplicateFound)
+                    foreach (DuplicatedScanData duplicate in duplicateFound)
                     {
+                        ScanData data = duplicate.DuplicatedData;
                         sb.Append($"\n- {data.BookName}, Chapter {data.ChapterId}, {data.PagesCount} pages ({data.WebsiteDomain})");
                     }
                     sb.AppendLine($"\n\nDo you to remove duplicated data ?");
@@ -124,7 +126,7 @@ namespace ScanNetDownloader.Logic
                     YesNoWindow duplicateWindow = MsgWindow.ShowYesNoWindow(header, message, false, MsgWindow.ImageType.Question);
                     if (duplicateWindow.Success)
                     {
-                        foreach (ScanData data in duplicateFound) scanDataToImport.ScanDataList.Remove(data);
+                        foreach (DuplicatedScanData duplicate in duplicateFound) scanDataToImport.ScanDataList.Remove(duplicate.DuplicatedData);
                     }
                 }
 
