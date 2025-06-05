@@ -27,7 +27,7 @@ namespace ScanNetDownloader.View.CustomControls
 
         public ScanData currentScanData { get; private set; }
 
-        private double textAvailableWidth = 472;
+        private double textAvailableWidth = 467;
 
         private string _itemLabel;
         public string ItemLabel
@@ -80,28 +80,6 @@ namespace ScanNetDownloader.View.CustomControls
             set
             {
                 _currentScanUrl = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private double _duplicateUrlMaxWidth;
-        public double DuplicateUrlMaxWidth
-        {
-            get { return _duplicateUrlMaxWidth; }
-            set
-            {
-                _duplicateUrlMaxWidth = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private double _currentUrlMaxWidth;
-        public double CurrentUrlMaxWidth
-        {
-            get { return _currentUrlMaxWidth; }
-            set
-            {
-                _currentUrlMaxWidth = value;
                 OnPropertyChanged();
             }
         }
@@ -163,18 +141,6 @@ namespace ScanNetDownloader.View.CustomControls
         private void cbDuplicateOptions_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             DuplicateOption = (DuplicateOptions)cbDuplicateOptions.SelectedIndex;
-        }
-
-        private void txtBlockDuplicateUrl_Loaded(object sender, RoutedEventArgs e)
-        {
-            double newDuplicateUrlMaxWidth = textAvailableWidth - txtBlockDuplicateInfo.ActualWidth;
-            DuplicateUrlMaxWidth = newDuplicateUrlMaxWidth;
-        }
-
-        private void txtBlockCurrentUrl_Loaded(object sender, RoutedEventArgs e)
-        {
-            double newCurrentUrlMaxWidth = textAvailableWidth - txtBlockCurrentInfo.ActualWidth;
-            CurrentUrlMaxWidth = newCurrentUrlMaxWidth;
         }
     }
 }

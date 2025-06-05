@@ -107,29 +107,10 @@ namespace ScanNetDownloader.Logic
                 ScansLocalData scanDataToImport = JsonConvert.DeserializeObject<ScansLocalData>(File.ReadAllText(importPath), serializerSettings);
                 if (scanDataToImport == null) throw new Exception($"Failed to get data from provided scan data json, the data is null. Json is an empty file or something went wrong during json deserialization.");
 
-                List<ScanData> currentData = new List<ScanData>(Instance.ScanDataList);
-                currentData.Sort();
-                List<DuplicatedScanData> duplicateFound = ScanManagement.FindDuplicate(scanDataToImport.ScanDataList, currentData);
+                ScanManagement.CheckForDuplicate(scanDataToImport.ScanDataList, out List<ScanData> scanToReplace);
 
-                if (duplicateFound.Count > 0)
-                {
-                    string header = $"Duplicate found";
-                    StringBuilder sb = new StringBuilder();
-                    sb.Append($"{duplicateFound.Count} duplicate found on {scanDataToImport.ScanDataList.Count} scan data to import.");
-                    foreach (DuplicatedScanData duplicate in duplicateFound)
-                    {
-                        ScanData data = duplicate.DuplicatedData;
-                        sb.Append($"\n- {data.BookName}, Chapter {data.ChapterId}, {data.PagesCount} pages ({data.WebsiteDomain})");
-                    }
-                    sb.AppendLine($"\n\nDo you to remove duplicated data ?");
-                    string message = sb.ToString();
-                    YesNoWindow duplicateWindow = MsgWindow.ShowYesNoWindow(header, message, false, MsgWindow.ImageType.Question);
-                    if (duplicateWindow.Success)
-                    {
-                        foreach (DuplicatedScanData duplicate in duplicateFound) scanDataToImport.ScanDataList.Remove(duplicate.DuplicatedData);
-                    }
-                }
-
+                // TODO: Handle scanToReplace
+                // Delete scan item + scan data before adding new data
 
                 // Merge with current scan data
                 Instance.ScanDataList.AddRange(scanDataToImport.ScanDataList);

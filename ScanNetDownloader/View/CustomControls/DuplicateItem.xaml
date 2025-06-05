@@ -5,11 +5,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ScanNetDownloader.View.CustomControls"
              mc:Ignorable="d" 
-             d:DesignHeight="30" d:DesignWidth="760">
+             d:DesignHeight="40" d:DesignWidth="760">
     <Grid>
         
         <Grid.RowDefinitions>
-            <RowDefinition Height="30" />
+            <RowDefinition Height="40" />
             <RowDefinition Height="2" />
         </Grid.RowDefinitions>
 
@@ -18,7 +18,7 @@
                 <ColumnDefinition Width="25" />
                 <ColumnDefinition Width="78" />
                 <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="180" />
+                <ColumnDefinition Width="200" />
             </Grid.ColumnDefinitions>
 
             <Image Name="imgSeeCurrent"  Source="{StaticResource Img.questionBlack}" Width="18" Height="18" MouseEnter="imgSeeCurrent_MouseEnter" MouseLeave="imgSeeCurrent_MouseLeave"/>
@@ -26,14 +26,14 @@
             <Rectangle Grid.Column="1" Name="labelRect" Fill="{StaticResource Colors.Orange}" Height="20"/>
             <TextBlock Grid.Column="1" Name="txtBlockLabel" Text="{Binding ItemLabel, FallbackValue=Duplicate}" VerticalAlignment="Center" HorizontalAlignment="Center" FontStyle="Italic"/>
 
-            <StackPanel Grid.Column="2" Orientation="Horizontal">
-                <TextBlock Name="txtBlockDuplicateInfo" Text="{Binding DuplicateScanInfo, FallbackValue=Book name - Chapter 999 (99 pages)}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="5 0 0 0"/>
-                <TextBlock MaxWidth="{Binding DuplicateUrlMaxWidth}" Loaded="txtBlockDuplicateUrl_Loaded" Text="{Binding DuplicateScanUrl, FallbackValue=https://some-url.fr}" VerticalAlignment="Center" FontSize="10" FontStyle="Italic" Margin="10 0 0 0" TextWrapping="Wrap"/>
+            <StackPanel Grid.Column="2" VerticalAlignment="Center" Orientation="Vertical" Margin="5 0 0 0">
+                <TextBlock Text="{Binding DuplicateScanInfo, FallbackValue=Book name - Chapter 999 (99 pages)}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="5 0 0 0"/>
+                <TextBlock Text="{Binding DuplicateScanUrl, FallbackValue=https://some-url.fr}" VerticalAlignment="Center" FontSize="10" FontStyle="Italic" Margin="5 0 0 0" TextWrapping="Wrap"/>
             </StackPanel>
 
-            <StackPanel Grid.Column="2" x:Name="stPanelCurrentData" Orientation="Horizontal" Background="Aqua" Visibility="Hidden">
-                <TextBlock Name="txtBlockCurrentInfo" Text="{Binding CurrentScanInfo, FallbackValue=Book name - Chapter 999 (99 pages)}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="5 0 0 0"/>
-                <TextBlock MaxWidth="{Binding CurrentUrlMaxWidth}" Loaded="txtBlockCurrentUrl_Loaded" Text="{Binding CurrentScanUrl, FallbackValue=https://some-url.fr}" VerticalAlignment="Center" FontSize="10" FontStyle="Italic" Margin="10 0 0 0" TextWrapping="Wrap"/>
+            <StackPanel Grid.Column="2" x:Name="stPanelCurrentData" VerticalAlignment="Center" Orientation="Vertical" Margin="5 0 0 0" Background="{StaticResource Colors.MediumGrey}" Visibility="Hidden">
+                <TextBlock Text="{Binding CurrentScanInfo, FallbackValue=Book name - Chapter 999 (99 pages)}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="5 10 0 0"/>
+                <TextBlock Text="{Binding CurrentScanUrl, FallbackValue=https://some-url.fr}" VerticalAlignment="Center" FontSize="10" FontStyle="Italic" Margin="5 0 0 10" TextWrapping="Wrap"/>
             </StackPanel>
 
 

@@ -217,29 +217,10 @@ namespace ScanNetDownloader.View.CustomControls
 
         private void AddScanItems(List<ScanData> newScansToAdd)
         {
-            // TODO: Check for duplicated ScanData (Same BookName, chapter and url)
-            List<ScanData> currentData = new List<ScanData>(ScansLocalData.Instance.ScanDataList); // create new instance of scan data list to sort it
-            currentData.Sort();
-            List<DuplicatedScanData> duplicateFound = ScanManagement.FindDuplicate(newScansToAdd, currentData);
+            ScanManagement.CheckForDuplicate(newScansToAdd, out List<ScanData> scanToReplace);
 
-            if(duplicateFound.Count > 0)
-            {
-                string header = $"Duplicate found";
-                StringBuilder sb = new StringBuilder();
-                sb.Append($"{duplicateFound.Count} duplicate found on {newScansToAdd.Count} scan data to add.");
-                foreach (DuplicatedScanData duplicate in duplicateFound)
-                {
-                    ScanData data = duplicate.DuplicatedData;
-                    sb.Append($"\n- {data.BookName}, Chapter {data.ChapterId}, {data.PagesCount} pages ({data.WebsiteDomain})");
-                }
-                sb.AppendLine($"\n\nDo you to remove duplicated data ?");
-                string message = sb.ToString();
-                YesNoWindow duplicateWindow = MsgWindow.ShowYesNoWindow(header, message, false, MsgWindow.ImageType.Question);
-                if(duplicateWindow.Success)
-                {
-                    foreach(DuplicatedScanData duplicate in duplicateFound) newScansToAdd.Remove(duplicate.DuplicatedData);
-                }
-            }
+            // TODO: Handle scanToReplace
+            // Delete scan item + scan data before adding new data
 
             // Add in saved data
             ScanDatas.AddRange(newScansToAdd);

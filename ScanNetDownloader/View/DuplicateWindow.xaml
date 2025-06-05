@@ -21,7 +21,7 @@
         </Grid.RowDefinitions>
 
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="20 10 16 0">
-            <TextBlock Text="Choose what to do with scan data duplicate" FontWeight="SemiBold" Foreground="{StaticResource Colors.Black}" FontSize="16"/>
+            <TextBlock Text="Some scans are already added" FontWeight="SemiBold" Foreground="{StaticResource Colors.Black}" FontSize="16"/>
         </StackPanel>
 
         <Grid Grid.Row="1" Margin="20 5 20 20">
@@ -33,7 +33,7 @@
 
             <TextBlock>
                 <Span>Some of the scans you want to add seems to have been already added.</Span><LineBreak/>
-                <Span>Here is the list of the duplicated scans, choose what you want to do with them.</Span>
+                <Span>Choose what you want to do with them.</Span>
             </TextBlock>
 
             <StackPanel Grid.Row="1" Orientation="Horizontal">

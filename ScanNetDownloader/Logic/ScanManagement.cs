@@ -149,7 +149,49 @@ namespace ScanNetDownloader.Logic
             return searchResult >= 0;
         }
 
-        public static List<DuplicatedScanData> FindDuplicate(List<ScanData> dataToCheck, List<ScanData> sortedList = null)
+        public static List<ScanData> CheckForDuplicate(List<ScanData> dataToCheck, out List<ScanData> scanToReplace)
+        {
+            scanToReplace = new List<ScanData>();
+
+            // Get current scan data and sort them for binary search
+            List<ScanData> sortedData = new List<ScanData>(ScansLocalData.Instance.ScanDataList);
+            sortedData.Sort();
+
+            // Check data for duplicate
+            List<DuplicatedScanData> duplicateFound = ScanManagement.FindDuplicate(dataToCheck, sortedData);
+            if(duplicateFound.Count > 0)
+            {
+                // Open window to let user choose what he wants to do
+                DuplicateWindow duplicateWindow = MsgWindow.ShowDuplicateWindow(duplicateFound);
+
+                // Process duplicate window result
+                foreach (var item in duplicateWindow.DuplicateItems)
+                {
+                    switch (item.DuplicateOption)
+                    {
+                        case DuplicateItem.DuplicateOptions.Delete:
+                            dataToCheck.Remove(item.duplicateScanData);
+                            break;
+                        case DuplicateItem.DuplicateOptions.Keep: // Don't do anything
+                            break;
+                        case DuplicateItem.DuplicateOptions.Replace:
+                            scanToReplace.Add(item.currentScanData);
+                            // TODO: Should I compare info to make sure we keep all useful info
+                            // ex: location path
+                            // issue if different website -> different page number (= missing or extra page) -> location path
+                            // TODO: what to do if image already downloaded, should I delete them ?
+                            break;
+                        default:
+                            Debug.WriteLine($"Unknown DuplicateOptions, nothing will be done with this duplicate");
+                            break;
+                    }
+                }
+            }
+
+            return dataToCheck;
+        }
+
+        private static List<DuplicatedScanData> FindDuplicate(List<ScanData> dataToCheck, List<ScanData> sortedList = null)
         {
             if (sortedList == null) // If sorted list is not specified automatically create an instance of the list and sort it
             {
@@ -170,28 +212,6 @@ namespace ScanNetDownloader.Logic
             }         
             
             return duplicateData;
-        }
-
-        public static void ProcessDeduplication(DuplicateWindow windowResult, List<ScanData> dataToCheck)
-        {
-            foreach (var item in windowResult.DuplicateItems)
-            {
-                switch (item.DuplicateOption)
-                {
-                    case DuplicateItem.DuplicateOptions.Delete:
-                        dataToCheck.Remove(item.duplicateScanData);
-                        break;
-                    case DuplicateItem.DuplicateOptions.Keep: // Don't do anything
-                        break;
-                    case DuplicateItem.DuplicateOptions.Replace:
-                        // Remove current + keep in scan to add
-                        // Manage location path
-                        break;
-                    default:
-                        Debug.WriteLine($"Unknown DuplicateOptions, nothing will be done with this duplicate");
-                        break;
-                }
-            }
         }
     }
 }

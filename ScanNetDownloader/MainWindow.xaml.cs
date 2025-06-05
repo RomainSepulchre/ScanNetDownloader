@@ -383,19 +383,7 @@ namespace ScanNetDownloader
             datas.Add(dataD);
             datas.Add(dataE);
 
-            List<DuplicatedScanData> duplicateFound = ScanManagement.FindDuplicate(datas, sortedData);
-
-            Debug.WriteLine($"Duplicate found:");
-
-            foreach (DuplicatedScanData duplicate in duplicateFound)
-            {
-                ScanData data = duplicate.DuplicatedData;
-                Debug.WriteLine($"{data.BookName}#{data.ChapterId} is duplicate");
-            }
-
-            DuplicateWindow duplicateWindow = MsgWindow.ShowDuplicateWindow(duplicateFound);
-
-            ScanManagement.ProcessDeduplication(duplicateWindow, datas);
+            ScanManagement.CheckForDuplicate(datas, out List<ScanData> scanToReplace);
 
             Debug.WriteLine($"Process de-duplicate:");
             datas.Log();
