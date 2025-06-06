@@ -32,8 +32,8 @@
             </Grid.RowDefinitions>
 
             <TextBlock>
-                <Span>Some of the scans you want to add seems to have been already added.</Span><LineBreak/>
-                <Span>Choose what you want to do with them.</Span>
+                <Span>Some of the scans you want to add seems to have been already added. Choose what you want to do with them.</Span><LineBreak/>
+                <Span Foreground="{StaticResource Colors.Red}"><Italic>When replacing with new scan data that differs, downloaded images and cbz might be deleted (ex: different scan website or page count)</Italic></Span>
             </TextBlock>
 
             <StackPanel Grid.Row="1" Orientation="Horizontal">
