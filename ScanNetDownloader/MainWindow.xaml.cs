@@ -383,7 +383,7 @@ namespace ScanNetDownloader
             datas.Add(dataD);
             datas.Add(dataE);
 
-            ScanManagement.CheckForDuplicate(datas, out List<ScanData> scanToReplace);
+            ScanManagement.CheckForDuplicate(datas, out List<ReplaceInfo> replaceInfos);
 
             Debug.WriteLine($"Process de-duplicate:");
             datas.Log();

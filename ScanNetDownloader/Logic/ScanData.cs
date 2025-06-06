@@ -239,16 +239,4 @@ namespace ScanNetDownloader.Logic
         }
         #endregion
     }
-
-    public class DuplicatedScanData
-    {
-        public ScanData DuplicatedData;
-        public ScanData CurrentData;
-
-        public DuplicatedScanData(ScanData duplicatedData, ScanData currentData)
-        {
-            DuplicatedData = duplicatedData;
-            CurrentData = currentData;
-        }
-    }
 }

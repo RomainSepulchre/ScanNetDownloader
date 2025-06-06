@@ -217,10 +217,13 @@ namespace ScanNetDownloader.View.CustomControls
 
         private void AddScanItems(List<ScanData> newScansToAdd)
         {
-            ScanManagement.CheckForDuplicate(newScansToAdd, out List<ScanData> scanToReplace);
-
-            // TODO: Handle scanToReplace
-            // Delete scan item + scan data before adding new data
+            ScanManagement.CheckForDuplicate(newScansToAdd, out List<ReplaceInfo> replaceInfos);
+            if (replaceInfos.Count > 0)
+            {
+                ScanManagement.DeleteDataToReplace(replaceInfos, ScanListItems, out int selectedDeleteCount);
+                SelectedCount -= selectedDeleteCount;
+                // Note: Force refresh might be safer in this case => switch to that if issue with current solution 
+            }
 
             // Add in saved data
             ScanDatas.AddRange(newScansToAdd);
@@ -231,8 +234,6 @@ namespace ScanNetDownloader.View.CustomControls
             // Add item in list view
             foreach (ScanData scanData in newScansToAdd)
             {
-                // TODO: Add a check to prevent a double entry of the same chapter on the same website, maybe check before calling AddScanItems ?
-
                 // TODO: ? Is this really necessary ? How could a new scan be downloaded or have a cbz archive ?
                 ScanItem.DownloadedStatus downloadStatus = FileManagement.GetDownloadStatus(scanData);
                 bool cbzAlreadyCreated = downloadStatus.IsCbzCreated();

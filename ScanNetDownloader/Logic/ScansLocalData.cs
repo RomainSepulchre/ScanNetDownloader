@@ -107,10 +107,8 @@ namespace ScanNetDownloader.Logic
                 ScansLocalData scanDataToImport = JsonConvert.DeserializeObject<ScansLocalData>(File.ReadAllText(importPath), serializerSettings);
                 if (scanDataToImport == null) throw new Exception($"Failed to get data from provided scan data json, the data is null. Json is an empty file or something went wrong during json deserialization.");
 
-                ScanManagement.CheckForDuplicate(scanDataToImport.ScanDataList, out List<ScanData> scanToReplace);
-
-                // TODO: Handle scanToReplace
-                // Delete scan item + scan data before adding new data
+                ScanManagement.CheckForDuplicate(scanDataToImport.ScanDataList, out List<ReplaceInfo> replaceInfos);
+                if(replaceInfos.Count > 0) ScanManagement.DeleteDataToReplace(replaceInfos);
 
                 // Merge with current scan data
                 Instance.ScanDataList.AddRange(scanDataToImport.ScanDataList);
