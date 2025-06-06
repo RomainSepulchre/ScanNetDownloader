@@ -193,8 +193,8 @@ namespace ScanNetDownloader.View.CustomControls
                         resultHeader = "Scan data importation done";
                         resultMessage = $"<Bold>You have successfully imported {result.ImportedCount} scan data from:</Bold><LineBreak/><Italic>{scanDataPath}</Italic>.";
                         msgType = MsgWindow.ImageType.Success;
+                        RaiseEvent(new RoutedEventArgs(RefreshScanDataEvent, this)); // Only refresh after successful import
                     }
-                    RaiseEvent(new RoutedEventArgs(RefreshScanDataEvent, this));
                     MsgWindow.ShowOkWindow(resultHeader, resultMessage, false, msgType, true);
                 }
             }            
