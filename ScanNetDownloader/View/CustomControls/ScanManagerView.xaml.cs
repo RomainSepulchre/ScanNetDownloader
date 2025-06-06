@@ -36,7 +36,7 @@ namespace ScanNetDownloader.View.CustomControls
         {
             get { return _selectedCount; }
             set {
-                _selectedCount = value;
+                _selectedCount = Math.Clamp(value, 0, int.MaxValue); // Minimum value is 0
                 if (_selectedCount > 0)
                 {
                     if(btnStart.IsEnabled == false) btnStart.IsEnabled = true;
@@ -241,6 +241,8 @@ namespace ScanNetDownloader.View.CustomControls
                 ScanItem item = new ScanItem(scanData, cbzAlreadyCreated, downloadStatus);
                 item.DeleteScanBtnPressed += ScanItem_DeleteBtnPressed;
                 item.CreateCbzBtnPressed += ScanItem_CreateCbzBtnPressed;
+                item.StatusBtnPressed += ScanItem_StatusBtnPressed;
+                item.IsSelectedModified += ScanItem_IsSelectedForDownload;
                 ScanListItems.Add(item);
 
                 SelectedCount++;

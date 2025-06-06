@@ -234,7 +234,7 @@ namespace ScanNetDownloader.Logic
 
         public static void DeleteDataToReplace(List<ReplaceInfo> replaceInfos, ObservableCollection<ScanItem> scanItems, out int selectedDeleteCount)
         {
-            //DeleteDataToReplace(replaceInfos);
+            DeleteDataToReplace(replaceInfos);
 
             // Delete scan item
             selectedDeleteCount = 0;
@@ -244,14 +244,11 @@ namespace ScanNetDownloader.Logic
 
                 if(scanItemToDelete != null)
                 {
-                    Debug.WriteLine($"SCAN ITEM TO DELETE: {scanItemToDelete.BookName}-{scanItemToDelete.ChapterId}, linkedDataIsNull={scanItemToDelete.linkedScanData == null}");
+                    Debug.WriteLine($"SCAN ITEM TO DELETE: {scanItemToDelete.BookName}-{scanItemToDelete.ChapterId}, linkedDataIsNull={scanItemToDelete.linkedScanData == null}"); // delete
                     scanItems.Remove(scanItemToDelete);
-                    selectedDeleteCount++;
+                    if(scanItemToDelete.IsSelectedForDownload) selectedDeleteCount++;
                 }
             }
-                
-
-            // Delete Scan Item
         }
 
         public static void DeleteDataToReplace(List<ReplaceInfo> replaceInfos)
@@ -262,7 +259,12 @@ namespace ScanNetDownloader.Logic
                 {
                     if (Directory.Exists(replaceInfo.ScanData.LocationPath) && Directory.GetFiles(replaceInfo.ScanData.LocationPath).Length > 0)
                     {
+                        // Delete images
                         Directory.Delete(replaceInfo.ScanData.LocationPath, true);
+
+                        // Delete cbz
+                        string cbzPath = FileManagement.GetCbzPathFromScanData(replaceInfo.ScanData);
+                        if(File.Exists(cbzPath)) File.Delete(cbzPath);
                     }
                 }
 
