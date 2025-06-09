@@ -274,6 +274,14 @@ namespace ScanNetDownloader.Logic
             else return false;
         }
 
+        public static string GetCbzPathFromScanData(ScanData scanData)
+        {
+            string cbzFolderPath = Path.Combine(scanData.LocationPath, ".."); // Get parent
+            string cbzFilePath = Path.Combine(cbzFolderPath, $"{scanData.BookName}{Constants.CBZ_CHAPTER_PREFIX}{scanData.ChapterId}{Constants.CBZ_EXTENSION}");
+
+            return cbzFilePath;
+        }
+
         static Guid folderDownloads = new Guid("374DE290-123F-4565-9164-39C4925E467B");
         [DllImport("shell32.dll", CharSet = CharSet.Auto)]
         private static extern int SHGetKnownFolderPath(ref Guid id, int flags, IntPtr token, out IntPtr path);

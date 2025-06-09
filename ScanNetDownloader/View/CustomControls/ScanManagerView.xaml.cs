@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -35,7 +36,7 @@ namespace ScanNetDownloader.View.CustomControls
         {
             get { return _selectedCount; }
             set {
-                _selectedCount = value;
+                _selectedCount = Math.Clamp(value, 0, int.MaxValue); // Minimum value is 0
                 if (_selectedCount > 0)
                 {
                     if(btnStart.IsEnabled == false) btnStart.IsEnabled = true;
@@ -216,7 +217,13 @@ namespace ScanNetDownloader.View.CustomControls
 
         private void AddScanItems(List<ScanData> newScansToAdd)
         {
-            // TODO: Check for duplicated ScanData (Same BookName, chapter and url)
+            ScanManagement.CheckForDuplicate(newScansToAdd, out List<ReplaceInfo> replaceInfos);
+            if (replaceInfos.Count > 0)
+            {
+                ScanManagement.DeleteDataToReplace(replaceInfos, ScanListItems, out int selectedDeleteCount);
+                SelectedCount -= selectedDeleteCount;
+                // Note: Force refresh might be safer in this case => switch to that if issue with current solution 
+            }
 
             // Add in saved data
             ScanDatas.AddRange(newScansToAdd);
@@ -227,8 +234,6 @@ namespace ScanNetDownloader.View.CustomControls
             // Add item in list view
             foreach (ScanData scanData in newScansToAdd)
             {
-                // TODO: Add a check to prevent a double entry of the same chapter on the same website, maybe check before calling AddScanItems ?
-
                 // TODO: ? Is this really necessary ? How could a new scan be downloaded or have a cbz archive ?
                 ScanItem.DownloadedStatus downloadStatus = FileManagement.GetDownloadStatus(scanData);
                 bool cbzAlreadyCreated = downloadStatus.IsCbzCreated();
@@ -236,6 +241,8 @@ namespace ScanNetDownloader.View.CustomControls
                 ScanItem item = new ScanItem(scanData, cbzAlreadyCreated, downloadStatus);
                 item.DeleteScanBtnPressed += ScanItem_DeleteBtnPressed;
                 item.CreateCbzBtnPressed += ScanItem_CreateCbzBtnPressed;
+                item.StatusBtnPressed += ScanItem_StatusBtnPressed;
+                item.IsSelectedModified += ScanItem_IsSelectedForDownload;
                 ScanListItems.Add(item);
 
                 SelectedCount++;

@@ -356,13 +356,44 @@ namespace ScanNetDownloader
 
         private void btnDbg8_Click(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine($"AppData path: {Constants.APPDATA_PATH}, exist:{Directory.Exists(Constants.APPDATA_PATH)}");
-            Debug.WriteLine($"Data folder path: {Constants.DATA_FOLDER_PATH}, exist:{Directory.Exists(Constants.DATA_FOLDER_PATH)}");
-            Debug.WriteLine($"ScanData file path: {Constants.SCANSLOCALDATA_JSON_PATH}, exist:{File.Exists(Constants.SCANSLOCALDATA_JSON_PATH)}");
-            Debug.WriteLine($"Settings file path: {Constants.SETTINGS_JSON_PATH}, exist:{File.Exists(Constants.SETTINGS_JSON_PATH)}");
-            Debug.WriteLine($"DEV Data folder path: {Constants.DEBUG_DATA_FOLDER_PATH}, exist:{Directory.Exists(Constants.DEBUG_DATA_FOLDER_PATH)}");
-            Debug.WriteLine($"DEV ScanData file path: {Constants.DEBUG_SCANSLOCALDATA_JSON_PATH}, exist:{File.Exists(Constants.DEBUG_SCANSLOCALDATA_JSON_PATH)}");
-            Debug.WriteLine($"DEV Settings file path: {Constants.DEBUG_SETTINGS_JSON_PATH}, exist:{File.Exists(Constants.DEBUG_SETTINGS_JSON_PATH)}");
+            //Debug.WriteLine($"AppData path: {Constants.APPDATA_PATH}, exist:{Directory.Exists(Constants.APPDATA_PATH)}");
+            //Debug.WriteLine($"Data folder path: {Constants.DATA_FOLDER_PATH}, exist:{Directory.Exists(Constants.DATA_FOLDER_PATH)}");
+            //Debug.WriteLine($"ScanData file path: {Constants.SCANSLOCALDATA_JSON_PATH}, exist:{File.Exists(Constants.SCANSLOCALDATA_JSON_PATH)}");
+            //Debug.WriteLine($"Settings file path: {Constants.SETTINGS_JSON_PATH}, exist:{File.Exists(Constants.SETTINGS_JSON_PATH)}");
+            //Debug.WriteLine($"DEV Data folder path: {Constants.DEBUG_DATA_FOLDER_PATH}, exist:{Directory.Exists(Constants.DEBUG_DATA_FOLDER_PATH)}");
+            //Debug.WriteLine($"DEV ScanData file path: {Constants.DEBUG_SCANSLOCALDATA_JSON_PATH}, exist:{File.Exists(Constants.DEBUG_SCANSLOCALDATA_JSON_PATH)}");
+            //Debug.WriteLine($"DEV Settings file path: {Constants.DEBUG_SETTINGS_JSON_PATH}, exist:{File.Exists(Constants.DEBUG_SETTINGS_JSON_PATH)}");
+
+            List<ScanData> sortedData = new List<ScanData>(ScansLocalData.Instance.ScanDataList);
+            sortedData.Sort();
+            sortedData.Log();
+
+            ScanData dataA = new LelScansNetScanData("No URL", 120, "One Punch Man");
+            ScanData dataB = new LelScansNetScanData("No URL", 235, "Naruto");
+            ScanData dataC = new AnimeSamaFrScanData("No URL", 10, "One Punch Man");
+            ScanData dataD = new ScanVfNetScanData("No URL", 1117, "One Piece");
+            ScanData dataE = new ScanVfNetScanData("No URL", 126, "Naruto");
+
+            // Check a list of data
+
+            List<ScanData> datas = new List<ScanData>();
+            datas.Add(dataA);
+            datas.Add(dataB);
+            datas.Add(dataC);
+            datas.Add(dataD);
+            datas.Add(dataE);
+
+            ScanManagement.CheckForDuplicate(datas, out List<ReplaceInfo> replaceInfos);
+
+            Debug.WriteLine($"Process de-duplicate:");
+            datas.Log();
+
+            // Check specific scan data
+
+                //ScanData data = dataB;
+                //bool alreadyExist = ScanManagement.IsADuplicate(data);
+
+                //Debug.WriteLine($"Duplicate found for {data.BookName}#{data.ChapterId}: {alreadyExist}");
         }
 
         #endregion

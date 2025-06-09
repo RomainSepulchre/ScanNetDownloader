@@ -142,6 +142,30 @@ namespace ScanNetDownloader.Logic.Helpers
             }
         }
 
+        public static DuplicateWindow ShowDuplicateWindow(List<DuplicatedScanData> duplicateFound)
+        {
+            Window parentWindow = Application.Current.MainWindow;
+
+            DuplicateWindow duplicateWindow = new DuplicateWindow(parentWindow, duplicateFound);
+
+            parentWindow.Opacity = 0.4;
+            duplicateWindow.ShowDialog();
+            parentWindow.Opacity = 1;
+
+            return duplicateWindow;
+        }
+
+        public static DuplicateWindow ShowDuplicateWindow(Window parentWindow, List<DuplicatedScanData> duplicateFound)
+        {
+            DuplicateWindow duplicateWindow = new DuplicateWindow(parentWindow, duplicateFound);
+
+            parentWindow.Opacity = 0.4;
+            duplicateWindow.ShowDialog();
+            parentWindow.Opacity = 1;
+
+            return duplicateWindow;
+        }
+
         private static BitmapImage GetBitmapImage(ImageType windowImg)
         {
             BitmapImage bitmapImage;

@@ -1,0 +1,62 @@
+﻿<Window x:Class="ScanNetDownloader.View.DuplicateWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ScanNetDownloader.View"
+        xmlns:customControls="clr-namespace:ScanNetDownloader.View.CustomControls"
+        mc:Ignorable="d"
+        WindowStyle="None" WindowStartupLocation="CenterOwner"
+        Title="Manage duplicated scan" Height="450" Width="800"
+        ResizeMode="NoResize">
+    <Window.Resources>
+        <CollectionViewSource x:Key="DuplicateItemSource" Source="{Binding DuplicateItems}">
+        </CollectionViewSource>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="38"/>
+            <RowDefinition/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="20 10 16 0">
+            <TextBlock Text="Some scans are already added" FontWeight="SemiBold" Foreground="{StaticResource Colors.Black}" FontSize="16"/>
+        </StackPanel>
+
+        <Grid Grid.Row="1" Margin="20 5 20 20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.12*" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="0.88*" />
+            </Grid.RowDefinitions>
+
+            <TextBlock>
+                <Span>Some of the scans you want to add seems to have been already added. Choose what you want to do with them.</Span><LineBreak/>
+                <Span Foreground="{StaticResource Colors.Red}"><Italic>When replacing with new scan data that differs, downloaded images and cbz might be deleted (ex: different scan website or page count)</Italic></Span>
+            </TextBlock>
+
+            <StackPanel Grid.Row="1" Orientation="Horizontal">
+                <Button Name="btnDeleteAll" Content="Delete all duplicate" Click="btnDeleteAll_Click" Height="30" Width="150" Margin="0 0 5 0" Style="{StaticResource complexButton}"/>
+                <Button Name="btnKeepAll" Content="Keep all duplicate" Click="btnKeepAll_Click" Height="30" Width="150" Margin="0 0 5 0" Style="{StaticResource complexButton}"/>
+                <Button Name="btnReplaceAll" Content="Replace by duplicate (all)" Click="btnReplaceAll_Click" Height="30" Width="180" Margin="0 0 5 0" Style="{StaticResource complexButton}"/>
+            </StackPanel>
+
+            <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" CanContentScroll="True"  Margin="0 5 0 0">
+                <ItemsControl x:Name="stPanelDuplicatedScan" ItemsSource="{Binding Source={StaticResource DuplicateItemSource}}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel IsItemsHost="True" Orientation="Vertical" Background="{StaticResource Colors.LightGrey}">
+                            </StackPanel>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
+
+        <Grid Grid.Row="2">
+            <Button Name="btnFinish" Content="Finish" Click="btnFinish_Click" FontSize="22"/>
+        </Grid>
+
+    </Grid>
+</Window>
