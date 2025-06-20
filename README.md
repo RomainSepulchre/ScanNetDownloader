@@ -100,14 +100,23 @@ After a scan is downloaded, a .cbz archive is automatically created unless you d
 
 > :warning: When we speak about data here we only speak about the scan informations and app settings. We are not talking about downloaded images, they stay where you downloaded them.
 
-I did a pretty bad decision when choosing where to save the data and settings, this means that when downloading a new version of the app you lose the data from the previous version. I intend to improve that in the next version but in the meantime here is how to import your previous data after downloading a new version.
+### After 1.2.0.0
 
-### Where are saved the data and settings ?
+After 1.2.0.0 the settings and data are saved in your AppData folder (.../AppData\Roaming\ScanNetDownloader) which means you should keep it between every update.
 
-Currently, both the data and settings are saved next to the app .exe in ***ScansLocalData.json*** and ***Settings.json***.
+If you want to import data from a version of the app anterior to 1.2.0.0, I added a **"Import scan data"** and a **"Import settings"** buttons in the options tab.
 
-### Import previous data
+- **Import scan data:** locate and select your previous **ScansLocalData.json** file. Before 1.2.0.0 the file should be next to the .exe of the previous version of the application you used. Imported scan data will be merge to your current scan data.  
+- **Import settings:** locate and select your previous **Settings.json** file. Before 1.2.0.0 the file should be next to the .exe of the previous version of the application you used. Imported settings will replace your settings.
+
+### Before 1.2.0.0
+
+When I initially choose where to save application settings and data, I made a pretty bad decision when choosing where to save the data and settings, this means that when downloading a new version of the app you lose the data from the previous version. This has been fixed at version 1.2.0.0 of the application.
+
+#### Where are saved the data and settings ?
+
+Before 1.2.0.0, both the data and settings are saved next to the app .exe in ***ScansLocalData.json*** and ***Settings.json***.
+
+#### Import previous data
 
 To import previous data you just need to copy the ***ScansLocalData.json*** and ***Settings.json*** files from the previous version of the app and paste them next to the .exe of the app new version. By doing so, you replace the empty files of the new version by your previous data and settings.
-
-
