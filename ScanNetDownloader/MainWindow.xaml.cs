@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -30,11 +31,14 @@ namespace ScanNetDownloader
         {
             DataContext = this;
 
+            // Handle First launch
+            bool firstLaunch = IsFirstLaunch();
+
             // Load Settings
-            Settings.InitializeAppSettings();
+            Settings.InitializeAppSettings(firstLaunch);
 
             // Load ScansLocalData
-            ScansLocalData.InitializeScansData();
+            ScansLocalData.InitializeScansData(firstLaunch);
 
             App.OnApplicationExitEvent += new EventHandler(OnApplicationExit);
 
@@ -43,9 +47,26 @@ namespace ScanNetDownloader
 
             titleBar.InitializeTitleBar();
 
+            versionNumber.Content = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+
 #if !DEBUG
             tabDebug.Visibility = Visibility.Collapsed;       
 #endif
+        }
+
+        private bool IsFirstLaunch()
+        {
+#if DEBUG
+            string dataPath = Constants.DEBUG_DATA_FOLDER_PATH;
+#else
+            string dataPath = Constants.DATA_FOLDER_PATH;
+#endif
+            bool firstLaunch = !Directory.Exists(dataPath);
+            if (firstLaunch)
+            {
+                Directory.CreateDirectory(dataPath);
+            }
+            return firstLaunch;
         }
 
         #region Ui Routed Events    
@@ -113,28 +134,51 @@ namespace ScanNetDownloader
             ScansLocalData.Save();
         }
 
-        private void optionsVw_ClearLocalData(object sender, RoutedEventArgs e)
+        private void optionsVw_RefreshScanData(object sender, RoutedEventArgs e)
         {
             scanManagerVw.ForceScanDataRefresh();
         }
 
         private void OnApplicationExit(object sender, EventArgs e)
         {
-            // Save the scans local data
-            ScansLocalData.Save();
-
-            if(tabCtrlNavigation.SelectedItem == tabOptions && optionsVw.OptionsChangesNotSaved)
+            // Fallback save in case the app quit in an unconventionnal way
+            // Only save the scans local data if they weren't saved recently
+            Debug.WriteLine($"App exit - Time before last save: {ScansLocalData.TimeInSecondsSinceLastSave()}, save={ScansLocalData.TimeInSecondsSinceLastSave() > 1}");
+            if (ScansLocalData.TimeInSecondsSinceLastSave() > 1) // Was last save more than 1 second ago
             {
-                AskToSaveSettings();
+                ScansLocalData.Save();
             }
         }
         #endregion
 
-        private void AskToSaveSettings()
+        public void SaveBeforeQuit()
         {
-            string mBoxMessage = "Do you want to save your settings changes ?";
+            
+            if (tabCtrlNavigation.SelectedItem == tabOptions && optionsVw.OptionsChangesNotSaved)
+            {
+                AskToSaveSettings(true); 
+            }
+
+            ScansLocalData.Save(); // Save after any pop-up that needs user input to keep delay between last save as low as possible for OnApplicationExit() check
+
+            App.Quit();
+        }
+
+        private void AskToSaveSettings(bool quitApp=false)
+        {
+            string mBoxMessage = quitApp ? "Before quitting, do you want to save your settings changes ?" : "Do you want to save your settings changes ?";
             string mBoxCaption = "Save settings ?";
-            YesNoWindow yesNoWindow = MsgWindow.ShowYesNoWindow(mBoxCaption, mBoxMessage, true, MsgWindow.ImageType.Question);
+
+            YesNoWindow yesNoWindow;
+            if (Application.Current.MainWindow == null)
+            {
+                yesNoWindow = MsgWindow.ShowYesNoWindow(true, mBoxCaption, mBoxMessage, true, MsgWindow.ImageType.Question);
+            }
+            else
+            {
+                yesNoWindow = MsgWindow.ShowYesNoWindow(mBoxCaption, mBoxMessage, true, MsgWindow.ImageType.Question);
+            }
+                 
             if (yesNoWindow.Success) optionsVw.SaveSettings();
         }
 
@@ -224,9 +268,9 @@ namespace ScanNetDownloader
             Window parentWindow = this;
 
             string header = "Test for yes no window";
-            string msg = "Nothing will happen to the directory C:\\Users\\aRandomUserName\\IncredibleDirectoryName.\n\nDo accept that nothing will happen to this directory ?";
+            string msg = "<Bold>Nothing will happen to the directory</Bold> <Italic>C:\\Users\\aRandomUserName\\IncredibleDirectoryName.</Italic><LineBreak/><LineBreak/>Do accept that nothing will happen to this directory ?";
 
-            YesNoWindow ynWindow = MsgWindow.ShowYesNoWindow(this, header, msg, true, MsgWindow.ImageType.Question);
+            YesNoWindow ynWindow = MsgWindow.ShowYesNoWindow(this, header, msg, true, MsgWindow.ImageType.Question, true);
 
             if (ynWindow.Success)
             {
@@ -241,8 +285,8 @@ namespace ScanNetDownloader
         private void btnDbg6_Click(object sender, RoutedEventArgs e)
         {
             string header = "Ok window";
-            string msg = "Do you acknowledge something? It can be anything, just acknowledge it!";
-            OkWindow okWindow = MsgWindow.ShowOkWindow(this, header, msg, false, MsgWindow.ImageType.Warning);
+            string msg = "<Bold>Do you acknowledge something?</Bold> <Italic>It can be anything,</Italic> just acknowledge it!";
+            OkWindow okWindow = MsgWindow.ShowOkWindow(this, header, msg, false, MsgWindow.ImageType.Warning, true);
 
             if (okWindow.Success)
             {
@@ -312,9 +356,48 @@ namespace ScanNetDownloader
 
         private void btnDbg8_Click(object sender, RoutedEventArgs e)
         {
-            
+            //Debug.WriteLine($"AppData path: {Constants.APPDATA_PATH}, exist:{Directory.Exists(Constants.APPDATA_PATH)}");
+            //Debug.WriteLine($"Data folder path: {Constants.DATA_FOLDER_PATH}, exist:{Directory.Exists(Constants.DATA_FOLDER_PATH)}");
+            //Debug.WriteLine($"ScanData file path: {Constants.SCANSLOCALDATA_JSON_PATH}, exist:{File.Exists(Constants.SCANSLOCALDATA_JSON_PATH)}");
+            //Debug.WriteLine($"Settings file path: {Constants.SETTINGS_JSON_PATH}, exist:{File.Exists(Constants.SETTINGS_JSON_PATH)}");
+            //Debug.WriteLine($"DEV Data folder path: {Constants.DEBUG_DATA_FOLDER_PATH}, exist:{Directory.Exists(Constants.DEBUG_DATA_FOLDER_PATH)}");
+            //Debug.WriteLine($"DEV ScanData file path: {Constants.DEBUG_SCANSLOCALDATA_JSON_PATH}, exist:{File.Exists(Constants.DEBUG_SCANSLOCALDATA_JSON_PATH)}");
+            //Debug.WriteLine($"DEV Settings file path: {Constants.DEBUG_SETTINGS_JSON_PATH}, exist:{File.Exists(Constants.DEBUG_SETTINGS_JSON_PATH)}");
+
+            List<ScanData> sortedData = new List<ScanData>(ScansLocalData.Instance.ScanDataList);
+            sortedData.Sort();
+            sortedData.Log();
+
+            ScanData dataA = new LelScansNetScanData("No URL", 120, "One Punch Man");
+            ScanData dataB = new LelScansNetScanData("No URL", 235, "Naruto");
+            ScanData dataC = new AnimeSamaFrScanData("No URL", 10, "One Punch Man");
+            ScanData dataD = new ScanVfNetScanData("No URL", 1117, "One Piece");
+            ScanData dataE = new ScanVfNetScanData("No URL", 126, "Naruto");
+
+            // Check a list of data
+
+            List<ScanData> datas = new List<ScanData>();
+            datas.Add(dataA);
+            datas.Add(dataB);
+            datas.Add(dataC);
+            datas.Add(dataD);
+            datas.Add(dataE);
+
+            ScanManagement.CheckForDuplicate(datas, out List<ReplaceInfo> replaceInfos);
+
+            Debug.WriteLine($"Process de-duplicate:");
+            datas.Log();
+
+            // Check specific scan data
+
+                //ScanData data = dataB;
+                //bool alreadyExist = ScanManagement.IsADuplicate(data);
+
+                //Debug.WriteLine($"Duplicate found for {data.BookName}#{data.ChapterId}: {alreadyExist}");
         }
 
         #endregion
+
+
     }
 }

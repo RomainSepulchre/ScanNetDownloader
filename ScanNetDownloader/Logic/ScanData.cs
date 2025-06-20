@@ -4,7 +4,7 @@ using System.Net.Http;
 
 namespace ScanNetDownloader.Logic
 {
-    public abstract class ScanData
+    public abstract class ScanData : IComparable<ScanData>
     {
         public string Url
         {
@@ -43,9 +43,14 @@ namespace ScanNetDownloader.Logic
             get; protected set;
         }
 
+        public string? LocationPath
+        {
+            get; set;
+        }
+
 
         [JsonConstructor] // Only for Json deserialization, apparently passed variable name ABSOLUTELY must the same as its destination value name  (ex: url-> Url, websiteDomain -> WebsiteDomain)
-        public ScanData(string url, string websiteDomain, string bookName, int chapterId, bool isSelectedForDownload, List<string> pagesUrl, bool isTemporaryData)
+        public ScanData(string url, string websiteDomain, string bookName, int chapterId, bool isSelectedForDownload, List<string> pagesUrl, bool isTemporaryData, string path)
         {
             Url = url;
             WebsiteDomain = websiteDomain;
@@ -54,6 +59,7 @@ namespace ScanNetDownloader.Logic
             IsSelectedForDownload = isSelectedForDownload;
             PagesUrl = pagesUrl;
             IsTemporaryData = isTemporaryData;
+            LocationPath = path;
         }
 
         public ScanData(string url)
@@ -216,6 +222,20 @@ namespace ScanNetDownloader.Logic
             }
 
             return result;
+        }
+        #endregion
+
+        #region IComparable
+        public int CompareTo(ScanData? other)
+        {
+            if(BookName != other.BookName)
+            {
+                return BookName.CompareTo(other.BookName);
+            }
+            else
+            {
+                return ChapterId.CompareTo(other.ChapterId);
+            }
         }
         #endregion
     }

@@ -1,5 +1,9 @@
 ﻿using ScanNetDownloader.Logic.Helpers;
+using ScanNetDownloader.View;
+using ScanNetDownloader.View.CustomControls;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 
 namespace ScanNetDownloader.Logic
 {
@@ -132,6 +136,165 @@ namespace ScanNetDownloader.Logic
             }
 
             return newScanDatas;
+        }
+
+        public static bool IsADuplicate(ScanData data, List<ScanData> sortedList = null)
+        {
+            if(sortedList == null) // If sorted list is not specified automatically create an instance of the list and sort it
+            {
+                sortedList = new List<ScanData>(ScansLocalData.Instance.ScanDataList);
+                sortedList.Sort();
+            }
+
+            int searchResult = sortedList.BinarySearch(data); // Binary search need to be called on sorted list
+
+            return searchResult >= 0;
+        }
+
+        public static List<ScanData> CheckForDuplicate(List<ScanData> dataToCheck, out List<ReplaceInfo> replaceInfos)
+        {
+            replaceInfos = new List<ReplaceInfo>();
+
+            // Get current scan data and sort them for binary search
+            List<ScanData> sortedData = new List<ScanData>(ScansLocalData.Instance.ScanDataList);
+            sortedData.Sort();
+
+            // Check data for duplicate
+            List<DuplicatedScanData> duplicateFound = ScanManagement.FindDuplicate(dataToCheck, sortedData);
+            if(duplicateFound.Count > 0)
+            {
+                // Open window to let user choose what he wants to do
+                DuplicateWindow duplicateWindow = MsgWindow.ShowDuplicateWindow(duplicateFound);
+
+                // Process duplicate window result
+                foreach (var item in duplicateWindow.DuplicateItems)
+                {
+                    switch (item.DuplicateOption)
+                    {
+                        case DuplicateItem.DuplicateOptions.Delete:
+                            dataToCheck.Remove(item.duplicateScanData);
+                            break;
+
+                        case DuplicateItem.DuplicateOptions.Keep: // Don't do anything
+                            break;
+
+                        case DuplicateItem.DuplicateOptions.Replace:
+                            bool needToReplaceImgs = NeedToDeleteImgsWhenReplacing(item.duplicateScanData, item.currentScanData);
+                            replaceInfos.Add(new ReplaceInfo(item.currentScanData, needToReplaceImgs));
+
+                            // If same website and pageCount, check locationPath to use the more relevant
+                            if(item.duplicateScanData.WebsiteDomain == item.currentScanData.WebsiteDomain && item.duplicateScanData.PagesCount == item.currentScanData.PagesCount)
+                            {
+                                // If new path null/empty and previous has a value use previous value
+                                if(string.IsNullOrEmpty(item.duplicateScanData.LocationPath) && !string.IsNullOrEmpty(item.currentScanData.LocationPath))
+                                {
+                                    item.duplicateScanData.LocationPath = item.currentScanData.LocationPath;
+                                }
+                            }
+                            break;
+
+                        default:
+                            Debug.WriteLine($"Unknown DuplicateOptions, nothing will be done with this duplicate");
+                            break;
+                    }
+                }
+            }
+
+            return dataToCheck;
+        }
+
+        private static List<DuplicatedScanData> FindDuplicate(List<ScanData> dataToCheck, List<ScanData> sortedList = null)
+        {
+            if (sortedList == null) // If sorted list is not specified automatically create an instance of the list and sort it
+            {
+                sortedList = new List<ScanData>(ScansLocalData.Instance.ScanDataList);
+                sortedList.Sort();
+            }
+
+            List<DuplicatedScanData> duplicateData = new List<DuplicatedScanData>();
+
+            foreach (ScanData data in dataToCheck)
+            {
+                int searchResult = sortedList.BinarySearch(data); // Binary search need to be called on sorted list
+                if (searchResult >= 0)
+                {
+                    DuplicatedScanData duplicatedData = new DuplicatedScanData(data, sortedList[searchResult]);
+                    duplicateData.Add(duplicatedData);
+                }
+            }         
+            
+            return duplicateData;
+        }
+
+
+        private static bool NeedToDeleteImgsWhenReplacing(ScanData newData, ScanData dataToReplace)
+        {
+            return newData.WebsiteDomain != dataToReplace.WebsiteDomain || newData.PagesCount != dataToReplace.PagesCount;
+        }
+
+        public static void DeleteDataToReplace(List<ReplaceInfo> replaceInfos, ObservableCollection<ScanItem> scanItems, out int selectedDeleteCount)
+        {
+            DeleteDataToReplace(replaceInfos);
+
+            // Delete scan item
+            selectedDeleteCount = 0;
+            foreach (ReplaceInfo replaceInfo in replaceInfos)
+            {
+                ScanItem scanItemToDelete = scanItems.Where(s => s.linkedScanData == replaceInfo.ScanData).First();
+
+                if(scanItemToDelete != null)
+                {
+                    Debug.WriteLine($"SCAN ITEM TO DELETE: {scanItemToDelete.BookName}-{scanItemToDelete.ChapterId}, linkedDataIsNull={scanItemToDelete.linkedScanData == null}"); // delete
+                    scanItems.Remove(scanItemToDelete);
+                    if(scanItemToDelete.IsSelectedForDownload) selectedDeleteCount++;
+                }
+            }
+        }
+
+        public static void DeleteDataToReplace(List<ReplaceInfo> replaceInfos)
+        {
+            foreach (ReplaceInfo replaceInfo in replaceInfos)
+            {
+                if (replaceInfo.NeedToDeleteImgs && !string.IsNullOrEmpty(replaceInfo.ScanData.LocationPath))
+                {
+                    if (Directory.Exists(replaceInfo.ScanData.LocationPath) && Directory.GetFiles(replaceInfo.ScanData.LocationPath).Length > 0)
+                    {
+                        // Delete images
+                        Directory.Delete(replaceInfo.ScanData.LocationPath, true);
+
+                        // Delete cbz
+                        string cbzPath = FileManagement.GetCbzPathFromScanData(replaceInfo.ScanData);
+                        if(File.Exists(cbzPath)) File.Delete(cbzPath);
+                    }
+                }
+
+                ScansLocalData.Instance.ScanDataList.Remove(replaceInfo.ScanData);
+            }
+        }
+
+    }
+
+    public class DuplicatedScanData
+    {
+        public ScanData DuplicatedData;
+        public ScanData CurrentData;
+
+        public DuplicatedScanData(ScanData duplicatedData, ScanData currentData)
+        {
+            DuplicatedData = duplicatedData;
+            CurrentData = currentData;
+        }
+    }
+
+    public class ReplaceInfo
+    {
+        public ScanData ScanData;
+        public bool NeedToDeleteImgs;
+
+        public ReplaceInfo(ScanData scanData, bool needToDeleteImgs)
+        {
+            ScanData = scanData;
+            NeedToDeleteImgs = needToDeleteImgs;
         }
     }
 }

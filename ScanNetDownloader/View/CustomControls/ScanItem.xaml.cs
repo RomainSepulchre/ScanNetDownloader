@@ -1,6 +1,8 @@
 ﻿using ScanNetDownloader.Logic;
 using ScanNetDownloader.Logic.Helpers;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -51,9 +53,9 @@ namespace ScanNetDownloader.View.CustomControls
         public enum DownloadedStatus
         {
             NotDownloaded = 0,
-            FullyDownloaded = 1,   
-            OnlyImagesDownloaded = 2,
-            OnlyCbzDownloaded = 3,
+            FullyDownloaded = 1, // Images + Cbz 
+            OnlyImagesDownloaded = 2, // Images 
+            OnlyCbzDownloaded = 3, // Cbz
             MissingImages = 4
         }
         private DownloadedStatus _downloadStatus;
@@ -116,6 +118,10 @@ namespace ScanNetDownloader.View.CustomControls
         {
             DataContext = this;
             InitializeComponent();
+
+#if !DEBUG
+            btnDebug.Visibility = Visibility.Collapsed;   
+#endif
         }
 
         public ScanItem(ScanData _scanData, bool cbzAlreadyCreated=false, DownloadedStatus dlStatus=DownloadedStatus.NotDownloaded)
@@ -132,7 +138,11 @@ namespace ScanNetDownloader.View.CustomControls
             Website = _scanData.WebsiteDomain;
             DownloadStatus = dlStatus;
             CbzArchiveCreated = cbzAlreadyCreated; 
-            IsSelectedForDownload = _scanData.IsSelectedForDownload;           
+            IsSelectedForDownload = _scanData.IsSelectedForDownload;
+
+#if !DEBUG
+            btnDebug.Visibility = Visibility.Collapsed;
+#endif
         }
 
         private void OnPropertyChanged([CallerMemberName] string property = null)
@@ -150,6 +160,22 @@ namespace ScanNetDownloader.View.CustomControls
             RaiseEvent(new RoutedEventArgs(CreateCbzBtnPressedEvent, this));
         }
 
+        private void btnOpenFolder_Click(object sender, RoutedEventArgs e)
+        {
+            if(DownloadStatus == DownloadedStatus.FullyDownloaded || DownloadStatus == DownloadedStatus.OnlyImagesDownloaded || DownloadStatus == DownloadedStatus.MissingImages)
+            {
+                // Open image folder 
+                FileManagement.OpenFolder(linkedScanData.LocationPath);
+            }
+            else if (DownloadStatus == DownloadedStatus.OnlyCbzDownloaded) 
+            {
+                // Open cbz folder
+                string parentFolder = Path.Combine(linkedScanData.LocationPath, "..");
+                FileManagement.OpenFolder(parentFolder);
+            }
+
+        }
+
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
             RaiseEvent(new RoutedEventArgs(DeleteBtnPressedEvent, this));
@@ -160,14 +186,19 @@ namespace ScanNetDownloader.View.CustomControls
             switch (status)
             {
                 case DownloadedStatus.NotDownloaded:
+                    btnCbzCreation.IsEnabled = false;
+                    btnOpenFolder.IsEnabled = false;
+                    break;
                 case DownloadedStatus.FullyDownloaded:
                 case DownloadedStatus.OnlyCbzDownloaded:
                 default:
                     btnCbzCreation.IsEnabled = false;
+                    btnOpenFolder.IsEnabled = true;
                     break;
                 case DownloadedStatus.OnlyImagesDownloaded:
                 case DownloadedStatus.MissingImages:
                     btnCbzCreation.IsEnabled = true;
+                    btnOpenFolder.IsEnabled = true;
                     break;
             }     
         }
@@ -220,5 +251,14 @@ namespace ScanNetDownloader.View.CustomControls
                     return true;
             }
         }
+
+        #region Debug
+        private void btnDebug_Click(object sender, RoutedEventArgs e)
+        {
+            bool locIsNull = linkedScanData.LocationPath == null;
+            string loc = locIsNull ? "Is null" : linkedScanData.LocationPath;
+            Debug.WriteLine($"{BookName} - {ChapterId}: location = \"{loc}\", DownloadStatus = {DownloadStatus} ");
+        }
+        #endregion
     }
 }

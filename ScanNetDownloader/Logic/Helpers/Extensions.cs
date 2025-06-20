@@ -3,6 +3,9 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Markup;
 using System.Windows.Media;
 
 namespace ScanNetDownloader.Logic.Helpers
@@ -12,6 +15,12 @@ namespace ScanNetDownloader.Logic.Helpers
         public static string ToTitleCase(this string title)
         {
             return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(title.ToLower());
+        }
+
+        public static IEnumerable<Inline> ParseInlines(this string stringToParse)
+        {
+            TextBlock txtBlock = (TextBlock)XamlReader.Parse($"<TextBlock xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\">{stringToParse}</TextBlock>");
+            return txtBlock.Inlines.ToList();
         }
 
         public static bool StartsWithAny(this string s, List<string> listOfStrings)
@@ -26,11 +35,19 @@ namespace ScanNetDownloader.Logic.Helpers
             return startWithAny;
         }
 
-        public static void Log<T>(this List<T> list)
+        public static void Log<T>(this IList<T> list)
         {
             foreach (T item in list)
             {
-                Debug.WriteLine($"- {item}");
+                if (typeof(T) == typeof(ScanData))
+                {
+                    ScanData data = item as ScanData;
+                    Debug.WriteLine($"{data.BookName} #{data.ChapterId}");
+                }
+                else
+                {
+                    Debug.WriteLine($"- {item}");
+                } 
             }
         }
 
@@ -119,6 +136,21 @@ namespace ScanNetDownloader.Logic.Helpers
                 scansToDownload.Add(item.linkedScanData);
             }
             return scansToDownload;
+        }
+
+        public static bool IsCbzCreated (this ScanItem.DownloadedStatus status)
+        {
+            return status == ScanItem.DownloadedStatus.FullyDownloaded || status == ScanItem.DownloadedStatus.OnlyCbzDownloaded;
+        }
+
+        public static bool OnlyImageDownloaded(this ScanItem.DownloadedStatus status)
+        {
+            return status == ScanItem.DownloadedStatus.OnlyImagesDownloaded;
+        }
+
+        public static bool MissingImages(this ScanItem.DownloadedStatus status)
+        {
+            return status == ScanItem.DownloadedStatus.MissingImages;
         }
 
         /// <summary>

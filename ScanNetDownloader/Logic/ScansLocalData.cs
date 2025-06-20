@@ -3,6 +3,7 @@ using ScanNetDownloader.Logic.Helpers;
 using ScanNetDownloader.View;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 
 namespace ScanNetDownloader.Logic
 {
@@ -21,13 +22,22 @@ namespace ScanNetDownloader.Logic
         /// </summary>
         public List<ScanData> ScanDataList { get; set; } = new List<ScanData>();
 
-        public static void InitializeScansData()
+        private static string scansDataPath;
+
+        private static DateTime lastSaveTime = DateTime.Now;
+
+        public static void InitializeScansData(bool firstLaunch)
         {
-            Instance = LoadData(Constants.SCANSLOCALDATA_JSON_PATH);
+#if DEBUG
+            scansDataPath = Constants.DEBUG_SCANSLOCALDATA_JSON_PATH;
+#else
+            scansDataPath = Constants.SCANSLOCALDATA_JSON_PATH;
+#endif
+            Instance = LoadData(firstLaunch);
             //Instance.Log();
         }
 
-        private static ScansLocalData LoadData(string jsonPath)
+        private static ScansLocalData LoadData(bool firstLaunch)
         {
             ScansLocalData loadedData;
 
@@ -36,17 +46,17 @@ namespace ScanNetDownloader.Logic
                 TypeNameHandling = TypeNameHandling.All
             };
 
-            if (File.Exists(jsonPath))
+            if (File.Exists(scansDataPath))
             {
                 try
                 {
-                    loadedData = JsonConvert.DeserializeObject<ScansLocalData>(File.ReadAllText(Constants.SCANSLOCALDATA_JSON_PATH), serializerSettings);
+                    loadedData = JsonConvert.DeserializeObject<ScansLocalData>(File.ReadAllText(scansDataPath), serializerSettings);
                     if (loadedData == null) throw new Exception($"Loaded scan local data should never be null, something wrong happened during json deserialization");
                     return loadedData;
                 }
                 catch (Exception ex)
                 {
-                    Error.FailedToLoadScansLocalData(jsonPath, ex);
+                    Error.FailedToLoadScansLocalData(scansDataPath, ex);
 
                     string mBoxMessage = $"Error while loading scan local data, do you want to clear the data ?\nAll the previous data of the scan manager view will be lost but you will keep everything you already downloaded.";
                     string mBoxCaption = "Clear local scan data ?";
@@ -75,8 +85,39 @@ namespace ScanNetDownloader.Logic
             }
             else // No scan data yet, create the scan data
             {
+                if (!firstLaunch)
+                {
+                    Error.MissingScanDataJson(scansDataPath);
+                }
+
                 loadedData = ClearLocalData();
                 return loadedData;
+            }
+        }
+
+        public static ScanDataImportResult ImportScanData(string importPath)
+        {
+            JsonSerializerSettings serializerSettings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All
+            };
+
+            try
+            {
+                ScansLocalData scanDataToImport = JsonConvert.DeserializeObject<ScansLocalData>(File.ReadAllText(importPath), serializerSettings);
+                if (scanDataToImport == null) throw new Exception($"Failed to get data from provided scan data json, the data is null. Json is an empty file or something went wrong during json deserialization.");
+
+                ScanManagement.CheckForDuplicate(scanDataToImport.ScanDataList, out List<ReplaceInfo> replaceInfos);
+                if(replaceInfos.Count > 0) ScanManagement.DeleteDataToReplace(replaceInfos);
+
+                // Merge with current scan data
+                Instance.ScanDataList.AddRange(scanDataToImport.ScanDataList);
+                Save();
+                return new ScanDataImportResult(true, scanDataToImport.ScanDataList.Count);
+            }
+            catch (Exception ex)
+            {
+                return new ScanDataImportResult(false, ex);
             }
         }
 
@@ -99,12 +140,18 @@ namespace ScanNetDownloader.Logic
 
             try
             {
-                File.WriteAllText(Constants.SCANSLOCALDATA_JSON_PATH, JsonConvert.SerializeObject(Instance, serializerSettings));
+                File.WriteAllText(scansDataPath, JsonConvert.SerializeObject(Instance, serializerSettings));
+                lastSaveTime = DateTime.Now;
             }
             catch (Exception ex)
             {
-                Error.FailedToSaveScansLocalData(Constants.SCANSLOCALDATA_JSON_PATH, ex);
+                Error.FailedToSaveScansLocalData(scansDataPath, ex);
             }
+        }
+
+        public static double TimeInSecondsSinceLastSave()
+        {
+            return (DateTime.Now - lastSaveTime).TotalSeconds;
         }
 
         private static ScansLocalData ClearLocalData()
@@ -118,7 +165,7 @@ namespace ScanNetDownloader.Logic
         {
             if (Settings.Instance != null && Settings.Instance.AutoOpenJsonWhenNecessary)
             {
-                new Process { StartInfo = new ProcessStartInfo(Constants.SCANSLOCALDATA_JSON_PATH) { UseShellExecute = true } }.Start();
+                new Process { StartInfo = new ProcessStartInfo(scansDataPath) { UseShellExecute = true } }.Start();
             }
         }
 

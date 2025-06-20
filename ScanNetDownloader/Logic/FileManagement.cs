@@ -96,13 +96,13 @@ namespace ScanNetDownloader.Logic
             return chapterDirectory;
         }
 
-        public static void OpenRelevantFolder(List<ScanData> scansToDownload)
+        public static void OpenRelevantFolderAfterDownload(List<ScanData> scansToDownload)
         {
+            // Called at the end of a download, should I make a isNull check on LocationPath ? it should always be set during download.
             if (scansToDownload.Count == 1)
             {
                 // One chapter downloaded, open this chapter folder
-                string chapterDirectory = GetChapterDirectoryPath(scansToDownload[0]);
-                OpenFolder(chapterDirectory);
+                OpenFolder(scansToDownload[0].LocationPath);
             }
             else
             {
@@ -115,7 +115,7 @@ namespace ScanNetDownloader.Logic
                 else
                 {
                     // Several chapters of the same book downloaded, open the book folder
-                    string bookDirectory = GetBookDirectoryPath(scansToDownload[0]);
+                    string bookDirectory = Path.Combine(scansToDownload[0].LocationPath, "..");
                     OpenFolder(bookDirectory);
                 }
             }
@@ -135,64 +135,149 @@ namespace ScanNetDownloader.Logic
             }
         }
 
-        public static ScanItem.DownloadedStatus GetDownloadStatus(ScanData scanData, bool cbzCreated)
+        public static ScanItem.DownloadedStatus GetDownloadStatus(ScanData scanData)
         {
-            string chapterDirPath = GetChapterDirectoryPath(scanData);
-            if (Directory.Exists(chapterDirPath))
+            if(scanData.LocationPath != null)
             {
-                int expectedImgsCount = scanData.PagesCount;
-                int filesInChapterDirCount = Directory.GetFiles(chapterDirPath).Length;
-
-                if (filesInChapterDirCount > 0 && expectedImgsCount == filesInChapterDirCount)
+                if(scanData.LocationPath != string.Empty)
                 {
-                    if (cbzCreated) return ScanItem.DownloadedStatus.FullyDownloaded;
-                    else return ScanItem.DownloadedStatus.OnlyImagesDownloaded;
-                }
-                else if (filesInChapterDirCount > 0 && filesInChapterDirCount < expectedImgsCount)
-                {
-                    return ScanItem.DownloadedStatus.MissingImages;
+                    bool cbzCreated = TryToFindCbzFromLocationPath(scanData, out string cbzPathTried);
+                    if (Directory.Exists(scanData.LocationPath))
+                    {
+                        return AnalyzeLocationPath(scanData.LocationPath, scanData.PagesCount, cbzCreated);
+                    }
+                    else
+                    {
+                        if (cbzCreated) return ScanItem.DownloadedStatus.OnlyCbzDownloaded;
+                        else return ScanItem.DownloadedStatus.NotDownloaded;
+                    }
                 }
                 else
                 {
-                    if(cbzCreated) return ScanItem.DownloadedStatus.OnlyCbzDownloaded;
-                    else return ScanItem.DownloadedStatus.NotDownloaded;
+                    // Path was never set, images cannot have been download             
+                    return ScanItem.DownloadedStatus.NotDownloaded; // TODO: Add new state NeverDownloaded ?
                 }
+            }
+            else // Retro-compatibility: Try to find path from current download location
+            {
+                // Path is null, scan data was created before LocationPath introduction   
+                bool cbzCreated = TryToFindCbzFromOutputDir(scanData, out string cbzPathTried);
+
+                if (TryFindDirectoryFromOutputDir(scanData, out string pathFromOutputTried))
+                {
+                    // Location Path Found
+                    scanData.LocationPath = pathFromOutputTried;
+                    return AnalyzeLocationPath(scanData.LocationPath, scanData.PagesCount, cbzCreated);
+                }
+                else if (cbzCreated)
+                {
+                    // Cbz file found so location path found, save the path from output dir
+                    scanData.LocationPath = pathFromOutputTried;
+                    return ScanItem.DownloadedStatus.OnlyCbzDownloaded;  
+                }
+                else
+                {
+                    // Keep location path null if we didn't find anything in case user change download path later
+                    return ScanItem.DownloadedStatus.NotDownloaded;
+                }
+            }       
+        }
+
+        private static ScanItem.DownloadedStatus AnalyzeLocationPath(string scanPath, int expectedImgsCount, bool cbzCreated)
+        {
+            int filesInChapterDirCount = Directory.GetFiles(scanPath).Length;
+
+            // Are all images downloaded ?
+            if (filesInChapterDirCount > 0 && filesInChapterDirCount >= expectedImgsCount) // if more image than expected just consider image are downloaded
+            {
+                // All images downloaded
+                if (cbzCreated) return ScanItem.DownloadedStatus.FullyDownloaded;
+                else return ScanItem.DownloadedStatus.OnlyImagesDownloaded;
+            }
+            else if (filesInChapterDirCount > 0 && filesInChapterDirCount < expectedImgsCount)
+            {
+                // Some images are missing
+                return ScanItem.DownloadedStatus.MissingImages;
             }
             else
             {
+                // No Images (but maybe a Cbz)
                 if (cbzCreated) return ScanItem.DownloadedStatus.OnlyCbzDownloaded;
                 else return ScanItem.DownloadedStatus.NotDownloaded;
             }
         }
 
-        public static bool IsCbzArchiveCreated(ScanData scanData)
+        private static bool TryFindDirectoryFromOutputDir(ScanData scanData, out string pathTried)
         {
-            string cbzPath = GetCbzFilePath(scanData);
-            return File.Exists(cbzPath) && File.ReadAllBytes(cbzPath).Length > 0;
-        }
-
-        static string GetBookDirectoryPath(ScanData scanData)
-        {
-            string bookName = scanData.BookName;
-            string bookDirectoryPath = Path.Combine(OutputDirectory, $"{bookName}{Constants.SCAN_SUFFIX}");
-
-            return bookDirectoryPath;
-        }
-
-        public static string GetChapterDirectoryPath(ScanData scanData)
-        {
+            // Build path from output directory
             string bookName = scanData.BookName;
             string chapterNumber = scanData.ChapterId.ToString();
             string chapterDirectoryPath = Path.Combine(OutputDirectory, $"{bookName}{Constants.SCAN_CHAPTER_PATH}{chapterNumber}");
+            pathTried = chapterDirectoryPath;
 
-            return chapterDirectoryPath;
+            if (Directory.Exists(chapterDirectoryPath)) return true;
+            else return false;
         }
 
-        static string GetCbzFilePath(ScanData scanData)
+        public static bool CbzFileExist(ScanData scanData)
         {
+            if (scanData.LocationPath != null)
+            {
+                if(scanData.LocationPath != string.Empty)
+                {
+                    return TryToFindCbzFromLocationPath(scanData, out string cbzPathTried);
+                }
+                else
+                {
+                    // LocationPath never set
+                    return false;
+                }
+            }
+            else
+            {
+                // Retro-compatibility: LocationPath is null
+                return TryToFindCbzFromOutputDir(scanData, out string cbzPathTried);
+            }
+        }
+
+        private static bool TryToFindCbzFromOutputDir(ScanData scanData, out string cbzPathTried)
+        {
+            cbzPathTried = string.Empty;
+
             string bookName = scanData.BookName;
             string chapterNumber = scanData.ChapterId.ToString();
-            string cbzFilePath = Path.Combine(GetBookDirectoryPath(scanData), $"{bookName}{Constants.CBZ_CHAPTER_PREFIX}{chapterNumber}{Constants.CBZ_EXTENSION}");
+            string bookDirectoryPath = Path.Combine(OutputDirectory, $"{bookName}{Constants.SCAN_SUFFIX}");
+            string cbzFilePath = Path.Combine(bookDirectoryPath, $"{bookName}{Constants.CBZ_CHAPTER_PREFIX}{chapterNumber}{Constants.CBZ_EXTENSION}");
+
+            cbzPathTried = cbzFilePath;
+
+            if (File.Exists(cbzFilePath) && File.ReadAllBytes(cbzFilePath).Length > 0) return true;
+            else return false;
+        }
+
+        private static bool TryToFindCbzFromLocationPath(ScanData scanData, out string cbzPathTried)
+        {
+            // Ex:
+            // Location path =  D:\Download\ScanNetDownloader\One Piece Scan\Chapter 1
+            // Cbz Path      =  D:\Download\ScanNetDownloader\One Piece Scan\One Piece - chapter 1.cbz
+
+            string bookName = scanData.BookName;
+            string chapterNumber = scanData.ChapterId.ToString();
+            string cbzFileName = $"{bookName}{Constants.CBZ_CHAPTER_PREFIX}{chapterNumber}{Constants.CBZ_EXTENSION}";
+
+            string cbzParentDir = Path.Combine(scanData.LocationPath, ".."); // Get parent directory
+            string cbzFilePath = Path.Combine (cbzParentDir, cbzFileName);
+
+            cbzPathTried = cbzFilePath;
+
+            if(File.Exists(cbzFilePath) && File.ReadAllBytes(cbzFilePath).Length > 0) return true;
+            else return false;
+        }
+
+        public static string GetCbzPathFromScanData(ScanData scanData)
+        {
+            string cbzFolderPath = Path.Combine(scanData.LocationPath, ".."); // Get parent
+            string cbzFilePath = Path.Combine(cbzFolderPath, $"{scanData.BookName}{Constants.CBZ_CHAPTER_PREFIX}{scanData.ChapterId}{Constants.CBZ_EXTENSION}");
 
             return cbzFilePath;
         }

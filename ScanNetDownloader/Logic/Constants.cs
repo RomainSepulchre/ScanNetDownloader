@@ -9,13 +9,23 @@ namespace ScanNetDownloader.Logic
     {
         #region Paths
         public static readonly string BASE_DIRECTORY_PATH = AppDomain.CurrentDomain.BaseDirectory;
-        private const string SETTINGS_JSON_FILENAME = "Settings.json";
-        public static readonly string SETTINGS_JSON_PATH = BASE_DIRECTORY_PATH + SETTINGS_JSON_FILENAME;
+        public static readonly string APPDATA_PATH = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        private const string DATA_FOLDER_NAME = "ScanNetDownloader";
+        public static readonly string DATA_FOLDER_PATH = Path.Combine(APPDATA_PATH, DATA_FOLDER_NAME);
+        public static readonly string DEBUG_DATA_FOLDER_PATH = Path.Combine(APPDATA_PATH, $"{DATA_FOLDER_NAME}_DEV");
+        private const string SETTINGS_JSON_FILENAME = "Settings.json";   
+        public static readonly string SETTINGS_JSON_PATH = Path.Combine(DATA_FOLDER_PATH, SETTINGS_JSON_FILENAME);
+        public static readonly string DEBUG_SETTINGS_JSON_PATH = Path.Combine(DEBUG_DATA_FOLDER_PATH, SETTINGS_JSON_FILENAME);
         private const string SCANSLOCALDATA_JSON_FILENAME = "ScansLocalData.json";
-        public static readonly string SCANSLOCALDATA_JSON_PATH = BASE_DIRECTORY_PATH + SCANSLOCALDATA_JSON_FILENAME;
+        public static readonly string SCANSLOCALDATA_JSON_PATH = Path.Combine(DATA_FOLDER_PATH, SCANSLOCALDATA_JSON_FILENAME);
+        public static readonly string DEBUG_SCANSLOCALDATA_JSON_PATH = Path.Combine(DEBUG_DATA_FOLDER_PATH, SCANSLOCALDATA_JSON_FILENAME);
         public static readonly string USER_FOLDER_PATH = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile); // User directory path
         //public static readonly string USER_DOWNLOAD_FOLDER_PATH = Path.Combine(USER_FOLDER_PATH, "Downloads"); // Default download directory path
-        public static readonly string USER_DOWNLOAD_FOLDER_PATH = Path.Combine(FileManagement.GetUserDownloadsFolder(), "ScanNetDownloader"); // Actual download directory path, if it has been moved
+        public static readonly string USER_DOWNLOAD_FOLDER_PATH = Path.Combine(FileManagement.GetUserDownloadsFolder(), DATA_FOLDER_NAME); // Actual download directory path, if it has been moved
+
+        // Old paths, kept just in case
+        public static readonly string OLD_SCANSLOCALDATA_JSON_PATH = BASE_DIRECTORY_PATH + SCANSLOCALDATA_JSON_FILENAME; 
+        public static readonly string OLD_SETTINGS_JSON_PATH = BASE_DIRECTORY_PATH + SETTINGS_JSON_FILENAME;
         #endregion
 
 

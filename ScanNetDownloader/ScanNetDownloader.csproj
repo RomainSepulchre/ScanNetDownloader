@@ -6,8 +6,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <AssemblyVersion>1.1.1.0</AssemblyVersion>
-    <FileVersion>1.1.1.0</FileVersion>
+    <AssemblyVersion>1.2.0.0</AssemblyVersion>
+    <FileVersion>1.2.0.0</FileVersion>
     <ApplicationIcon>Images\appIcon.ico</ApplicationIcon>
   </PropertyGroup>
 
@@ -17,6 +17,8 @@
     <None Remove="Images\CheckboxIcon_Black_Empty.png" />
     <None Remove="Images\CheckboxIcon_White_Empty.png" />
     <None Remove="Images\checkIcon.png" />
+    <None Remove="Images\compareOffIcon.png" />
+    <None Remove="Images\compareOnIcon.png" />
     <None Remove="Images\crossIcon_White.png" />
     <None Remove="Images\downloadIcon_Black.png" />
     <None Remove="Images\downloadIcon_BorderBlack.png" />
@@ -24,6 +26,9 @@
     <None Remove="Images\downloadIcon_Orange.png" />
     <None Remove="Images\downloadIcon_White.png" />
     <None Remove="Images\errorIcon.png" />
+    <None Remove="Images\eyeIcon.png" />
+    <None Remove="Images\eyeIcon_Blue.png" />
+    <None Remove="Images\folderIcon.png" />
     <None Remove="Images\inferiorLevelIcon.png" />
     <None Remove="Images\infoIcon.png" />
     <None Remove="Images\maximizeIcon.png" />
@@ -37,6 +42,7 @@
     <None Remove="Images\startIcon_Blue.png" />
     <None Remove="Images\startIcon_White.png" />
     <None Remove="Images\stopIcon.png" />
+    <None Remove="Images\successIcon.png" />
     <None Remove="Images\warningIcon.png" />
   </ItemGroup>
 
@@ -61,6 +67,9 @@
     <Resource Include="Images\downloadIcon_Orange.png" />
     <Resource Include="Images\downloadIcon_White.png" />
     <Resource Include="Images\errorIcon.png" />
+    <Resource Include="Images\eyeIcon.png" />
+    <Resource Include="Images\eyeIcon_Blue.png" />
+    <Resource Include="Images\folderIcon.png" />
     <Resource Include="Images\inferiorLevelIcon.png" />
     <Resource Include="Images\infoIcon.png" />
     <Resource Include="Images\maximizeIcon.png" />
@@ -82,6 +91,7 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Images\stopIcon.png" />
+    <Resource Include="Images\successIcon.png" />
     <Resource Include="Images\warningIcon.png" />
   </ItemGroup>
 
