@@ -1,7 +1,10 @@
-﻿using ScanNetDownloader.Logic;
+﻿using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
+using ScanNetDownloader.Logic;
 using ScanNetDownloader.Logic.Helpers;
 using ScanNetDownloader.View;
 using ScanNetDownloader.View.CustomControls;
+using SeleniumUndetectedChromeDriver;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
@@ -9,6 +12,8 @@ using System.Net.Http;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
+using Cookie = System.Net.Cookie;
+using CookieSelenium = OpenQA.Selenium.Cookie;
 
 namespace ScanNetDownloader
 {
@@ -230,6 +235,7 @@ namespace ScanNetDownloader
             string imgUrl = "https://www.scan-vf.net/uploads/manga/jujutsu-kaisen/chapters/chapitre-21/01.png";
 
             HttpClient client = HttpClientSingleton.Client;
+
             try
             {
                 Debug.WriteLine($"\nDownloading TEST IMG from {imgUrl}");
@@ -394,6 +400,65 @@ namespace ScanNetDownloader
                 //bool alreadyExist = ScanManagement.IsADuplicate(data);
 
                 //Debug.WriteLine($"Duplicate found for {data.BookName}#{data.ChapterId}: {alreadyExist}");
+        }
+
+
+        public static IWebDriver driver;
+        private async void btnDbg9_Click(object sender, RoutedEventArgs e)
+        {
+            if(driver == null)
+            {
+                ChromeOptions options = new ChromeOptions();
+                options.AddArgument("--no-sandbox");
+                options.AddArgument("--disable-blink-features=AutomationControlled");
+
+                //driver = new ChromeDriver(options);
+                driver = UndetectedChromeDriver.Create(options, driverExecutablePath: await new ChromeDriverInstaller().Auto());
+
+                Debug.WriteLine($"Driver is null ?: {driver == null}");
+            }
+
+            driver.Navigate().GoToUrl("https://sushiscan.net/one-piece-chapitre-1105/");
+        }
+
+        private async void btnDbg10_Click(object sender, RoutedEventArgs e)
+        {
+            string downloadFile = @"D:\Download\ScanNetDownloader\Dev\Sushi\testImg.webp";
+            //string imgUrl = "https://c.sushiscan.net/wp-content/uploads81/OPChap1131-01.webp";
+            string chapterUrl = "https://sushiscan.net/one-piece-chapitre-1107/";
+
+            IReadOnlyCollection<CookieSelenium> cookies = driver.Manage().Cookies.AllCookies;
+
+            foreach (CookieSelenium cookie in cookies)
+            {
+                Debug.WriteLine($"COOKIE - url:{cookie.Domain}, Name: {cookie.Name}, Value: {cookie.Value}");
+            }
+
+            //Debug.WriteLine($"SOURCE: {driver.PageSource}");
+            driver.Navigate().GoToUrlAsync(chapterUrl);
+
+            Thread.Sleep(TimeSpan.FromSeconds(2));
+
+            IReadOnlyCollection<IWebElement> imgs = driver.FindElements(By.TagName("img"));
+
+            int i = 0;
+            foreach (IWebElement img in imgs)
+            {
+                Debug.WriteLine($"IMG: class={img.GetAttribute("class")} - src={img.GetAttribute("src")}");
+            }
+
+            // Execute script
+            IJavaScriptExecutor js = (IJavaScriptExecutor)driver;
+            IWebElement querySelector = (IWebElement)js.ExecuteScript("""return document.querySelector(".ts-main-image")""");
+
+            Debug.WriteLine($"querySelector: source {querySelector.GetAttribute("src")}");
+
+            Thread.Sleep(TimeSpan.FromSeconds(15));
+            if (driver != null)
+            {
+                driver.Quit();
+                driver = null;
+            }
         }
 
         #endregion
