@@ -424,19 +424,19 @@ namespace ScanNetDownloader
         private async void btnDbg10_Click(object sender, RoutedEventArgs e)
         {
             string downloadFile = @"D:\Download\ScanNetDownloader\Dev\Sushi\testImg.webp";
-            //string imgUrl = "https://c.sushiscan.net/wp-content/uploads81/OPChap1131-01.webp";
+            string imgUrl = "https://c.sushiscan.net/wp-content/uploads81/OPChap1131-01.webp";
             string chapterUrl = "https://sushiscan.net/one-piece-chapitre-1107/";
 
             IReadOnlyCollection<CookieSelenium> cookies = driver.Manage().Cookies.AllCookies;
 
+            CookieSelenium clearanceCookie = null;
             foreach (CookieSelenium cookie in cookies)
-            {
+            {        
                 Debug.WriteLine($"COOKIE - url:{cookie.Domain}, Name: {cookie.Name}, Value: {cookie.Value}");
+                if (cookie.Name == "cf_clearance") clearanceCookie = cookie;
             }
 
-            //Debug.WriteLine($"SOURCE: {driver.PageSource}");
             driver.Navigate().GoToUrlAsync(chapterUrl);
-
             Thread.Sleep(TimeSpan.FromSeconds(2));
 
             IReadOnlyCollection<IWebElement> imgs = driver.FindElements(By.TagName("img"));
@@ -444,8 +444,60 @@ namespace ScanNetDownloader
             int i = 0;
             foreach (IWebElement img in imgs)
             {
+                // TODO: find image url with this
                 Debug.WriteLine($"IMG: class={img.GetAttribute("class")} - src={img.GetAttribute("src")}");
             }
+
+            //CookieContainer cookiesContainer = new CookieContainer();
+            //HttpClientHandler handler = new HttpClientHandler { CookieContainer = cookiesContainer, UseCookies = true};
+
+            //using (HttpClient client = new HttpClient(handler))
+            if (clearanceCookie != null)
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    //client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36");
+                    //client.DefaultRequestHeaders.Add("Referer", "https://sushiscan.net/");
+                    //client.DefaultRequestHeaders.Add("Accept", "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8");
+                    //client.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate, br, zstd");
+                    //client.DefaultRequestHeaders.Add("Accept-Language", "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7");
+                    //client.DefaultRequestHeaders.Add("Cookie", $"{clearanceCookie.Name}={clearanceCookie.Value}");
+
+                    //byte[] img = await client.GetByteArrayAsync(imgUrl);
+                    //File.WriteAllBytes(downloadFile, img);
+
+                    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, imgUrl);
+                    request.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36");
+                    request.Headers.Add("Referer", "https://sushiscan.net/");
+                    request.Headers.Add("Accept", "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8");
+                    request.Headers.Add("Accept-Encoding", "gzip, deflate, br, zstd");
+                    request.Headers.Add("Accept-Language", "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7");
+                    request.Headers.Add("Cookie", $"{clearanceCookie.Name}={clearanceCookie.Value}");
+
+                    var response = await client.SendAsync(request);
+
+                    response.EnsureSuccessStatusCode();
+
+                    byte[] img = await response.Content.ReadAsByteArrayAsync();
+                    File.WriteAllBytes(downloadFile, img);
+
+                }
+            }
+
+            if (driver != null)
+            {
+                driver.Quit();
+                driver = null;
+            }
+
+            return;
+
+            //Debug.WriteLine($"SOURCE: {driver.PageSource}");
+            
+
+            
+
+            
 
             // Execute script
             IJavaScriptExecutor js = (IJavaScriptExecutor)driver;
@@ -454,11 +506,7 @@ namespace ScanNetDownloader
             Debug.WriteLine($"querySelector: source {querySelector.GetAttribute("src")}");
 
             Thread.Sleep(TimeSpan.FromSeconds(15));
-            if (driver != null)
-            {
-                driver.Quit();
-                driver = null;
-            }
+            
         }
 
         #endregion
