@@ -377,6 +377,12 @@ namespace ScanNetDownloader.Logic
                         result.Exception = loadResult.Exception;
                         result.Success = false;
                     }
+                    else
+                    {
+                        result.InvalidityReason = loadResult.Exception.Message;
+                        result.Exception = loadResult.Exception;
+                        result.Success = false;
+                    }
                 }
                 else
                 {

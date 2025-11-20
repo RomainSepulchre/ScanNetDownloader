@@ -195,6 +195,7 @@ namespace ScanNetDownloader.Logic
                         else
                         {
                             result.Success = false;
+                            result.Exception = new Exception($"Http request failed with status code: {response.StatusCode}");
                         }     
                     }
                 }
