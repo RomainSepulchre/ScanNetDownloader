@@ -72,8 +72,8 @@ namespace ScanNetDownloader.Logic
         public const string SCANVF_DOMAIN_NAME = "https://www.scan-vf.net";
         public const string SCANVF_IMG_URL_MARKER = "uploads";
         public const string SCANVF_CHAPTER_IN_URL = "/chapitre-";
-        public const string ANIMESAMA_DOMAIN_NAME = "https://anime-sama.fr";
-        public const string ANIMESAMA_IMG_URL_START = "https://anime-sama.fr/s2/scans/";
+        public const string ANIMESAMA_DOMAIN_NAME = "https://anime-sama.org";
+        public const string ANIMESAMA_IMG_URL_START = "https://anime-sama.org/s2/scans/";
         public const string ANIMESAMA_IMG_URL_MARKER = "scans";
         public const string ANIMESAMA_ENGLISH_SCAN_URL_MARKER = "va";
         public const string ANIMESAMA_ENGLISH_IMG_SUFFIX = " Anglais";
@@ -110,8 +110,8 @@ namespace ScanNetDownloader.Logic
             },
             { ANIMESAMA_DOMAIN_NAME, new List<string>()
                 {
-                    "https://anime-sama.fr/catalogue/one-piece/scan_noir-et-blanc/vf/ (for scan in french)",
-                    "https://anime-sama.fr/catalogue/one-piece/scan_noir-et-blanc/va/ (for scan in english)"
+                    "https://anime-sama.org/catalogue/one-piece/scan_noir-et-blanc/vf/ (for scan in french)",
+                    "https://anime-sama.org/catalogue/one-piece/scan_noir-et-blanc/va/ (for scan in english)"
                 }
             },
             { LELSCANS_DOMAIN_NAME, new List<string>()
