@@ -411,6 +411,7 @@ namespace ScanNetDownloader
                 ChromeOptions options = new ChromeOptions();
                 options.AddArgument("--no-sandbox");
                 options.AddArgument("--disable-blink-features=AutomationControlled");
+                //options.AddArguments("--Headless");
 
                 //driver = new ChromeDriver(options);
                 driver = UndetectedChromeDriver.Create(options, driverExecutablePath: await new ChromeDriverInstaller().Auto());
@@ -419,34 +420,42 @@ namespace ScanNetDownloader
             }
 
             driver.Navigate().GoToUrl("https://sushiscan.net/one-piece-chapitre-1105/");
+            //driver.Navigate().GoToUrl("https://anime-sama.org/catalogue/l-imperatrice-remariee/scan/vf/");
         }
 
         private async void btnDbg10_Click(object sender, RoutedEventArgs e)
         {
             string downloadFile = @"D:\Download\ScanNetDownloader\Dev\Sushi\testImg.webp";
-            string imgUrl = "https://c.sushiscan.net/wp-content/uploads81/OPChap1131-01.webp";
+            //string imgUrl = "https://c.sushiscan.net/wp-content/uploads81/OPChap1131-01.webp";
+            string imgUrl = "https://c1.sushiscan.net/wp-content/uploads47/OPChap1105-01.png";
             string chapterUrl = "https://sushiscan.net/one-piece-chapitre-1107/";
+
+            //string chapterUrl = "https://anime-sama.org/catalogue/l-imperatrice-remariee/scan/vf/";
 
             IReadOnlyCollection<CookieSelenium> cookies = driver.Manage().Cookies.AllCookies;
 
             CookieSelenium clearanceCookie = null;
+            CookieSelenium ga1Cookie = null;
+            CookieSelenium ga2Cookie = null;
             foreach (CookieSelenium cookie in cookies)
             {        
                 Debug.WriteLine($"COOKIE - url:{cookie.Domain}, Name: {cookie.Name}, Value: {cookie.Value}");
                 if (cookie.Name == "cf_clearance") clearanceCookie = cookie;
+                if (cookie.Name == "_ga") ga1Cookie = cookie;
+                if (cookie.Name.Contains("_ga_")) ga2Cookie = cookie;
             }
 
-            driver.Navigate().GoToUrlAsync(chapterUrl);
-            Thread.Sleep(TimeSpan.FromSeconds(2));
+            //driver.Navigate().GoToUrlAsync(chapterUrl);
+            //Thread.Sleep(TimeSpan.FromSeconds(2));
 
-            IReadOnlyCollection<IWebElement> imgs = driver.FindElements(By.TagName("img"));
+            //IReadOnlyCollection<IWebElement> imgs = driver.FindElements(By.TagName("img"));
 
-            int i = 0;
-            foreach (IWebElement img in imgs)
-            {
-                // TODO: find image url with this
-                Debug.WriteLine($"IMG: class={img.GetAttribute("class")} - src={img.GetAttribute("src")}");
-            }
+            //int i = 0;
+            //foreach (IWebElement img in imgs)
+            //{
+            //    // TODO: find image url with this
+            //    Debug.WriteLine($"IMG: class={img.GetAttribute("class")} - src={img.GetAttribute("src")}");
+            //}
 
             //CookieContainer cookiesContainer = new CookieContainer();
             //HttpClientHandler handler = new HttpClientHandler { CookieContainer = cookiesContainer, UseCookies = true};
@@ -466,6 +475,10 @@ namespace ScanNetDownloader
                     //byte[] img = await client.GetByteArrayAsync(imgUrl);
                     //File.WriteAllBytes(downloadFile, img);
 
+                    //
+                    // SUSHI SCAN IMG
+                    //
+
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, imgUrl);
                     request.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36");
                     request.Headers.Add("Referer", "https://sushiscan.net/");
@@ -474,9 +487,30 @@ namespace ScanNetDownloader
                     request.Headers.Add("Accept-Language", "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7");
                     request.Headers.Add("Cookie", $"{clearanceCookie.Name}={clearanceCookie.Value}");
 
+                    //
+                    // Anime-Sama org PAGE
+                    //
+
+                    //HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, chapterUrl);
+                    //request.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36");
+                    //request.Headers.Add("authority", "anime-sama.org");
+                    //request.Headers.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7");
+                    //request.Headers.Add("Accept-Encoding", "gzip, deflate, br, zstd");
+                    //request.Headers.Add("Accept-Language", "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7");
+                    //request.Headers.Add("Cookie", $"{clearanceCookie.Name}={clearanceCookie.Value}; {ga1Cookie.Name}={ga1Cookie.Value}; {ga2Cookie.Name}={ga2Cookie.Value};");
+                    //request.Headers.Add("Cache-Control", $"max-age=0");
+                    //request.Headers.Add("Priority", $"u=0, i");
+
                     var response = await client.SendAsync(request);
 
-                    response.EnsureSuccessStatusCode();
+                    try
+                    {
+                        response.EnsureSuccessStatusCode();
+                    }
+                    catch (HttpRequestException ex)
+                    {
+                        Debug.WriteLine($"{ex.Message}");
+                    }
 
                     byte[] img = await response.Content.ReadAsByteArrayAsync();
                     File.WriteAllBytes(downloadFile, img);
