@@ -275,7 +275,13 @@ namespace ScanNetDownloader.Logic
                         result.InvalidityReason = "This does not seem to be an url, usually the url should start with \"https://\"";
                         result.Exception = loadResult.Exception;
                         result.Success = false;
-                    }    
+                    }
+                    else
+                    {
+                        result.InvalidityReason = loadResult.Exception.Message;
+                        result.Exception = loadResult.Exception;
+                        result.Success = false;
+                    }
                 }
                 else
                 {

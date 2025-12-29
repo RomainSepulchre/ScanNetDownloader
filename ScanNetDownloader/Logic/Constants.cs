@@ -72,8 +72,8 @@ namespace ScanNetDownloader.Logic
         public const string SCANVF_DOMAIN_NAME = "https://www.scan-vf.net";
         public const string SCANVF_IMG_URL_MARKER = "uploads";
         public const string SCANVF_CHAPTER_IN_URL = "/chapitre-";
-        public const string ANIMESAMA_DOMAIN_NAME = "https://anime-sama.fr";
-        public const string ANIMESAMA_IMG_URL_START = "https://anime-sama.fr/s2/scans/";
+        public const string ANIMESAMA_DOMAIN_NAME = "https://anime-sama.tv";
+        public const string ANIMESAMA_IMG_URL_START = "https://anime-sama.tv/s2/scans/";
         public const string ANIMESAMA_IMG_URL_MARKER = "scans";
         public const string ANIMESAMA_ENGLISH_SCAN_URL_MARKER = "va";
         public const string ANIMESAMA_ENGLISH_IMG_SUFFIX = " Anglais";
@@ -110,8 +110,8 @@ namespace ScanNetDownloader.Logic
             },
             { ANIMESAMA_DOMAIN_NAME, new List<string>()
                 {
-                    "https://anime-sama.fr/catalogue/one-piece/scan_noir-et-blanc/vf/ (for scan in french)",
-                    "https://anime-sama.fr/catalogue/one-piece/scan_noir-et-blanc/va/ (for scan in english)"
+                    "https://anime-sama.tv/catalogue/one-piece/scan_noir-et-blanc/vf/ (for scan in french)",
+                    "https://anime-sama.tv/catalogue/one-piece/scan_noir-et-blanc/va/ (for scan in english)"
                 }
             },
             { LELSCANS_DOMAIN_NAME, new List<string>()
@@ -134,18 +134,18 @@ namespace ScanNetDownloader.Logic
         // List of Url that can be used for dev purpose
         private static readonly List<string> DEV_SCANS_TO_DOWNLOAD_URL = new List<string>
         {
-            "https://anime-sama.fr/catalogue/20th-century-boys/scan/vf/",
+            "https://anime-sama.tv/catalogue/20th-century-boys/scan/vf/",
             "https://www.scan-vf.net/one_piece/chapitre-1079/1",
             "https://www.scan-vf.net/one_piece/chapitre-1120/5",
             "https://www.scan-vf.net/one_piece/chapitre-140/1",
             "https://www.scan-vf.net/one_piece/chapitre-1087/7",
-            "https://anime-sama.fr/catalogue/berserk/scan/vf/",
-            "https://anime-sama.fr/catalogue/alice-in-borderland/scan/vf/",
+            "https://anime-sama.tv/catalogue/berserk/scan/vf/",
+            "https://anime-sama.tv/catalogue/alice-in-borderland/scan/vf/",
             "https://www.scan-vf.net/jujutsu-kaisen/chapitre-268/1",
             "https://www.scan-vf.net/dragon-Ball-Super/chapitre-73/4",
-            "https://anime-sama.fr/catalogue/fairy-tail/scan/vf/",
+            "https://anime-sama.tv/catalogue/fairy-tail/scan/vf/",
             "https://www.scan-vf.net/my-hero-academia/chapitre-358/2",
-            "https://anime-sama.fr/catalogue/the-terminally-ill-young-master-of-the-baek-clan/scan/vf/"
+            "https://anime-sama.tv/catalogue/the-terminally-ill-young-master-of-the-baek-clan/scan/vf/"
         };
         #endregion
     }
