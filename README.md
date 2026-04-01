@@ -21,7 +21,7 @@ You provide a scan url to download and the software will do the rest.
 Currently, the compatible website are:
 
 - www.scan-vf.net
-- www.anime-sama.fr
+- www.anime-sama.to
 - www.lelscans.net
 
 > If the scan website you use is not part of this list, contact me or open an issue and I'll do my best to make ScanNet Downloader compatible with it.
