@@ -55,10 +55,10 @@ In most of the case if you copy-paste the link of the first page of the scan you
 >- Url of a chapter: https://www.scan-vf.net/one_piece/chapitre-1/1.
 >- Url of a book: https://www.scan-vf.net/one_piece.
 
-##### Anime-sama.fr
+##### Anime-sama.to
 
 >Open any chapter of the scan and copy-paste the url.<br>
->The url should look like this: https://anime-sama.fr/catalogue/one-piece/scan/vf/.
+>The url should look like this: https://anime-sama.to/catalogue/one-piece/scan/vf/.
 
 ##### Lelscans.net
 
