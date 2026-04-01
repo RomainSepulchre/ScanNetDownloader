@@ -115,19 +115,19 @@ namespace ScanNetDownloader.Logic
             #region Chapter and img url examples
             // Example of chapter url
             //   0    1      2           3         4     5   6
-            // https://anime-sama.tv/catalogue/berserk/scan/vf/
-            // https://anime-sama.tv/catalogue/20th-century-boys/scan/vf/
-            // https://anime-sama.tv/catalogue/alice-in-borderland/scan/vf/
-            // https://anime-sama.tv/catalogue/fairy-tail/scan/vf/
-            // https://anime-sama.tv/catalogue/the-terminally-ill-young-master-of-the-baek-clan/scan/vf/
+            // https://anime-sama.to/catalogue/berserk/scan/vf/
+            // https://anime-sama.to/catalogue/20th-century-boys/scan/vf/
+            // https://anime-sama.to/catalogue/alice-in-borderland/scan/vf/
+            // https://anime-sama.to/catalogue/fairy-tail/scan/vf/
+            // https://anime-sama.to/catalogue/the-terminally-ill-young-master-of-the-baek-clan/scan/vf/
 
             // Example of img url
             //   0    1      2        3    4     5    6   7
-            // https://anime-sama.tv/s2/scans/Berserk/2/1.jpg
-            // https://anime-sama.tv/s2/scans/20th%20Century%20boys/1/1.jpg
-            // https://anime-sama.tv/s2/scans/Alice%20in%20Borderland/1/1.jpg
-            // https://anime-sama.tv/s2/scans/Fairy%20Tail/1/1.jpg
-            // https://anime-sama.tv/s2/scans/The%20Terminally%20Ill%20Young%20Master%20of%20the%20Baek%20Clan/1/1.jpg
+            // https://anime-sama.to/s2/scans/Berserk/2/1.jpg
+            // https://anime-sama.to/s2/scans/20th%20Century%20boys/1/1.jpg
+            // https://anime-sama.to/s2/scans/Alice%20in%20Borderland/1/1.jpg
+            // https://anime-sama.to/s2/scans/Fairy%20Tail/1/1.jpg
+            // https://anime-sama.to/s2/scans/The%20Terminally%20Ill%20Young%20Master%20of%20the%20Baek%20Clan/1/1.jpg
             #endregion
 
             // Note: With AnimeSama we replace this book name with one we get from the html content in GetBookNameFromHtmlContent().
@@ -152,19 +152,19 @@ namespace ScanNetDownloader.Logic
             #region Chapter and img url examples
             // Example of chapter url
             //   0    1      2           3         4     5   6
-            // https://anime-sama.tv/catalogue/berserk/scan/vf/
-            // https://anime-sama.tv/catalogue/20th-century-boys/scan/vf/
-            // https://anime-sama.tv/catalogue/alice-in-borderland/scan/vf/
-            // https://anime-sama.tv/catalogue/fairy-tail/scan/vf/
-            // https://anime-sama.tv/catalogue/the-terminally-ill-young-master-of-the-baek-clan/scan/vf/
+            // https://anime-sama.to/catalogue/berserk/scan/vf/
+            // https://anime-sama.to/catalogue/20th-century-boys/scan/vf/
+            // https://anime-sama.to/catalogue/alice-in-borderland/scan/vf/
+            // https://anime-sama.to/catalogue/fairy-tail/scan/vf/
+            // https://anime-sama.to/catalogue/the-terminally-ill-young-master-of-the-baek-clan/scan/vf/
 
             // Example of img url
             //   0    1      2        3    4     5    6   7
-            // https://anime-sama.tv/s2/scans/Berserk/2/1.jpg
-            // https://anime-sama.tv/s2/scans/20th%20Century%20boys/1/1.jpg
-            // https://anime-sama.tv/s2/scans/Alice%20in%20Borderland/1/1.jpg
-            // https://anime-sama.tv/s2/scans/Fairy%20Tail/1/1.jpg
-            // https://anime-sama.tv/s2/scans/The%20Terminally%20Ill%20Young%20Master%20of%20the%20Baek%20Clan/1/1.jpg
+            // https://anime-sama.to/s2/scans/Berserk/2/1.jpg
+            // https://anime-sama.to/s2/scans/20th%20Century%20boys/1/1.jpg
+            // https://anime-sama.to/s2/scans/Alice%20in%20Borderland/1/1.jpg
+            // https://anime-sama.to/s2/scans/Fairy%20Tail/1/1.jpg
+            // https://anime-sama.to/s2/scans/The%20Terminally%20Ill%20Young%20Master%20of%20the%20Baek%20Clan/1/1.jpg
             #endregion
 
             int splitIdForImgUrl = 6;
@@ -190,11 +190,11 @@ namespace ScanNetDownloader.Logic
             #region Img url examples
             // Example of img url
             //   0    1      2        3    4     5    6   7
-            // https://anime-sama.tv/s2/scans/Berserk/2/1.jpg
-            // https://anime-sama.tv/s2/scans/20th%20Century%20boys/1/1.jpg
-            // https://anime-sama.tv/s2/scans/Alice%20in%20Borderland/1/1.jpg
-            // https://anime-sama.tv/s2/scans/Fairy%20Tail/1/1.jpg
-            // https://anime-sama.tv/s2/scans/The%20Terminally%20Ill%20Young%20Master%20of%20the%20Baek%20Clan/1/1.jpg
+            // https://anime-sama.to/s2/scans/Berserk/2/1.jpg
+            // https://anime-sama.to/s2/scans/20th%20Century%20boys/1/1.jpg
+            // https://anime-sama.to/s2/scans/Alice%20in%20Borderland/1/1.jpg
+            // https://anime-sama.to/s2/scans/Fairy%20Tail/1/1.jpg
+            // https://anime-sama.to/s2/scans/The%20Terminally%20Ill%20Young%20Master%20of%20the%20Baek%20Clan/1/1.jpg
             #endregion
 
             ThrowExceptionIfTemporaryData();
@@ -215,11 +215,11 @@ namespace ScanNetDownloader.Logic
             Debug.WriteLine($"\nPARSE HTML - {BookName}_{ChapterId} ({Url}), imgs found:");
             // V1 Recreate url since we can't get the page after js loading
 
-            // https://anime-sama.tv/s2/scans/Berserk/2/1.jpg
-            // https://anime-sama.tv/s2/scans/20th%20Century%20boys/1/1.jpg
-            // https://anime-sama.tv/s2/scans/Alice%20in%20Borderland/1/1.jpg
-            // https://anime-sama.tv/s2/scans/Fairy%20Tail/1/1.jpg
-            // https://anime-sama.tv/s2/scans/The%20Terminally%20Ill%20Young%20Master%20of%20the%20Baek%20Clan/1/1.jpg
+            // https://anime-sama.to/s2/scans/Berserk/2/1.jpg
+            // https://anime-sama.to/s2/scans/20th%20Century%20boys/1/1.jpg
+            // https://anime-sama.to/s2/scans/Alice%20in%20Borderland/1/1.jpg
+            // https://anime-sama.to/s2/scans/Fairy%20Tail/1/1.jpg
+            // https://anime-sama.to/s2/scans/The%20Terminally%20Ill%20Young%20Master%20of%20the%20Baek%20Clan/1/1.jpg
 
             //
             // : Manage Scan in english-> VF (normal url)/VA (add: " Anglais" after image name) <- check if reliable
@@ -341,8 +341,8 @@ namespace ScanNetDownloader.Logic
         public static async Task<UrlValidityResult> IsUrlValid(string url)
         {
             // What are the caracteristics of a valid anime sama url ?
-            // https://anime-sama.tv/catalogue/20th-century-boys/scan/vf/ ==> 8 splits 
-            // https://anime-sama.tv/catalogue/20th-century-boys ==> 5 splits and last split must not be empty
+            // https://anime-sama.to/catalogue/20th-century-boys/scan/vf/ ==> 8 splits 
+            // https://anime-sama.to/catalogue/20th-century-boys ==> 5 splits and last split must not be empty
             // Check if url is long enough to have a book name
 
             // TODO: Manage short url ? Give Url Example when this happens
