@@ -70,7 +70,7 @@ namespace ScanNetDownloader.View.CustomControls
 #if DEBUG
             // For easier debug
             //UrlInput = "https://www.scan-vf.net/jujutsu-kaisen/chapitre-18/1";
-            //UrlInput = "https://anime-sama.tv/catalogue/20th-century-boys/scan-21st-century-boys/vf/";
+            //UrlInput = "https://anime-sama.to/catalogue/20th-century-boys/scan-21st-century-boys/vf/";
             UrlInput = "https://lelscans.net/scan-one-piece/1117";
 #endif
 
