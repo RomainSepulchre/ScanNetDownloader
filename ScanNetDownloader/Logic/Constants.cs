@@ -34,7 +34,7 @@ namespace ScanNetDownloader.Logic
         // Scan VF
         public static readonly string[] SCANVF_URL_BLOCK_START_SEPARATOR = new string[] { "<div class=\"viewer-cnt\">" };
         public static readonly string[] SCANVF_URL_BLOCK_END_SEPARATOR = new string[] { "<div id=\"ppp\" style" };
-        public static readonly string[] SCANVF_CLEAN_BEFORE_IMG_TAG_SEPARATOR = new string[] { "<div id=\"all\" style=\"\">" };
+        public static readonly string[] SCANVF_CLEAN_BEFORE_IMG_TAG_SEPARATOR = new string[] { "<div id=\"all\" style=\" display: none; \">" };
         public static readonly string[] SCANVF_IMG_TAG_END_SEPARATOR = new string[] { "/>" };
 
         // Anime Sama
